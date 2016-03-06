@@ -664,6 +664,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         onlineTextView = new TextView(context);
         onlineTextView.setTextColor(AvatarDrawable.getProfileTextColorForId(5));
         onlineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        onlineTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         onlineTextView.setLines(1);
         onlineTextView.setMaxLines(1);
         onlineTextView.setSingleLine(true);
@@ -1248,7 +1249,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     view = new TextInfoCell(mContext);
                     try {
                         PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                        ((TextInfoCell) view).setText(String.format(Locale.US, "Telegram for Android v%s (%d)", pInfo.versionName, pInfo.versionCode));
+                        ((TextInfoCell) view).setText(String.format(Locale.US, "Telegramity for Android v%s (%d)", pInfo.versionName, pInfo.versionCode));
                     } catch (Exception e) {
                         FileLog.e("tmessages", e);
                     }

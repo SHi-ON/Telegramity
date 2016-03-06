@@ -466,6 +466,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
             TextView helpTextView = new TextView(context);
             helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             helpTextView.setTextColor(0xff6d6d72);
+            helpTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             helpTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             helpTextView.setText(LocaleController.getString("DescriptionInfo", R.string.DescriptionInfo));
             linearLayout.addView(helpTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 24, 10, 24, 20));

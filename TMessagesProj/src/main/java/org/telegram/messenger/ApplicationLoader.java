@@ -29,6 +29,8 @@ import android.util.Base64;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.parse.Parse;
+import com.parse.ParseInstallation;
 
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
@@ -41,8 +43,18 @@ import java.io.RandomAccessFile;
 public class ApplicationLoader extends Application {
 
     private static Drawable cachedWallpaper;
+    public static final String OFFICIAL_CHAN = "ioton_telegramity";
+    public static final String TGYLNK = "BL6mIDvhlAL5kCBf8yOwRg";
     private static int selectedColor;
     private static boolean isCustomTheme;
+    public static int ABBG_COLOR = 0xffef3f3e;
+    public static int DH_COLOR = 0xff2196f3;
+    public static int PBG_COLOR = 0xff9c27b0;
+    /*Default Values:
+    editor.putInt("actionBarBackgroundColor",0xff54759e);
+    editor.putInt("drawerHeaderColor",0xff4c84b5);
+    editor.putInt("profileBackgroundColor",0xff4c84b6);*/
+
     private static final Object sync = new Object();
 
     public static volatile Context applicationContext;
@@ -272,6 +284,17 @@ public class ApplicationLoader extends Application {
         }
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
+
+        // Enable Local Datastore.
+//        Parse.enableLocalDatastore(this);
+        // Add your initialization code here
+        Parse.initialize(this);
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+//        ParseUser.enableAutomaticUser();
+//        ParseACL defaultACL = new ParseACL();
+//        ParseACL.setDefaultACL(defaultACL, true);
+        // Optionally enable public read access.
+        // defaultACL.setPublicReadAccess(true);
 
         startPushService();
     }

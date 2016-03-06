@@ -670,6 +670,7 @@ public class LoginActivity extends BaseFragment {
             textView = new TextView(context);
             textView.setText(LocaleController.getString("StartText", R.string.StartText));
             textView.setTextColor(0xff757575);
+            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             textView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
@@ -1018,6 +1019,7 @@ public class LoginActivity extends BaseFragment {
             wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);
             linearLayout.addView(wrongNumber, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 0, 0, 0, 10));
             wrongNumber.setText(LocaleController.getString("WrongNumber", R.string.WrongNumber));
+            wrongNumber.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             wrongNumber.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1061,9 +1063,11 @@ public class LoginActivity extends BaseFragment {
                 int idx = str.indexOf(number);
                 stringBuilder.setSpan(span, idx, idx + number.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 confirmTextView.setText(stringBuilder);
+                confirmTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium"));
             } catch (Exception e) {
                 FileLog.e("tmessages", e);
                 confirmTextView.setText(str);
+                confirmTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             }
 
             AndroidUtilities.showKeyboard(codeField);
@@ -1072,6 +1076,7 @@ public class LoginActivity extends BaseFragment {
             destroyTimer();
             destroyCodeTimer();
             timeText.setText(LocaleController.formatString("CallText", R.string.CallText, 1, 0));
+            timeText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             lastCurrentTime = System.currentTimeMillis();
             problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
 
@@ -1137,6 +1142,7 @@ public class LoginActivity extends BaseFragment {
                                 int minutes = time / 1000 / 60;
                                 int seconds = time / 1000 - minutes * 60;
                                 timeText.setText(LocaleController.formatString("CallText", R.string.CallText, minutes, seconds));
+                                timeText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
                             } else {
                                 timeText.setText(LocaleController.getString("Calling", R.string.Calling));
                                 destroyTimer();

@@ -44,6 +44,7 @@ public class MentionCell extends LinearLayout {
         nameTextView = new TextView(context);
         nameTextView.setTextColor(0xff000000);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         nameTextView.setSingleLine(true);
         nameTextView.setGravity(Gravity.LEFT);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
@@ -52,6 +53,7 @@ public class MentionCell extends LinearLayout {
         usernameTextView = new TextView(context);
         usernameTextView.setTextColor(0xff999999);
         usernameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        usernameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         usernameTextView.setSingleLine(true);
         usernameTextView.setGravity(Gravity.LEFT);
         usernameTextView.setEllipsize(TextUtils.TruncateAt.END);

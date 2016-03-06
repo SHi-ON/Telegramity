@@ -117,6 +117,7 @@ public class ActionBar extends FrameLayout {
         subTitleTextView = new TextView(getContext());
         subTitleTextView.setGravity(Gravity.LEFT);
         subTitleTextView.setTextColor(0xffd7e8f7);
+        subTitleTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         subTitleTextView.setSingleLine(true);
         subTitleTextView.setLines(1);
         subTitleTextView.setMaxLines(1);

@@ -83,6 +83,7 @@ public class SharedPhotoVideoCell extends FrameLayoutFixed {
             videoTextView = new TextView(context);
             videoTextView.setTextColor(0xffffffff);
             videoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+            videoTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             videoTextView.setGravity(Gravity.CENTER_VERTICAL);
             videoInfoContainer.addView(videoTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 4, 0, 0, 1));
 

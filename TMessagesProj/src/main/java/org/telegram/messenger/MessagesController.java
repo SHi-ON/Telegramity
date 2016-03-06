@@ -18,6 +18,7 @@ import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.widget.Toast;
@@ -3673,18 +3674,50 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         UserConfig.saveConfig(false);
                     }
                     TLRPC.TL_updateServiceNotification update = new TLRPC.TL_updateServiceNotification();
-                    update.message = LocaleController.getString("updateText", R.string.updateText);
+                    PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+                    update.message = new StringBuilder().append(LocaleController.formatString("updateHeader", R.string.updateHeader, pInfo.versionName)).append(LocaleController.getString("updateText", R.string.updateText)).toString();
                     update.media = new TLRPC.TL_messageMediaEmpty();
                     update.type = "update";
                     update.popup = false;
                     ArrayList<TLRPC.Update> updates = new ArrayList<>();
                     updates.add(update);
                     processUpdateArray(updates, null, null);
+
+                    TLRPC.TL_contacts_resolveUsername req = new TLRPC.TL_contacts_resolveUsername();
+                    req.username = ApplicationLoader.OFFICIAL_CHAN;
+                    ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
+                        @Override
+                        public void run(final TLObject response, TLRPC.TL_error error) {
+                            try {
+                                TLRPC.Chat chat = ((TLRPC.TL_contacts_resolvedPeer) response).chats.get(0);
+                                MessagesController.getInstance().putChat(chat, false);
+                                if (!ChatObject.isNotInChat(chat)) {
+                                    return;
+                                }
+                                final int i = chat.id;
+                                final TLRPC.User user = UserConfig.getCurrentUser();
+                                MessagesController.getInstance().startShortPoll(i, false);
+                                Utilities.stageQueue.postRunnable(new Runnable() {
+                                    public void run() {
+                                        MessagesController.getInstance().addUserToChat(i, user, null, 0, null, null);
+                                    }
+                                });
+                            } catch (Exception ex) {
+                                Log.e("Telegramity", ex.getMessage(), ex);
+                            }
+                        }
+                    });
                 } catch (Exception e) {
                     FileLog.e("tmessages", e);
                 }
             }
         });
+    }
+
+    public void reRunUpdateTimerProc() {
+        lastStatusUpdateTime = 0;
+        statusSettingState = 0;
+        updateTimerProc();
     }
 
     public void registerForPush(final String regid) {

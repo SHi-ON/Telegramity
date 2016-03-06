@@ -9,6 +9,7 @@
 package org.telegram.ui.Cells;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -32,6 +33,7 @@ public class TextDetailCell extends FrameLayout {
         textView = new TextView(context);
         textView.setTextColor(0xff212121);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         textView.setLines(1);
         textView.setMaxLines(1);
         textView.setSingleLine(true);
@@ -41,6 +43,7 @@ public class TextDetailCell extends FrameLayout {
         valueTextView = new TextView(context);
         valueTextView.setTextColor(0xff8a8a8a);
         valueTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        valueTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         valueTextView.setLines(1);
         valueTextView.setMaxLines(1);
         valueTextView.setSingleLine(true);
@@ -63,10 +66,10 @@ public class TextDetailCell extends FrameLayout {
         imageView.setVisibility(INVISIBLE);
     }
 
-    public void setTextAndValueAndIcon(String text, String value, int resId) {
+    public void setTextAndValueAndIcon(String text, String value, Drawable resDrawable) {
         textView.setText(text);
         valueTextView.setText(value);
         imageView.setVisibility(VISIBLE);
-        imageView.setImageResource(resId);
+        imageView.setImageDrawable(resDrawable);
     }
 }

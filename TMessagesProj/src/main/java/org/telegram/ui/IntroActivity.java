@@ -12,6 +12,7 @@ import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.DataSetObserver;
 import android.os.Build;
@@ -51,7 +52,9 @@ public class IntroActivity extends Activity {
         setTheme(R.style.Theme_TMessages);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+//        advancedPreferencesInit();
+        SharedPreferences premPreferences = getSharedPreferences("PremiumState", MODE_PRIVATE);
+        premPreferences.edit().putBoolean("isUserPremium", false).apply();
         if (AndroidUtilities.isTablet()) {
             setContentView(R.layout.intro_layout_tablet);
         } else {
@@ -119,6 +122,7 @@ public class IntroActivity extends Activity {
         viewPager = (ViewPager) findViewById(R.id.intro_view_pager);
         TextView startMessagingButton = (TextView) findViewById(R.id.start_messaging_button);
         startMessagingButton.setText(LocaleController.getString("StartMessaging", R.string.StartMessaging).toUpperCase());
+        startMessagingButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         if (Build.VERSION.SDK_INT >= 21) {
             StateListAnimator animator = new StateListAnimator();
             animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(startMessagingButton, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
@@ -272,7 +276,8 @@ public class IntroActivity extends Activity {
 
             headerTextView.setText(getString(titles[position]));
             messageTextView.setText(AndroidUtilities.replaceTags(getString(messages[position])));
-
+            headerTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            messageTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             return view;
         }
 

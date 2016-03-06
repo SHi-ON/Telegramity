@@ -39,6 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.LocaleController;
@@ -479,6 +480,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     CharSequence items[];
                     if (chat != null && chat.megagroup) {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), chat == null || !chat.creator ? LocaleController.getString("LeaveMegaMenu", R.string.LeaveMegaMenu) : LocaleController.getString("DeleteMegaMenu", R.string.DeleteMegaMenu)};
+                    } else if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                        items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), LocaleController.getString("ChanLeave", R.string.ChanLeave)};
                     } else {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), chat == null || !chat.creator ? LocaleController.getString("LeaveChannelMenu", R.string.LeaveChannelMenu) : LocaleController.getString("ChannelDeleteMenu", R.string.ChannelDeleteMenu)};
                     }
@@ -509,6 +512,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 } else {
                                     if (chat == null || !chat.creator) {
                                         builder.setMessage(LocaleController.getString("ChannelLeaveAlert", R.string.ChannelLeaveAlert));
+                                    } else if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                                        builder.setMessage(LocaleController.getString("ChanLeaveAlert", R.string.ChanLeaveAlert));
                                     } else {
                                         builder.setMessage(LocaleController.getString("ChannelDeleteAlert", R.string.ChannelDeleteAlert));
                                     }

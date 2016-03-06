@@ -221,6 +221,7 @@ public class ActionBarMenuItem extends FrameLayoutFixed {
         }
         TextView textView = new TextView(getContext());
         textView.setTextColor(0xff212121);
+        textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         textView.setBackgroundResource(R.drawable.list_selector);
         if (!LocaleController.isRTL) {
             textView.setGravity(Gravity.CENTER_VERTICAL);

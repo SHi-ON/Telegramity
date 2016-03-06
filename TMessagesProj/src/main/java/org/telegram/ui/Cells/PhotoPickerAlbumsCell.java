@@ -57,6 +57,7 @@ public class PhotoPickerAlbumsCell extends FrameLayoutFixed {
             nameTextView = new TextView(context);
             nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             nameTextView.setTextColor(0xffffffff);
+            nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             nameTextView.setSingleLine(true);
             nameTextView.setEllipsize(TextUtils.TruncateAt.END);
             nameTextView.setMaxLines(1);
@@ -66,6 +67,7 @@ public class PhotoPickerAlbumsCell extends FrameLayoutFixed {
             countTextView = new TextView(context);
             countTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             countTextView.setTextColor(0xffaaaaaa);
+            countTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             countTextView.setSingleLine(true);
             countTextView.setEllipsize(TextUtils.TruncateAt.END);
             countTextView.setMaxLines(1);

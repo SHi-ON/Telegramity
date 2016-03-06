@@ -13,13 +13,16 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
+
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
-import org.telegram.tgnet.TLRPC;
+import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Cells.DividerCell;
 import org.telegram.ui.Cells.GreySectionCell;
 import org.telegram.ui.Cells.LetterSectionCell;
@@ -212,16 +215,16 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             }
             TextCell actionCell = (TextCell) convertView;
             if (needPhonebook) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), R.drawable.menu_invite);
+                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), mContext.getResources().getDrawable(R.drawable.menu_telegramity));
             } else if (isAdmin) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteToGroupByLink", R.string.InviteToGroupByLink), R.drawable.menu_invite);
+                actionCell.setTextAndIcon(LocaleController.getString("InviteToGroupByLink", R.string.InviteToGroupByLink), new IconicsDrawable(mContext, FontAwesome.Icon.faw_link).sizePx(48).color(0xff00a797));
             } else {
                 if (position == 0) {
-                    actionCell.setTextAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), R.drawable.menu_newgroup);
+                    actionCell.setTextAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), new IconicsDrawable(mContext, FontAwesome.Icon.faw_users).sizePx(48).color(0xff0c85e6));
                 } else if (position == 1) {
-                    actionCell.setTextAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), R.drawable.menu_secret);
+                    actionCell.setTextAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user_secret).sizePx(48).color(0xffffc107));
                 } else if (position == 2) {
-                    actionCell.setTextAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), R.drawable.menu_broadcast);
+                    actionCell.setTextAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), new IconicsDrawable(mContext, FontAwesome.Icon.faw_bullhorn).sizePx(48).color(0xff832194));
                 }
             }
         } else if (type == 1) {

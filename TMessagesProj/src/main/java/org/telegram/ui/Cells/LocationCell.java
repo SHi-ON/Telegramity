@@ -61,6 +61,7 @@ public class LocationCell extends FrameLayout {
 
         addressTextView = new TextView(context);
         addressTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        addressTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         addressTextView.setMaxLines(1);
         addressTextView.setEllipsize(TextUtils.TruncateAt.END);
         addressTextView.setSingleLine(true);

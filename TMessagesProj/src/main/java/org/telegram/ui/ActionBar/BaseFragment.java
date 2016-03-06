@@ -13,11 +13,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
@@ -116,9 +118,12 @@ public class BaseFragment {
                 }
             }
             if (parentLayout != null && actionBar == null) {
+                SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+                int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
+
                 actionBar = new ActionBar(parentLayout.getContext());
                 actionBar.parentFragment = this;
-                actionBar.setBackgroundColor(0xff54759e);
+                actionBar.setBackgroundColor(aBBackgroundColor);
                 actionBar.setItemsBackground(R.drawable.bar_selector);
             }
         }

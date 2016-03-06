@@ -16,8 +16,8 @@
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:colorPrimaryDark">#435e7e</item>
-        <item name="android:colorPrimary">#54759e</item>
+        <item name="android:colorPrimaryDark">#a82c2c</item><!-- default: #435e7e-->
+        <item name="android:colorPrimary">#ef3f3e</item><!-- default: #54759e-->
     </style>
 
     <style name="Theme.TMessages" parent="@android:style/Theme.Material.Light">
@@ -33,7 +33,7 @@
         <item name="android:editTextStyle">@style/Theme.TMessages.EditText</item>
         <item name="android:actionBarItemBackground">@drawable/bar_selector_style</item>
         <item name="android:colorPrimaryDark">#33000000</item>
-        <item name="android:colorPrimary">#54759e</item>
+        <item name="android:colorPrimary">#ef3f3e</item><!-- default: #54759e-->
         <item name="android:alertDialogTheme">@style/Theme.TMessages.Dialog.Alert</item>
         <item name="android:colorControlActivated">#4d83b3</item>
     </style>
@@ -54,7 +54,7 @@
     <!--ACTION BAR-->
 
     <style name="ActionBar.Transparent.TMessages.Start" parent="android:style/Widget.Material.Light.ActionBar">
-        <item name="android:background">#ff54759e</item>
+        <item name="android:background">#ffef3f3e</item><!-- default: #ff54759e-->
         <item name="android:logo">@drawable/transparent</item>
         <item name="android:title">""</item>
     </style>
@@ -69,7 +69,7 @@
     <!--BORDERLESS BUTTON-->
 
     <style name="Theme.TMessages.BorderLessButton" parent="android:Widget.Material.Light.ButtonBar.AlertDialog">
-        <item name="android:textColor">#54759e</item>
+        <item name="android:textColor">#ef3f3e</item><!-- default: #54759e-->
     </style>
 
     <!--LIST VIEW-->
@@ -79,6 +79,12 @@
         <item name="android:fadingEdge">none</item>
         <item name="android:dividerHeight">1dp</item>
         <item name="android:divider">@color/divider</item>
+    </style>
+
+    <!--TEXT VIEW-->
+
+    <style name="Theme.TMessages.TextView" parent="@android:style/Widget.Material.Light.TextView">
+        <!--<item name="android:"-->
     </style>
 
     <!--EDIT TEXT-->

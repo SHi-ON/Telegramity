@@ -8,7 +8,9 @@
 
 package org.telegram.ui.Cells;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -25,10 +27,11 @@ import android.widget.TextView;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.UserObject;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
@@ -38,6 +41,7 @@ public class DrawerProfileCell extends FrameLayout {
 
     private BackupImageView avatarImageView;
     private TextView nameTextView;
+    private TextView onlineTextView;
     private TextView phoneTextView;
     private ImageView shadowView;
     private Rect srcRect = new Rect();
@@ -46,7 +50,10 @@ public class DrawerProfileCell extends FrameLayout {
 
     public DrawerProfileCell(Context context) {
         super(context);
-        setBackgroundColor(0xff4c84b5);
+
+        SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        int drawerHeaderColor = themePreferences.getInt("drawerHeaderColor", ApplicationLoader.DH_COLOR);
+        setBackgroundColor(drawerHeaderColor);
 
         shadowView = new ImageView(context);
         shadowView.setVisibility(INVISIBLE);
@@ -56,7 +63,7 @@ public class DrawerProfileCell extends FrameLayout {
 
         avatarImageView = new BackupImageView(context);
         avatarImageView.getImageReceiver().setRoundRadius(AndroidUtilities.dp(32));
-        addView(avatarImageView, LayoutHelper.createFrame(64, 64, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 0, 67));
+        addView(avatarImageView, LayoutHelper.createFrame(64, 64, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 0, 87)); // def=67
 
         nameTextView = new TextView(context);
         nameTextView.setTextColor(0xffffffff);
@@ -66,25 +73,36 @@ public class DrawerProfileCell extends FrameLayout {
         nameTextView.setMaxLines(1);
         nameTextView.setSingleLine(true);
         nameTextView.setGravity(Gravity.LEFT);
-        addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 28));
+        addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 48)); // def=28
+
+        onlineTextView = new TextView(context);
+        onlineTextView.setTextColor(0xffc2e5ff);
+        onlineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        onlineTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        onlineTextView.setLines(1);
+        onlineTextView.setMaxLines(1);
+        onlineTextView.setSingleLine(true);
+        onlineTextView.setGravity(Gravity.LEFT);
+        addView(onlineTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 29));
 
         phoneTextView = new TextView(context);
         phoneTextView.setTextColor(0xffc2e5ff);
         phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        phoneTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         phoneTextView.setLines(1);
         phoneTextView.setMaxLines(1);
         phoneTextView.setSingleLine(true);
         phoneTextView.setGravity(Gravity.LEFT);
-        addView(phoneTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 9));
+        addView(phoneTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 9)); // def=9
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (Build.VERSION.SDK_INT >= 21) {
-            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(148) + AndroidUtilities.statusBarHeight, MeasureSpec.EXACTLY));
+            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(168) + AndroidUtilities.statusBarHeight, MeasureSpec.EXACTLY));  // def=148
         } else {
             try {
-                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(148), MeasureSpec.EXACTLY));
+                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(168), MeasureSpec.EXACTLY));  // def=148
             } catch (Exception e) {
                 FileLog.e("tmessages", e);
             }
@@ -96,6 +114,7 @@ public class DrawerProfileCell extends FrameLayout {
         Drawable backgroundDrawable = ApplicationLoader.getCachedWallpaper();
         if (ApplicationLoader.isCustomTheme() && backgroundDrawable != null) {
             phoneTextView.setTextColor(0xffffffff);
+            onlineTextView.setTextColor(0xffffffff);
             shadowView.setVisibility(VISIBLE);
             if (backgroundDrawable instanceof ColorDrawable) {
                 backgroundDrawable.setBounds(0, 0, getMeasuredWidth(), getMeasuredHeight());
@@ -116,6 +135,7 @@ public class DrawerProfileCell extends FrameLayout {
         } else {
             shadowView.setVisibility(INVISIBLE);
             phoneTextView.setTextColor(0xffc2e5ff);
+            onlineTextView.setTextColor(0xffc2e5ff);
             super.onDraw(canvas);
         }
     }
@@ -129,7 +149,20 @@ public class DrawerProfileCell extends FrameLayout {
             photo = user.photo.photo_small;
         }
         nameTextView.setText(UserObject.getUserName(user));
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        boolean specter = preferences.getBoolean("specterMode", false);
+        if (specter) {
+            onlineTextView.setText(LocaleController.getString("SpecterOnline", R.string.SpecterOnline));
+        } else {
+            onlineTextView.setText(LocaleController.getString("Online", R.string.Online));
+        }
         phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
+        boolean no = preferences.getBoolean("noNumber", false);
+        if (no) {
+            phoneTextView.setVisibility(GONE);
+        } else {
+            phoneTextView.setVisibility(VISIBLE);
+        }
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(0xff5c98cd);
         avatarImageView.setImage(photo, "50_50", avatarDrawable);

@@ -95,6 +95,7 @@ public class AudioCell extends FrameLayout {
         genreTextView = new TextView(context);
         genreTextView.setTextColor(0xff8a8a8a);
         genreTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        genreTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         genreTextView.setLines(1);
         genreTextView.setMaxLines(1);
         genreTextView.setSingleLine(true);
@@ -105,6 +106,7 @@ public class AudioCell extends FrameLayout {
         authorTextView = new TextView(context);
         authorTextView.setTextColor(0xff8a8a8a);
         authorTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        authorTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         authorTextView.setLines(1);
         authorTextView.setMaxLines(1);
         authorTextView.setSingleLine(true);
@@ -115,6 +117,7 @@ public class AudioCell extends FrameLayout {
         timeTextView = new TextView(context);
         timeTextView.setTextColor(0xff999999);
         timeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        timeTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         timeTextView.setLines(1);
         timeTextView.setMaxLines(1);
         timeTextView.setSingleLine(true);
