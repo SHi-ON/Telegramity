@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -81,7 +82,7 @@ public class AboutLinkCell extends FrameLayout {
         invalidate();
     }
 
-    public void setTextAndIcon(String text, int resId) {
+    public void setTextAndIcon(String text, Drawable resDrawable) {
         if (text == null || text.length() == 0) {
             setVisibility(GONE);
             return;
@@ -94,10 +95,10 @@ public class AboutLinkCell extends FrameLayout {
         MessageObject.addLinks(stringBuilder, false);
         Emoji.replaceEmoji(stringBuilder, textPaint.getFontMetricsInt(), AndroidUtilities.dp(20), false);
         requestLayout();
-        if (resId == 0) {
+        if (resDrawable == null) {
             imageView.setImageDrawable(null);
         } else {
-            imageView.setImageResource(resId);
+            imageView.setImageDrawable(resDrawable);
         }
     }
 

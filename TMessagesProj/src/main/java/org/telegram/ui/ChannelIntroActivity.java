@@ -117,6 +117,7 @@ public class ChannelIntroActivity extends BaseFragment {
 
         whatIsChannelText = new TextView(context);
         whatIsChannelText.setTextColor(0xff212121);
+        whatIsChannelText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         whatIsChannelText.setGravity(Gravity.CENTER_HORIZONTAL);
         whatIsChannelText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
         whatIsChannelText.setText(LocaleController.getString("ChannelAlertTitle", R.string.ChannelAlertTitle));
@@ -124,6 +125,7 @@ public class ChannelIntroActivity extends BaseFragment {
 
         descriptionText = new TextView(context);
         descriptionText.setTextColor(0xff787878);
+        descriptionText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         descriptionText.setGravity(Gravity.CENTER_HORIZONTAL);
         descriptionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         descriptionText.setText(LocaleController.getString("ChannelAlertText", R.string.ChannelAlertText));
@@ -131,6 +133,7 @@ public class ChannelIntroActivity extends BaseFragment {
 
         createChannelText = new TextView(context);
         createChannelText.setTextColor(0xff4c8eca);
+        createChannelText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         createChannelText.setGravity(Gravity.CENTER);
         createChannelText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         createChannelText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));

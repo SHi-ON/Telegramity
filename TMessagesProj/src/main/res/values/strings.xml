@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation" >
 
-
-<resources>
-    <string name="AppName">Telegram</string>
-    <string name="AppNameBeta">Telegram Beta</string>
+    <string name="AppName">Telegramity</string>
+    <string name="AppNameBeta">Telegramity Beta</string>
     <string name="LanguageName">English</string>
     <string name="LanguageNameInEnglish">English</string>
     <string name="LanguageCode">en</string>
@@ -52,7 +53,7 @@
     <string name="HiddenName">Deleted Account</string>
     <string name="SelectChat">Select Chat</string>
     <string name="PhotoTip">Tap and hold to view</string>
-    <string name="CompatibilityChat">%1$s is using an older version of Telegram, so secret photos will be shown in compatibility mode.\n\nOnce %2$s updates Telegram, photos with timers for 1 minute or less will start working in \'Tap and hold to view\' mode, and you will be notified whenever the other party takes a screenshot.</string>
+    <string name="CompatibilityChat">%1$s is using an older version of Telegramity, so secret photos will be shown in compatibility mode.\n\nOnce %2$s updates Telegramity, photos with timers for 1 minute or less will start working in \'Tap and hold to view\' mode, and you will be notified whenever the other party takes a screenshot.</string>
     <string name="SearchMessages">MESSAGES</string>
     <string name="Search">Search</string>
     <string name="MuteNotifications">Mute notifications</string>
@@ -219,7 +220,7 @@
     <string name="SendingPhoto">sending photo...</string>
     <string name="SendingVideoStatus">sending video...</string>
     <string name="SendingFile">sending file...</string>
-    <string name="GotAQuestion">Got a question\nabout Telegram?</string>
+    <string name="GotAQuestion">Got a question\nabout Telegramity?</string>
     <string name="ChatTakePhoto">Take photo</string>
     <string name="ChatGallery">Gallery</string>
     <string name="ChatLocation">Location</string>
@@ -285,7 +286,7 @@
     <string name="NotificationMessageDocument">%1$s sent you a file</string>
     <string name="NotificationMessageGif">%1$s sent you a GIF</string>
     <string name="NotificationMessageAudio">%1$s sent you an audio</string>
-    <string name="NotificationMessageSticker">%1$s sent you a sticker</string>
+    <string name="NotificationMessageSticker">%1$s sent you a stic=ker</string>
     <string name="NotificationMessageGroupText">%1$s @ %2$s: %3$s</string>
     <string name="NotificationMessageGroupNoText">%1$s sent a message to the group %2$s</string>
     <string name="NotificationMessageGroupPhoto">%1$s sent a photo to the group %2$s</string>
@@ -304,8 +305,8 @@
     <string name="NotificationGroupKickMember">%1$s removed %3$s from the group %2$s</string>
     <string name="NotificationGroupKickYou">%1$s removed you from the group %2$s</string>
     <string name="NotificationGroupLeftMember">%1$s has left the group %2$s</string>
-    <string name="NotificationContactJoined">%1$s joined Telegram!</string>
-    <string name="NotificationUnrecognizedDevice">%1$s,\nWe detected a login into your account from a new device on %2$s\n\nDevice: %3$s\nLocation: %4$s\n\nIf this wasn\'t you, you can go to Settings - Privacy and Security - Sessions and terminate that session.\n\nIf you think that somebody logged in to your account against your will, you can enable two-step verification in Privacy and Security settings.\n\nSincerely,\nThe Telegram Team</string>
+    <string name="NotificationContactJoined">%1$s joined Telegramity!</string>
+    <string name="NotificationUnrecognizedDevice">%1$s,\nWe detected a login into your account from a new device on %2$s\n\nDevice: %3$s\nLocation: %4$s\n\nIf this wasn\'t you, you can go to Settings - Privacy and Security - Sessions and terminate that session.\n\nIf you think that somebody logged in to your account against your will, you can enable two-step verification in Privacy and Security settings.\n\nSincerely,\nThe Telegramity Team</string>
     <string name="NotificationContactNewPhoto">%1$s updated profile photo</string>
     <string name="NotificationInvitedToGroupByLink">%1$s joined to the group %2$s via invite link</string>
     <string name="Reply">Reply</string>
@@ -315,7 +316,20 @@
     <!--contacts view-->
     <string name="SelectContact">Select Contact</string>
     <string name="NoContacts">No contacts yet</string>
-    <string name="InviteText">Hey, let\'s switch to Telegram: https://telegram.org/dl</string>
+    <string name="InviteText">"سلام، تلگرامیتی رو همین الان رایگان دانلود کن.
+
+پر از قابلیت های جدیده:
+*خواندن پیام ها به صورت نامحسوس
+*قفل اختصاصی
+*عدم نمایش آنلاین بودن
+*تایپ کردن نامحسوس
+*آیدی یاب اختصاصی
+*تم بی نهایت رنگی
+ و خیلی امکانات شیک و با کلاسه دیگه.
+
+اینم بگم که میتونی اونو کنار تلگرام اصلیت داشته باشی و نیازی نیست تلگرام رسمی رو پاک کنی و حتی میتونی دو تا شماره تلگرام رو گوشیت داشته باشی:
+http://bit.ly/Telegramity_invite
+"</string>
     <string name="TodayAt">at</string>
     <string name="YesterdayAt">yesterday at</string>
     <string name="Online">online</string>
@@ -444,11 +458,11 @@
     <string name="SendByEnter">Send by Enter</string>
     <string name="TerminateAllSessions">Terminate All Other Sessions</string>
     <string name="Events">Events</string>
-    <string name="ContactJoined">Contact joined Telegram</string>
+    <string name="ContactJoined">Contact joined Telegramity</string>
     <string name="Language">Language</string>
     <string name="AskAQuestionInfo">Please note that Telegram Support is done by volunteers. We try to respond as quickly as possible, but it may take a while.<![CDATA[<br><br>]]>Please take a look at the <![CDATA[<a href=\"https://telegram.org/faq#general\">Telegram FAQ</a>]]>: it has answers to most questions and important tips for <![CDATA[<a href=\"https://telegram.org/faq#troubleshooting\">troubleshooting</a>]]>.</string>
     <string name="AskButton">Ask a volunteer</string>
-    <string name="TelegramFaq">Telegram FAQ</string>
+    <string name="TelegramFaq">Telegramity FAQ</string>
     <string name="TelegramFaqUrl">https://telegram.org/faq</string>
     <string name="DeleteLocalization">Delete localization?</string>
     <string name="IncorrectLocalization">Incorrect localization file</string>
@@ -536,10 +550,10 @@
     <string name="TerminateSessionQuestion">Terminate this session?</string>
     <string name="UnofficialApp">unofficial app</string>
     <!--passcode view-->
-    <string name="Passcode">Passcode Lock</string>
+    <string name="Passcode">Telegramity Passcode Lock</string>
     <string name="ChangePasscode">Change Passcode</string>
-    <string name="ChangePasscodeInfo">When you set up an additional passcode, a lock icon will appear on the chats page. Tap it to lock and unlock your Telegram app.\n\nNote: if you forget the passcode, you\'ll need to delete and reinstall the app. All secret chats will be lost.</string>
-    <string name="ChangePasscodeAlert">You will now see a lock icon on the chats page. Tap it to lock your Telegram app with your new passcode.</string>
+    <string name="ChangePasscodeInfo">When you set up an additional passcode, a lock icon will appear on the chats page. Tap it to lock and unlock your Telegramity app.\n\nNote: if you forget the passcode, you\'ll need to delete and reinstall the app. All secret chats will be lost.</string>
+    <string name="ChangePasscodeAlert">You will now see a lock icon on the chats page. Tap it to lock your Telegramity app with your new passcode.</string>
     <string name="PasscodePIN">PIN</string>
     <string name="PasscodePassword">Password</string>
     <string name="EnterCurrentPasscode">Enter your current passcode</string>
@@ -789,7 +803,7 @@
     <string name="NoPlayerInstalled">You don\'t have a video player, please install one to continue</string>
     <string name="NoMailInstalled">Please send an email to sms@stel.com and tell us about your problem.</string>
     <string name="NoHandleAppInstalled">You don\'t have applications that can handle the file type \'%1$s\', please install one to continue</string>
-    <string name="InviteUser">This user does not have Telegram yet, send an invitation?</string>
+    <string name="InviteUser">This user does not have Telegramity yet, send an invitation?</string>
     <string name="AreYouSure">Are you sure?</string>
     <string name="AddToTheGroupTitle">Add %1$s to the chat %2$s?</string>
     <string name="AddToTheGroupForwardCount">Number of last messages to forward:</string>
@@ -825,7 +839,7 @@
     <string name="PermissionNoLocation">Telegram needs access to your location so that you can share it with your friends.</string>
     <string name="PermissionOpenSettings">SETTINGS</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Telegramity</string>
     <string name="Page2Title">Fast</string>
     <string name="Page3Title">Free</string>
     <string name="Page4Title">Secure</string>
@@ -833,12 +847,12 @@
     <string name="Page6Title">Cloud-Based</string>
     <string name="Page7Title">Private</string>
     <string name="Page1Message">The world\'s <![CDATA[<b>fastest</b>]]> messaging app.<![CDATA[<br/>]]>It is <![CDATA[<b>free</b>]]> and <![CDATA[<b>secure</b>]]>.</string>
-    <string name="Page2Message"><![CDATA[<b>Telegram</b>]]> delivers messages faster than<![CDATA[<br/>]]>any other application.</string>
-    <string name="Page3Message"><![CDATA[<b>Telegram</b>]]> is free forever. No ads.<![CDATA[<br/>]]>No subscription fees.</string>
-    <string name="Page4Message"><![CDATA[<b>Telegram</b>]]> keeps your messages safe<![CDATA[<br/>]]>from hacker attacks.</string>
-    <string name="Page5Message"><![CDATA[<b>Telegram</b>]]> has no limits on the size of<![CDATA[<br/>]]>your media and chats.</string>
-    <string name="Page6Message"><![CDATA[<b>Telegram</b>]]> lets you access your messages<![CDATA[<br/>]]>from multiple devices.</string>
-    <string name="Page7Message"><![CDATA[<b>Telegram</b>]]> messages are heavily encrypted<![CDATA[<br/>]]>and can self-destruct.</string>
+    <string name="Page2Message"><![CDATA[<b>Telegramity</b>]]> delivers messages faster than<![CDATA[<br/>]]>any other application.</string>
+    <string name="Page3Message"><![CDATA[<b>Telegramity</b>]]> is free forever. No ads.<![CDATA[<br/>]]>No subscription fees.</string>
+    <string name="Page4Message"><![CDATA[<b>Telegramity</b>]]> keeps your messages safe<![CDATA[<br/>]]>from hacker attacks.</string>
+    <string name="Page5Message"><![CDATA[<b>Telegramity</b>]]> has no limits on the size of<![CDATA[<br/>]]>your media and chats.</string>
+    <string name="Page6Message"><![CDATA[<b>Telegramity</b>]]> lets you access your messages<![CDATA[<br/>]]>from multiple devices.</string>
+    <string name="Page7Message"><![CDATA[<b>Telegramity</b>]]> messages are heavily encrypted<![CDATA[<br/>]]>and can self-destruct.</string>
     <string name="StartMessaging">Start Messaging</string>
     <!--plural-->
     <string name="Online_zero">%1$d online</string>
@@ -1039,7 +1053,76 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatDateAtTime">%1$s at %2$s</string>
+
+    <string name="ForwardNoQuote">Forward without quoting</string>
+
+    <!--Drawer Items-->
+    <string name="DrawerPremium">Remove Ads</string>
+    <string name="DrawerOfficialChannel">Official Channel</string>
+    <string name="DrawerIDRevealer">ID Revealer</string>
+    <string name="DrawerComment">Comment Us</string>
+    <string name="DrawerAdvancedSettings">Telegramity Advanced Settings</string>
+
+    <!--Premium-->
+    <string name="PremiumTitle">Special Packages</string>
+    <string name="PremiumOffersHeader">Offers</string>
+    <string name="PremiumRemoveAds">Golden Account</string>
+    <string name="PremiumRemoveAdsDetails">Premium package for promoting to Golden Account.\nWith this special offer experience permanent ads elimination and incredible features in Telegramity.\n\n This offer is time limited!</string>
+    <string name="PremiumQueryOwnedItemsError">Failed to query inventory.\nMake sure of login to your Bazaar account.</string>
+    <string name="PremiumPurchasedCongrats">Thanks for your purchase, \n enjoy Telegramity without ads!</string>
+    <string name="PremiumPurchaseUnsuccessful">Purchase operations was unsuccessful!</string>
+    <string name="PremiumPurchaseUserCanceled">Purchase operations canceled by the user!</string>
+    <string name="PremiumPurchaseUnknownError">Couldn\'t connect to Bazaar servers.\nPlease try again.</string>
+    <string name="PremiumNoInternetAccess">No Internet Access!\nInternet connection is needed to proceed the operations.</string>
+    <string name="PremiumBazaarNotInstalled">Bazaar app is not installed on the device!\nPlease install it first for proceeding the purchase operations.</string>
+    <string name="PremiumPurchaseAlreadyPurchased">You are already a premium user.</string>
+    <string name="PremiumStatusFree">Free Plan</string>
+    <string name="PremiumStatusPro">Premium Plan</string>
+
+    <!--Chan-->
+    <string name="ChanSub">Official Channel</string>
+    <string name="ChanLeave">Leave Official Channel</string>
+    <string name="ChanLeaveAlert">Are you sure you want to leave the official channel?\nThis is the only way we can offer you authentic solutions, news, FAQs, etc.</string>
+
+    <!--Share-->
+    <string name="ShareHeader">Share and Forward</string>
+    <string name="itemQuickShare">Quick share</string>
+    <string name="itemForwardNoCaption">Forward without caption</string>
+
+    <!--Sly-->
+    <string name="SlyHeader">Go imperceptible</string>
+    <string name="itemSpecterMode">Specter mode</string>
+    <string name="itemHiddenTyping">Hidden typing</string>
+    <string name="itemNoNumber">Hide phone number</string>
+    <string name="SlyHelp">In Specter mode, you\'ll display offline for others and all of messages you read will display unread (without the second checkmark). After sending each message in this mode, your mode will change to online for an instance and then turn back to offline.\nAfter Hidden typing activation, others can not see "is typing" when you type.\nHide phone number switch remove your phone number displayed in the navigation drawer.</string>
+    <string name="SpecterOnline">Specter mode</string>
+
+    <!--ID-->
+    <string name="IDHint">Desired Username</string>
+    <string name="IDHelp">You can find a username ID on <![CDATA[<b>]]>Telegramity<![CDATA[</b>]]>. If you enter your desired username, click on the above checkmark in order to show the related profile.</string>
+    <string name="IDUnavailable">This username is unavailable.</string>
+    <string name="IDAvailable">%1$s is available.</string>
+
+    <!--Customizations-->
+    <string name="CustomizationsHeader">Customizations</string>
+    <string name="CustomizationsResetDefault">Reset to default colors</string>
+    <string name="CustomizationsHelp">Full management on your Telegramity app\'s theme.\n\nNote: reopen the app to apply the changes.</string>
+    <string name="itemActionBarBackgroundColor">Action bar background color</string>
+    <string name="itemDrawerHeaderColor">Navigation drawer header color</string>
+    <string name="itemProfileBackgroundColor">Profile background color</string>
+    <string name="ChooseColor">Choose a color</string>
+    <string name="ThemeDialogSetButton">Set</string>
+    <string name="ThemeDialogCancelButton">Cancel</string>
+    <string name="ThemeChangeToastMessage">For taking effect, the app will restart when you return back.</string>
+    <string name="resetDefaultMessage">Are you sure to reset to the default colors?</string>
+
+    <!--Advanced Security-->
+    <string name="AdvancedSecurityHeader">Premium Security</string>
+    <string name="AdvancedSecurityHelp">You can choose a passcode for your Telegramity app, to protect the messages from stranger\'s access.</string>
+
     <!--update text-->
-    <string name="updateText">Telegram for Android has been updated. New in version 3.4.0:\n\nGIF revolution: up to 20x faster downloading/sending, autoplay, save GIFs to a dedicated tab on the sticker panel.\n\nMore about GIFs:\nhttps://telegram.org/blog/gif-revolution\n\nInline bots: A new way to add bot content to any chat. Type a bot\'s username and your query in the text field to get instant results and send them to your chat partner. Try typing “@gif dog” in your next chat. Sample bots: @gif, @wiki, @bing, @vid, @bold.\n\nMore about inline bots:\nhttps://telegram.org/blog/inline-bots</string>
-    <string name="updateBuild">704</string>
+    <string name="updateBuild">5356</string>
+    <string name="updateHeader">Updated to version %s:\n\n</string>
+    <string name="updateText">Telegramity for Android has been updated. New in this version:\n\nGIF revolution: up to 20x faster downloading/sending, autoplay, save GIFs to a dedicated tab on the sticker panel.\n\nMore about GIFs:\nhttps://telegram.org/blog/gif-revolution\n\nInline bots: A new way to add bot content to any chat. Type a bot\'s username and your query in the text field to get instant results and send them to your chat partner. Try typing “@gif dog” in your next chat. Sample bots: @gif, @wiki, @bing, @vid, @bold.\n\nMore about inline bots:\nhttps://telegram.org/blog/inline-bots</string>
+
 </resources>

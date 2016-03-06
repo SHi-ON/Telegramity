@@ -45,17 +45,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
+
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.AnimationCompat.AnimatorListenerAdapterProxy;
 import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
 import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
 import org.telegram.messenger.AnimationCompat.ViewProxy;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -85,6 +88,7 @@ public class PasscodeView extends FrameLayout {
                 TextView textView = new TextView(context);
                 textView.setTextColor(0xffffffff);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 36);
+                textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
                 textView.setGravity(Gravity.CENTER);
                 ViewProxy.setAlpha(textView, 0);
                 ViewProxy.setPivotX(textView, AndroidUtilities.dp(25));
@@ -405,6 +409,7 @@ public class PasscodeView extends FrameLayout {
     private ArrayList<TextView> numberTextViews;
     private ArrayList<TextView> lettersTextViews;
     private ArrayList<FrameLayout> numberFrameLayouts;
+    private int[] colorCodes;
     private FrameLayout passwordFrameLayout;
     private ImageView eraseView;
     private EditText passwordEditText;
@@ -466,7 +471,7 @@ public class PasscodeView extends FrameLayout {
 
         passcodeTextView = new TextView(context);
         passcodeTextView.setTextColor(0xffffffff);
-        passcodeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        passcodeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         passcodeTextView.setGravity(Gravity.CENTER_HORIZONTAL);
         passwordFrameLayout.addView(passcodeTextView);
         layoutParams = (LayoutParams) passcodeTextView.getLayoutParams();
@@ -601,12 +606,14 @@ public class PasscodeView extends FrameLayout {
         lettersTextViews = new ArrayList<>(10);
         numberTextViews = new ArrayList<>(10);
         numberFrameLayouts = new ArrayList<>(10);
+        colorCodes = new int[]{0xffe22d94, 0xffff3433, 0xffff8533, 0xffffd733, 0xfffeff33, 0xffb8eb2f, 0xff2bd730, 0xff2babd7, 0xff2b71d7, 0xff492bd7, 0xffa02bd7};
         for (int a = 0; a < 10; a++) {
             TextView textView = new TextView(context);
-            textView.setTextColor(0xffffffff);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 36);
+            textView.setTextColor(colorCodes[a]);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 44);
             textView.setGravity(Gravity.CENTER);
             textView.setText(String.format(Locale.US, "%d", a));
+            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             numbersFrameLayout.addView(textView);
             layoutParams = (LayoutParams) textView.getLayoutParams();
             layoutParams.width = AndroidUtilities.dp(50);
@@ -625,7 +632,7 @@ public class PasscodeView extends FrameLayout {
             layoutParams.height = AndroidUtilities.dp(20);
             layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
             textView.setLayoutParams(layoutParams);
-            switch (a) {
+            /*switch (a) {
                 case 0:
                     textView.setText("+");
                     break;
@@ -655,12 +662,12 @@ public class PasscodeView extends FrameLayout {
                     break;
                 default:
                     break;
-            }
+            }*/
             lettersTextViews.add(textView);
         }
         eraseView = new ImageView(context);
         eraseView.setScaleType(ImageView.ScaleType.CENTER);
-        eraseView.setImageResource(R.drawable.passcode_delete);
+        eraseView.setImageDrawable(new IconicsDrawable(context, FontAwesome.Icon.faw_chevron_circle_left).sizePx(64).color(0xffec2c0c));
         numbersFrameLayout.addView(eraseView);
         layoutParams = (LayoutParams) eraseView.getLayoutParams();
         layoutParams.width = AndroidUtilities.dp(50);
@@ -994,17 +1001,18 @@ public class PasscodeView extends FrameLayout {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         int selectedBackground = preferences.getInt("selectedBackground", 1000001);
         if (selectedBackground == 1000001) {
-            backgroundFrameLayout.setBackgroundColor(0xff517c9e);
+            backgroundFrameLayout.setBackgroundColor(0xff272727);
         } else {
             backgroundDrawable = ApplicationLoader.getCachedWallpaper();
             if (backgroundDrawable != null) {
                 backgroundFrameLayout.setBackgroundColor(0xbf000000);
             } else {
-                backgroundFrameLayout.setBackgroundColor(0xff517c9e);
+                backgroundFrameLayout.setBackgroundColor(0xff272727);
             }
         }
 
         passcodeTextView.setText(LocaleController.getString("EnterYourPasscode", R.string.EnterYourPasscode));
+        passcodeTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
 
         if (UserConfig.passcodeType == 0) {
             //InputFilter[] filterArray = new InputFilter[1];

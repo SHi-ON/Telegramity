@@ -142,6 +142,7 @@ public class LocaleController {
         addRules(new String[]{"ro", "mo"}, new PluralRules_Romanian());
         addRules(new String[]{"sl"}, new PluralRules_Slovenian());
         addRules(new String[]{"ar"}, new PluralRules_Arabic());
+        addRules(new String[]{"fa"}, new PluralRules_Persian());
         addRules(new String[]{"mk"}, new PluralRules_Macedonian());
         addRules(new String[]{"cy"}, new PluralRules_Welsh());
         addRules(new String[]{"br"}, new PluralRules_Breton());
@@ -188,6 +189,14 @@ public class LocaleController {
         localeInfo.name = "Nederlands";
         localeInfo.nameEnglish = "Dutch";
         localeInfo.shortName = "nl";
+        localeInfo.pathToFile = null;
+        sortedLanguages.add(localeInfo);
+        languagesDict.put(localeInfo.shortName, localeInfo);
+
+        localeInfo = new LocaleInfo();
+        localeInfo.name = "فارسی";
+        localeInfo.nameEnglish = "Persian";
+        localeInfo.shortName = "fa";
         localeInfo.pathToFile = null;
         sortedLanguages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
@@ -252,7 +261,7 @@ public class LocaleController {
 
         try {
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-            String lang = preferences.getString("language", null);
+            String lang = preferences.getString("language", "fa");  //for change default app language, but not enough for RTL correction!
             if (lang != null) {
                 currentInfo = languagesDict.get(lang);
                 if (currentInfo != null) {
@@ -757,7 +766,10 @@ public class LocaleController {
         if (lang == null) {
             lang = "en";
         }
-        isRTL = lang.toLowerCase().equals("ar");
+
+        isRTL = lang.toLowerCase().equals("fa");    //instead "ar" is LTR! but that's not important
+//        isRTL = lang.toLowerCase().equals("ar");
+
         nameDisplayOrder = lang.toLowerCase().equals("ko") ? 2 : 1;
 
         formatterMonth = createFormatter(locale, getStringInternal("formatterMonth", R.string.formatterMonth), "dd MMM");
@@ -767,7 +779,7 @@ public class LocaleController {
         chatFullDate = createFormatter(locale, getStringInternal("chatFullDate", R.string.chatFullDate), "d MMMM yyyy");
         formatterWeek = createFormatter(locale, getStringInternal("formatterWeek", R.string.formatterWeek), "EEE");
         formatterMonthYear = createFormatter(locale, getStringInternal("formatterMonthYear", R.string.formatterMonthYear), "MMMM yyyy");
-        formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
+        formatterDay = createFormatter(lang.toLowerCase().equals("fa") || lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
     }
 
     public static String stringForMessageListDate(long date) {
@@ -1493,6 +1505,25 @@ public class LocaleController {
                 return QUANTITY_ONE;
             } else if (rem10 >= 2 && rem10 <= 4 && !(rem100 >= 12 && rem100 <= 14) && !(rem100 >= 22 && rem100 <= 24)) {
                 return QUANTITY_FEW;
+            } else {
+                return QUANTITY_OTHER;
+            }
+        }
+    }
+
+    public static class PluralRules_Persian extends PluralRules {
+        public int quantityForNumber(int count) {
+            int rem100 = count % 100;
+            if (count == 0) {
+                return QUANTITY_ZERO;
+            } else if (count == 1) {
+                return QUANTITY_ONE;
+            } else if (count == 2) {
+                return QUANTITY_TWO;
+            } else if (rem100 >= 3 && rem100 <= 10) {
+                return QUANTITY_FEW;
+            } else if (rem100 >= 11 && rem100 <= 99) {
+                return QUANTITY_MANY;
             } else {
                 return QUANTITY_OTHER;
             }

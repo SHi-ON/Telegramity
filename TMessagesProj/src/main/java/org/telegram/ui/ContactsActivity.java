@@ -131,7 +131,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
     }
 
     @Override
-    public View createView(Context context) {
+    public View createView(final Context context) {
 
         searching = false;
         searchWas = false;
@@ -233,6 +233,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         emptyTextView = new TextView(context);
         emptyTextView.setTextColor(0xff808080);
         emptyTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        emptyTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         emptyTextView.setGravity(Gravity.CENTER);
         emptyTextView.setText(LocaleController.getString("NoContacts", R.string.NoContacts));
         emptyTextLayout.addView(emptyTextView);
@@ -294,7 +295,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         } else {
                             Bundle args = new Bundle();
                             args.putInt("user_id", user.id);
-                            presentFragment(new ChatActivity(args), true);
+                            presentFragment(new ChatActivity(args), false);
                         }
                     }
                 } else {
@@ -309,7 +310,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 try {
                                     Intent intent = new Intent(Intent.ACTION_SEND);
                                     intent.setType("text/plain");
-                                    intent.putExtra(Intent.EXTRA_TEXT, ContactsController.getInstance().getInviteText());
+                                    intent.putExtra(Intent.EXTRA_TEXT, context.getResources().getString(R.string.InviteText));
                                     getParentActivity().startActivityForResult(Intent.createChooser(intent, LocaleController.getString("InviteFriends", R.string.InviteFriends)), 500);
                                 } catch (Exception e) {
                                     FileLog.e("tmessages", e);
@@ -363,7 +364,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 } else {
                                     Bundle args = new Bundle();
                                     args.putInt("user_id", user.id);
-                                    presentFragment(new ChatActivity(args), true);
+                                    presentFragment(new ChatActivity(args), false);
                                 }
                             }
                         } else if (item instanceof ContactsController.Contact) {
@@ -546,7 +547,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 Bundle args2 = new Bundle();
                 args2.putInt("enc_id", encryptedChat.id);
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.closeChats);
-                presentFragment(new ChatActivity(args2), true);
+                presentFragment(new ChatActivity(args2), false);
             }
         } else if (id == NotificationCenter.closeChats) {
             if (!creatingChat) {

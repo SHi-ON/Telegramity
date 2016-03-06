@@ -9,21 +9,21 @@
     <uses-feature android:name="android.hardware.LOCATION" android:required="false" />
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="org.telegram.messenger.permission.MAPS_RECEIVE"/>
-    <uses-permission android:name="org.telegram.messenger.permission.C2D_MESSAGE" />
+    <uses-permission android:name="org.telegram.engmariaamani.messenger.permission.MAPS_RECEIVE"/>
+    <uses-permission android:name="org.telegram.engmariaamani.messenger.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <permission android:name="org.telegram.messenger.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
-    <permission android:name="org.telegram.messenger.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <permission android:name="org.telegram.engmariaamani.messenger.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
+    <permission android:name="org.telegram.engmariaamani.messenger.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 
     <application
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/AppName"
         android:theme="@style/Theme.TMessages.Start"
-        android:name=".ApplicationLoader"
+        android:name="org.telegram.messenger.ApplicationLoader"
         android:hardwareAccelerated="@bool/useHardwareAcceleration"
         android:largeHeap="true">
 
@@ -38,25 +38,25 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="org.telegram.messenger" />
+                <category android:name="org.telegram.engmariaamani.messenger" />
             </intent-filter>
         </receiver>
         <service
-            android:name=".GcmPushListenerService"
+            android:name="org.telegram.messenger.GcmPushListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".GcmInstanceIDListenerService"
+            android:name="org.telegram.messenger.GcmInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".GcmRegistrationIntentService"
+            android:name="org.telegram.messenger.GcmRegistrationIntentService"
             android:exported="false">
         </service>
 

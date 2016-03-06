@@ -19,18 +19,21 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
+
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.UserObject;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.messenger.UserConfig;
 import org.telegram.ui.Components.AvatarDrawable;
 
 public class ProfileSearchCell extends BaseCell {
@@ -118,13 +121,13 @@ public class ProfileSearchCell extends BaseCell {
             countPaint.setColor(0xffffffff);
             countPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
 
-            broadcastDrawable = getResources().getDrawable(R.drawable.list_broadcast);
+            broadcastDrawable = new IconicsDrawable(context, FontAwesome.Icon.faw_bullhorn).sizePx(30).color(0xff526b77); //Blue Grey -2
             lockDrawable = getResources().getDrawable(R.drawable.list_secret);
-            groupDrawable = getResources().getDrawable(R.drawable.list_group);
+            groupDrawable = new IconicsDrawable(context, FontAwesome.Icon.faw_users).sizePx(30).color(0xff678695); //Blue Grey +1
             countDrawable = getResources().getDrawable(R.drawable.dialogs_badge);
             countDrawableGrey = getResources().getDrawable(R.drawable.dialogs_badge2);
             checkDrawable = getResources().getDrawable(R.drawable.check_list);
-            botDrawable = getResources().getDrawable(R.drawable.bot_list);
+            botDrawable = new IconicsDrawable(context, FontAwesome.Icon.faw_github_alt).sizePx(30).color(0xff526b77); //Blue Grey -2
         }
 
         avatarImage = new ImageReceiver(this);

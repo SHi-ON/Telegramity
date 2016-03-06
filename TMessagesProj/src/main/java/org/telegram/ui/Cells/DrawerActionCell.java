@@ -9,6 +9,7 @@
 package org.telegram.ui.Cells;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.FrameLayout;
@@ -42,10 +43,10 @@ public class DrawerActionCell extends FrameLayout {
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(48), MeasureSpec.EXACTLY));
     }
 
-    public void setTextAndIcon(String text, int resId) {
+    public void setTextAndIcon(String text,Drawable resDrawable) {
         try {
             textView.setText(text);
-            textView.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
+            textView.setCompoundDrawablesWithIntrinsicBounds(resDrawable, null, null, null);
         } catch (Throwable e) {
             FileLog.e("tmessages", e);
         }

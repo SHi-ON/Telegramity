@@ -117,6 +117,7 @@ public class SharedDocumentCell extends FrameLayout implements MediaController.F
         dateTextView = new TextView(context);
         dateTextView.setTextColor(0xff999999);
         dateTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        dateTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         dateTextView.setLines(1);
         dateTextView.setMaxLines(1);
         dateTextView.setSingleLine(true);

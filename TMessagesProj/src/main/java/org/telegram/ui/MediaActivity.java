@@ -38,33 +38,38 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.foundation_icons_typeface_library.FoundationIcons;
+import com.mikepenz.iconics.IconicsDrawable;
+
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MediaController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.query.SharedMediaQuery;
+import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
+import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MediaController;
+import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.R;
+import org.telegram.messenger.Utilities;
+import org.telegram.messenger.query.SharedMediaQuery;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.Utilities;
+import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
-import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
+import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
 import org.telegram.ui.Adapters.BaseSectionsAdapter;
-import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
-import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
 import org.telegram.ui.Cells.GreySectionCell;
 import org.telegram.ui.Cells.LoadingCell;
 import org.telegram.ui.Cells.SharedDocumentCell;
@@ -72,7 +77,6 @@ import org.telegram.ui.Cells.SharedLinkCell;
 import org.telegram.ui.Cells.SharedMediaSectionCell;
 import org.telegram.ui.Cells.SharedPhotoVideoCell;
 import org.telegram.ui.Components.BackupImageView;
-import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.NumberTextView;
 import org.telegram.ui.Components.PlayerView;
@@ -204,6 +208,8 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
     private final static int forward = 3;
     private final static int delete = 4;
 
+    private final static int quoteforward = 33;//TGY
+
     public MediaActivity(Bundle args) {
         super(args);
     }
@@ -332,10 +338,11 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                     });
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                     showDialog(builder.create());
-                } else if (id == forward) {
+                } else if (id == forward || id == quoteforward) {
                     Bundle args = new Bundle();
                     args.putBoolean("onlySelect", true);
                     args.putInt("dialogsType", 1);
+                    final boolean quoteForward = id == forward ? false : true;
                     DialogsActivity fragment = new DialogsActivity(args);
                     fragment.setDelegate(new DialogsActivity.MessagesActivityDelegate() {
                         @Override
@@ -344,6 +351,9 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                             if (lower_part != 0) {
                                 Bundle args = new Bundle();
                                 args.putBoolean("scrollToTopOnResume", true);
+                                //TGY
+                                args.putBoolean("quote", quoteForward);
+                                //
                                 if (lower_part > 0) {
                                     args.putInt("user_id", lower_part);
                                 } else if (lower_part < 0) {
@@ -483,9 +493,10 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
         actionMode.addView(selectedMessagesCountTextView, LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0f, 65, 0, 0, 0));
 
         if ((int) dialog_id != 0) {
-            actionModeViews.add(actionMode.addItem(forward, R.drawable.ic_ab_fwd_forward, R.drawable.bar_selector_mode, null, AndroidUtilities.dp(54)));
+            actionModeViews.add(actionMode.addItem(quoteforward, R.drawable.ic_ab_fwd_quoteforward, R.drawable.bar_selector_mode,  new IconicsDrawable(context, FoundationIcons.Icon.fou_comment_quotes).sizePx(48).color(0xffee8e00), AndroidUtilities.dp(54)));
+            actionModeViews.add(actionMode.addItem(forward, R.drawable.ic_ab_fwd_forward, R.drawable.bar_selector_mode, new IconicsDrawable(context, FontAwesome.Icon.faw_arrow_circle_right).sizePx(48).color(0xff118ef2), AndroidUtilities.dp(54)));
         }
-        actionModeViews.add(actionMode.addItem(delete, R.drawable.ic_ab_fwd_delete, R.drawable.bar_selector_mode, null, AndroidUtilities.dp(54)));
+        actionModeViews.add(actionMode.addItem(delete, R.drawable.ic_ab_fwd_delete, R.drawable.bar_selector_mode, new IconicsDrawable(context, FontAwesome.Icon.faw_trash).sizePx(48).color(0xffff3433), AndroidUtilities.dp(54)));
 
         photoVideoAdapter = new SharedPhotoVideoAdapter(context);
         documentsAdapter = new SharedDocumentsAdapter(context, 1);
@@ -589,6 +600,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
 
         emptyTextView = new TextView(context);
         emptyTextView.setTextColor(0xff8a8a8a);
+        emptyTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         emptyTextView.setGravity(Gravity.CENTER);
         emptyTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
         emptyTextView.setPadding(AndroidUtilities.dp(40), 0, AndroidUtilities.dp(40), AndroidUtilities.dp(128));

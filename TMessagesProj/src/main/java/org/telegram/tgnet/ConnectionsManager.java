@@ -5,15 +5,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.PowerManager;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ContactsController;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
@@ -115,6 +116,18 @@ public class ConnectionsManager {
     }
 
     public int sendRequest(final TLObject object, final RequestDelegate onComplete, final QuickAckDelegate onQuickAck, final int flags, final int datacenterId, final int connetionType, final boolean immediate) {
+
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Context.MODE_PRIVATE);
+        boolean specter = preferences.getBoolean("specterMode", false);
+        boolean typing = preferences.getBoolean("hiddenTyping", false);
+
+        if (((object instanceof TLRPC.TL_messages_readHistory) || (object instanceof TLRPC.TL_channels_readHistory)) && (specter)) {
+            return 0;
+        }
+        if ((object instanceof TLRPC.TL_messages_setTyping) && (typing)) {
+            return 0;
+        }
+
         final int requestToken = lastRequestToken.getAndIncrement();
         Utilities.stageQueue.postRunnable(new Runnable() {
             @Override
