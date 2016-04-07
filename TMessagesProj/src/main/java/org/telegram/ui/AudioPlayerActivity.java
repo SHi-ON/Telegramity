@@ -208,6 +208,7 @@ public class AudioPlayerActivity extends BaseFragment implements NotificationCen
         timeTextView = new TextView(context);
         timeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         timeTextView.setTextColor(0xff19a7e8);
+        timeTextView.setTypeface(AndroidUtilities.getTypeface());
         timeTextView.setGravity(Gravity.CENTER);
         timeTextView.setText("0:00");
         seekBarContainer.addView(timeTextView, LayoutHelper.createFrame(44, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT));
@@ -215,6 +216,7 @@ public class AudioPlayerActivity extends BaseFragment implements NotificationCen
         durationTextView = new TextView(context);
         durationTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         durationTextView.setTextColor(0xff8a8a8a);
+        durationTextView.setTypeface(AndroidUtilities.getTypeface());
         durationTextView.setGravity(Gravity.CENTER);
         durationTextView.setText("3:00");
         seekBarContainer.addView(durationTextView, LayoutHelper.createFrame(44, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.RIGHT));
@@ -415,7 +417,7 @@ public class AudioPlayerActivity extends BaseFragment implements NotificationCen
     private void updateTitle(boolean shutdown) {
         MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();
         if (messageObject == null && shutdown || messageObject != null && !messageObject.isMusic()) {
-            if (!parentLayout.fragmentsStack.isEmpty() && parentLayout.fragmentsStack.get(parentLayout.fragmentsStack.size() - 1) == this) {
+            if (parentLayout != null && !parentLayout.fragmentsStack.isEmpty() && parentLayout.fragmentsStack.get(parentLayout.fragmentsStack.size() - 1) == this) {
                 finishFragment();
             } else {
                 removeSelfFromStack();

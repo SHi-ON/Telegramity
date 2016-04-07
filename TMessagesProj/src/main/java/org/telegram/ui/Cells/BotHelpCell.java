@@ -18,6 +18,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -97,7 +98,7 @@ public class BotHelpCell extends View {
         stringBuilder.append("\n\n");
         stringBuilder.append(text);
         MessageObject.addLinks(stringBuilder);
-        stringBuilder.setSpan(new TypefaceSpan(AndroidUtilities.getTypeface("fonts/rmedium.ttf")), 0, help.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(new TypefaceSpan(AndroidUtilities.getTypeface()), 0, help.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         Emoji.replaceEmoji(stringBuilder, textPaint.getFontMetricsInt(), AndroidUtilities.dp(20), false);
         textLayout = new StaticLayout(stringBuilder, textPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         width = 0;
@@ -160,7 +161,11 @@ public class BotHelpCell extends View {
                                 }
                             }
                         } else {
-                            pressedLink.onClick(this);
+                            if (pressedLink instanceof URLSpan) {
+                                AndroidUtilities.openUrl(getContext(), ((URLSpan) pressedLink).getURL());
+                            } else {
+                                pressedLink.onClick(this);
+                            }
                         }
                     } catch (Exception e) {
                         FileLog.e("tmessages", e);

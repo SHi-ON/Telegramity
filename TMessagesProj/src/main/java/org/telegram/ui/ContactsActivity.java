@@ -232,8 +232,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
 
         emptyTextView = new TextView(context);
         emptyTextView.setTextColor(0xff808080);
+        emptyTextView.setTypeface(AndroidUtilities.getTypeface());
         emptyTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        emptyTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         emptyTextView.setGravity(Gravity.CENTER);
         emptyTextView.setText(LocaleController.getString("NoContacts", R.string.NoContacts));
         emptyTextLayout.addView(emptyTextView);

@@ -10,13 +10,11 @@ package org.telegram.ui.Cells;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.Browser;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -88,7 +86,7 @@ public class SharedLinkCell extends FrameLayout {
 
         if (titleTextPaint == null) {
             titleTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-            titleTextPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            titleTextPaint.setTypeface(AndroidUtilities.getTypeface());
             titleTextPaint.setColor(0xff212121);
             titleTextPaint.setTextSize(AndroidUtilities.dp(16));
 
@@ -390,10 +388,7 @@ public class SharedLinkCell extends FrameLayout {
                                     if (webPage != null && Build.VERSION.SDK_INT >= 16 && webPage.embed_url != null && webPage.embed_url.length() != 0) {
                                         delegate.needOpenWebView(webPage);
                                     } else {
-                                        Uri uri = Uri.parse(links.get(pressedLink));
-                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-                                        getContext().startActivity(intent);
+                                        AndroidUtilities.openUrl(getContext(), links.get(pressedLink));
                                     }
                                 } catch (Exception e) {
                                     FileLog.e("tmessages", e);

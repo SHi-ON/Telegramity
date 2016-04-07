@@ -221,7 +221,7 @@ public class ActionBarMenuItem extends FrameLayoutFixed {
         }
         TextView textView = new TextView(getContext());
         textView.setTextColor(0xff212121);
-        textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        textView.setTypeface(AndroidUtilities.getTypeface());
         textView.setBackgroundResource(R.drawable.list_selector);
         if (!LocaleController.isRTL) {
             textView.setGravity(Gravity.CENTER_VERTICAL);
@@ -397,7 +397,8 @@ public class ActionBarMenuItem extends FrameLayoutFixed {
 
             searchField = new EditText(getContext());
             searchField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-            searchField.setHintTextColor(0x88ffffff);
+            searchField.setTypeface(AndroidUtilities.getTypeface());
+            searchField.setHintTextColor(0xffb8b8b8); //default: 0x88ffffff
             searchField.setTextColor(0xffffffff);
             searchField.setSingleLine(true);
             searchField.setBackgroundResource(0);

@@ -16,9 +16,11 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
@@ -31,6 +33,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
+import org.telegram.ui.Components.TypefaceSpan;
 import org.telegram.ui.Components.URLSpanNoUnderline;
 
 public class AboutLinkCell extends FrameLayout {
@@ -94,6 +97,8 @@ public class AboutLinkCell extends FrameLayout {
         stringBuilder = new SpannableStringBuilder(oldText);
         MessageObject.addLinks(stringBuilder, false);
         Emoji.replaceEmoji(stringBuilder, textPaint.getFontMetricsInt(), AndroidUtilities.dp(20), false);
+        TypefaceSpan typefaceSpan = new TypefaceSpan(AndroidUtilities.getTypeface());
+        stringBuilder.setSpan(typefaceSpan, 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         requestLayout();
         if (resDrawable == null) {
             imageView.setImageDrawable(null);
@@ -153,7 +158,11 @@ public class AboutLinkCell extends FrameLayout {
                                 }
                             }
                         } else {
-                            pressedLink.onClick(this);
+                            if (pressedLink instanceof URLSpan) {
+                                AndroidUtilities.openUrl(getContext(), ((URLSpan) pressedLink).getURL());
+                            } else {
+                                pressedLink.onClick(this);
+                            }
                         }
                     } catch (Exception e) {
                         FileLog.e("tmessages", e);

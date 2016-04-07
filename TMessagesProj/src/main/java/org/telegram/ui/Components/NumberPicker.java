@@ -38,6 +38,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
 
 import java.util.Locale;
@@ -151,6 +152,7 @@ public class NumberPicker extends LinearLayout {
         setWillNotDraw(false);
 
         mInputText = new TextView(getContext());
+        mInputText.setTypeface(AndroidUtilities.getTypeface());
         addView(mInputText);
         mInputText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mInputText.setGravity(Gravity.CENTER);

@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ioton.TelegramityUtilities;
+
 import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
@@ -119,7 +121,7 @@ public class BaseFragment {
             }
             if (parentLayout != null && actionBar == null) {
                 SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-                int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
+                int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
 
                 actionBar = new ActionBar(parentLayout.getContext());
                 actionBar.parentFragment = this;

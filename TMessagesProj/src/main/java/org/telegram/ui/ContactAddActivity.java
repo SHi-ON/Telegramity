@@ -150,7 +150,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         nameTextView.setSingleLine(true);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
         nameTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT));
-        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameTextView.setTypeface(AndroidUtilities.getTypeface());
         frameLayout.addView(nameTextView);
         layoutParams3 = (FrameLayout.LayoutParams) nameTextView.getLayoutParams();
         layoutParams3.width = LayoutHelper.WRAP_CONTENT;
@@ -163,6 +163,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
         onlineTextView = new TextView(context);
         onlineTextView.setTextColor(0xff999999);
+        onlineTextView.setTypeface(AndroidUtilities.getTypeface());
         onlineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         onlineTextView.setLines(1);
         onlineTextView.setMaxLines(1);
@@ -181,6 +182,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
         firstNameField = new EditText(context);
         firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        firstNameField.setTypeface(AndroidUtilities.getTypeface());
         firstNameField.setHintTextColor(0xff979797);
         firstNameField.setTextColor(0xff212121);
         firstNameField.setMaxLines(1);
@@ -213,6 +215,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
         lastNameField = new EditText(context);
         lastNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        lastNameField.setTypeface(AndroidUtilities.getTypeface());
         lastNameField.setHintTextColor(0xff979797);
         lastNameField.setTextColor(0xff212121);
         lastNameField.setMaxLines(1);

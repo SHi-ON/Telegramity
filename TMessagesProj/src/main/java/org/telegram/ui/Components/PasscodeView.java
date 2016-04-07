@@ -88,7 +88,7 @@ public class PasscodeView extends FrameLayout {
                 TextView textView = new TextView(context);
                 textView.setTextColor(0xffffffff);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 36);
-                textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                textView.setTypeface(AndroidUtilities.getTypeface());
                 textView.setGravity(Gravity.CENTER);
                 ViewProxy.setAlpha(textView, 0);
                 ViewProxy.setPivotX(textView, AndroidUtilities.dp(25));
@@ -613,7 +613,7 @@ public class PasscodeView extends FrameLayout {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 44);
             textView.setGravity(Gravity.CENTER);
             textView.setText(String.format(Locale.US, "%d", a));
-            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            textView.setTypeface(AndroidUtilities.getTypeface());
             numbersFrameLayout.addView(textView);
             layoutParams = (LayoutParams) textView.getLayoutParams();
             layoutParams.width = AndroidUtilities.dp(50);
@@ -1012,7 +1012,7 @@ public class PasscodeView extends FrameLayout {
         }
 
         passcodeTextView.setText(LocaleController.getString("EnterYourPasscode", R.string.EnterYourPasscode));
-        passcodeTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        passcodeTextView.setTypeface(AndroidUtilities.getTypeface());
 
         if (UserConfig.passcodeType == 0) {
             //InputFilter[] filterArray = new InputFilter[1];

@@ -145,6 +145,7 @@ public class CountrySelectActivity extends BaseFragment {
 
         emptyTextView = new TextView(context);
         emptyTextView.setTextColor(0xff808080);
+        emptyTextView.setTypeface(AndroidUtilities.getTypeface());
         emptyTextView.setTextSize(20);
         emptyTextView.setGravity(Gravity.CENTER);
         emptyTextView.setText(LocaleController.getString("NoResult", R.string.NoResult));

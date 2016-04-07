@@ -86,6 +86,7 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.AvatarUpdater;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.NumberPicker;
 import org.telegram.ui.PasscodeActivity;
 import org.telegram.ui.PhotoViewer;
 
@@ -121,6 +122,8 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
     private int slyDetailRow;
     private int slySectionBottomRow;
     private int customizationsSectionRow;
+    private int textFontRow;
+    private int textSizeRow;
     private int actionBarBackgroundColorRow;
     private int drawerHeaderColorRow;
     private int profileBackgroundColorRow;
@@ -211,6 +214,8 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
         slyDetailRow = rowCount++;
         slySectionBottomRow = rowCount++;
         customizationsSectionRow = rowCount++;
+        textFontRow = rowCount++;
+        textSizeRow = rowCount++;
         actionBarBackgroundColorRow = rowCount++;
         drawerHeaderColorRow = rowCount++;
         profileBackgroundColorRow = rowCount++;
@@ -245,8 +250,12 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
     @Override
     public View createView(final Context context) {
-        final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", ApplicationLoader.PBG_COLOR);
+
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        final int instanceOfActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
+        final int instanceOfDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
+
         needRestart = false;
         actionBar.setBackgroundColor(instanceOfProfileBackgroundColor);
         actionBar.setItemsBackground(AvatarDrawable.getButtonColorForId(5));
@@ -270,7 +279,13 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     }
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                     builder.setMessage(LocaleController.getString("AreYouSureLogout", R.string.AreYouSureLogout));
-                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    TextView titleTextView = new TextView(context);
+                    titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
+                    titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    titleTextView.setTextColor(instanceOfActionBarBackgroundColor);
+                    titleTextView.setTypeface(AndroidUtilities.getTypeface());
+                    titleTextView.setPadding(24, 18, 24, 0);
+                    builder.setCustomTitle(titleTextView);
                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -360,13 +375,54 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(!number);
                     }
+
+                } else if (i == textFontRow) {
+                    presentFragment(new FontSelectActivity());
+                } else if (i == textSizeRow) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    final SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).edit();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    TextView titleTextView = new TextView(context);
+                    titleTextView.setText(LocaleController.getString("TextSize", R.string.TextSize));
+                    titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    titleTextView.setTextColor(instanceOfActionBarBackgroundColor);
+                    titleTextView.setTypeface(AndroidUtilities.getTypeface());
+                    titleTextView.setPadding(24, 18, 24, 0);
+                    builder.setCustomTitle(titleTextView);
+                    final NumberPicker numberPicker = new NumberPicker(getParentActivity());
+                    numberPicker.setMinValue(12);
+                    numberPicker.setMaxValue(30);
+                    numberPicker.setValue(MessagesController.getInstance().fontSize);
+                    builder.setView(numberPicker);
+                    builder.setPositiveButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            editor.putInt("font_size", numberPicker.getValue());
+                            MessagesController.getInstance().fontSize = numberPicker.getValue();
+                            editor.commit();
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                    });
+                    builder.setNeutralButton(LocaleController.getString("Default", R.string.Default), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            editor.putInt("font_size", AndroidUtilities.isTablet() ? 18 : 16);
+                            MessagesController.getInstance().fontSize = AndroidUtilities.isTablet() ? 18 : 16;
+                            editor.commit();
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                    });
+                    showDialog(builder.create());
                 } else if (i == actionBarBackgroundColorRow || i == profileBackgroundColorRow || i == drawerHeaderColorRow) {
                     if (getParentActivity() == null) {
                         return;
                     }
-
-                    int initialActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
-                    int initialDrawerHeaderColor = preferences.getInt("drawerHeaderColor", ApplicationLoader.DH_COLOR);
 
                     LinearLayout linearLayout = new LinearLayout(getParentActivity());
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -387,21 +443,26 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 //                    ColorPickerDialogBuilder cPDB = ColorPickerDialogBuilder.with(context);
 
                     if (i == actionBarBackgroundColorRow) {
-                        colorPicker.setOldCenterColor(initialActionBarBackgroundColor);
+                        colorPicker.setOldCenterColor(instanceOfActionBarBackgroundColor);
 //                        cPDB.initialColor(initialActionBarBackgroundColor);
                     } else if (i == profileBackgroundColorRow) {
                         colorPicker.setOldCenterColor(instanceOfProfileBackgroundColor);
 //                        cPDB.initialColor(instanceOfProfileBackgroundColor);
                     } else if (i == drawerHeaderColorRow) {
-                        colorPicker.setOldCenterColor(initialDrawerHeaderColor);
-//                        cPDB.initialColor(initialDrawerHeaderColor);
+                        colorPicker.setOldCenterColor(instanceOfDrawerHeaderColor);
+//                        cPDB.initialColor(instanceOfDrawerHeaderColor);
                     }
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                    builder
-                            .setTitle(LocaleController.getString("ChooseColor", R.string.ChooseColor))
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    TextView titleTextView = new TextView(context);
+                    titleTextView.setText(LocaleController.getString("ChooseColor", R.string.ChooseColor));
+                    titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    titleTextView.setTextColor(instanceOfActionBarBackgroundColor);
+                    titleTextView.setTypeface(AndroidUtilities.getTypeface());
+                    titleTextView.setPadding(24, 18, 24, 0);
+                    builder.setCustomTitle(titleTextView)
                             .setView(linearLayout)
-                            .setPositiveButton(LocaleController.getString("ThemeDialogSetButton", R.string.ThemeDialogSetButton), new DialogInterface.OnClickListener() {
+                            .setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int which) {
                                     SharedPreferences.Editor editor = preferences.edit();
@@ -423,7 +484,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                                     editor.apply();
                                 }
                             })
-                            .setNeutralButton(LocaleController.getString("ThemeDialogCancelButton", R.string.ThemeDialogCancelButton), new DialogInterface.OnClickListener() {
+                            .setNeutralButton(LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
@@ -465,16 +526,22 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                             .build()
                             .show();*/
                 } else if (i == resetDefaultRow) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setMessage(LocaleController.getString("resetDefaultMessage", R.string.resetDefaultMessage));
-                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    TextView titleTextView = new TextView(context);
+                    titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
+                    titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    titleTextView.setTextColor(instanceOfActionBarBackgroundColor);
+                    titleTextView.setTypeface(AndroidUtilities.getTypeface());
+                    titleTextView.setPadding(24, 18, 24, 0);
+                    builder.setCustomTitle(titleTextView);
                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.putInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
-                            editor.putInt("drawerHeaderColor", ApplicationLoader.DH_COLOR);
-                            editor.putInt("profileBackgroundColor", ApplicationLoader.PBG_COLOR);
+                            editor.putInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+                            editor.putInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
+                            editor.putInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
                             editor.apply();
                             needRestart = true;
                             toast(context, LocaleController.getString("ThemeChangeToastMessage", R.string.ThemeChangeToastMessage));
@@ -527,7 +594,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
         nameTextView.setSingleLine(true);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
         nameTextView.setGravity(Gravity.LEFT);
-        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameTextView.setTypeface(AndroidUtilities.getTypeface());
         ViewProxy.setPivotX(nameTextView, 0);
         ViewProxy.setPivotY(nameTextView, 0);
         frameLayout.addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 118, 0, 48, 0));
@@ -535,7 +602,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
         onlineTextView = new TextView(context);
         onlineTextView.setTextColor(AvatarDrawable.getProfileTextColorForId(5));
         onlineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        onlineTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        onlineTextView.setTypeface(AndroidUtilities.getTypeface());
         onlineTextView.setLines(1);
         onlineTextView.setMaxLines(1);
         onlineTextView.setSingleLine(true);
@@ -895,7 +962,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
         @Override
         public boolean isEnabled(int i) {
-            return /*i == quickShareRow || i == forwardNoCaptionRow ||*/ i == specterModeRow || i == hiddenTypingRow || i == noNumberRow || i == actionBarBackgroundColorRow || i == drawerHeaderColorRow
+            return /*i == quickShareRow || i == forwardNoCaptionRow ||*/ i == specterModeRow || i == hiddenTypingRow || i == noNumberRow || i == textFontRow || i == textSizeRow || i == actionBarBackgroundColorRow || i == drawerHeaderColorRow
                     || i == profileBackgroundColorRow || i == resetDefaultRow || i == passcodeRow;
         }
 
@@ -942,9 +1009,9 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 TextColorCell textCell = (TextColorCell) view;
 
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-                int initialActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
-                int initialDrawerHeaderColor = preferences.getInt("drawerHeaderColor", ApplicationLoader.DH_COLOR);
-                final int initialProfileBackgroundColor = preferences.getInt("profileBackgroundColor", ApplicationLoader.PBG_COLOR);
+                int initialActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+                int initialDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
+                final int initialProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
 
                 if (i == actionBarBackgroundColorRow) {
                     textCell.setTextAndColor(LocaleController.getString("itemActionBarBackgroundColor", R.string.itemActionBarBackgroundColor), initialActionBarBackgroundColor, true);
@@ -996,8 +1063,16 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     view = new TextSettingsCell(mContext);
                 }
                 TextSettingsCell textCell = (TextSettingsCell) view;
-
-                if (i == resetDefaultRow) {
+                if (i == textFontRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Context.MODE_PRIVATE);
+                    String[] fontNameArray = ApplicationLoader.applicationContext.getResources().getStringArray(R.array.FontNameArr);
+                    String fontName = preferences.getString("customFontName", fontNameArray[2]);
+                    textCell.setTextAndValue(LocaleController.getString("itemFontName", R.string.itemFontName), fontName, true);
+                } else if (i == textSizeRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    int size = preferences.getInt("font_size", AndroidUtilities.isTablet() ? 18 : 16);
+                    textCell.setTextAndValue(LocaleController.getString("TextSize", R.string.TextSize), String.format("%d", size), true);
+                } else if (i == resetDefaultRow) {
                     textCell.setText(LocaleController.getString("CustomizationsResetDefault", R.string.CustomizationsResetDefault), true);
                 } else if (i == passcodeRow) {
                     textCell.setText(LocaleController.getString("Passcode", R.string.Passcode), true);
@@ -1040,7 +1115,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 return 4;
             } else if (i == textDescriptionRow) {
                 return 5;
-            } else if (i == resetDefaultRow || i == passcodeRow) {
+            } else if (i == textFontRow || i == textSizeRow || i == resetDefaultRow || i == passcodeRow) {
                 return 6;
             } else {
                 return 7;

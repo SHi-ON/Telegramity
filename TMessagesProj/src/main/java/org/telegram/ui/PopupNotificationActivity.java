@@ -38,6 +38,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ioton.TelegramityUtilities;
+
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -310,6 +312,11 @@ public class PopupNotificationActivity extends Activity implements NotificationC
             }
 
             @Override
+            public void onMessageEditEnd() {
+
+            }
+
+            @Override
             public void needSendTyping() {
                 if (currentMessageObject != null) {
                     MessagesController.getInstance().sendTyping(currentMessageObject.getDialogId(), 0, classGuid);
@@ -341,7 +348,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
         popupContainer.addView(messageContainer, 0);
 
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", MODE_PRIVATE);
-        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
 
         actionBar = new ActionBar(this);
         actionBar.setOccupyStatusBar(false);
@@ -356,6 +363,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
         ActionBarMenu menu = actionBar.createMenu();
         View view = menu.addItemResource(2, R.layout.popup_count_layout);
         countText = (TextView) view.findViewById(R.id.count_text);
+        countText.setTypeface(AndroidUtilities.getTypeface());
 
         avatarContainer = new FrameLayoutFixed(this);
         avatarContainer.setBackgroundResource(R.drawable.bar_selector);
@@ -386,7 +394,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
         nameTextView.setSingleLine(true);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
         nameTextView.setGravity(Gravity.LEFT);
-        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameTextView.setTypeface(AndroidUtilities.getTypeface());
         avatarContainer.addView(nameTextView);
         layoutParams2 = (FrameLayout.LayoutParams) nameTextView.getLayoutParams();
         layoutParams2.width = LayoutHelper.WRAP_CONTENT;
@@ -398,6 +406,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
 
         onlineTextView = new TextView(this);
         onlineTextView.setTextColor(0xffd7e8f7);
+        onlineTextView.setTypeface(AndroidUtilities.getTypeface());
         onlineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         onlineTextView.setLines(1);
         onlineTextView.setMaxLines(1);
@@ -680,7 +689,8 @@ public class PopupNotificationActivity extends Activity implements NotificationC
                 });
             }
 
-            TextView messageText = (TextView)view.findViewById(R.id.message_text);
+            TextView messageText = (TextView) view.findViewById(R.id.message_text);
+            messageText.setTypeface(AndroidUtilities.getTypeface());
             BackupImageView imageView = (BackupImageView) view.findViewById(R.id.message_image);
             imageView.setAspectFit(true);
 
@@ -772,6 +782,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
             TextView messageText = (TextView)view.findViewById(R.id.message_text);
             messageText.setTag(301);
             messageText.setTextSize(TypedValue.COMPLEX_UNIT_SP, MessagesController.getInstance().fontSize);
+            messageText.setTypeface(AndroidUtilities.getTypeface());
             messageText.setText(messageObject.messageText);
         }
         if (view.getParent() == null) {

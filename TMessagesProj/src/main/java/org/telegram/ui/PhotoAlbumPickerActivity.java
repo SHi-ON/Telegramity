@@ -186,7 +186,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment implements Notificati
             dropDown.setMaxLines(1);
             dropDown.setEllipsize(TextUtils.TruncateAt.END);
             dropDown.setTextColor(0xffffffff);
-            dropDown.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            dropDown.setTypeface(AndroidUtilities.getTypeface());
             dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down, 0);
             dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
             dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
@@ -223,6 +223,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment implements Notificati
 
         emptyView = new TextView(context);
         emptyView.setTextColor(0xff808080);
+        emptyView.setTypeface(AndroidUtilities.getTypeface());
         emptyView.setTextSize(20);
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setVisibility(View.GONE);

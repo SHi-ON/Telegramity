@@ -93,7 +93,7 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 5358
-        versionName "3.4.2 - TGY-Build 739"
+        versionCode 6719
+        versionName "3.6.1 - TGY-Build 861"
     }
 }

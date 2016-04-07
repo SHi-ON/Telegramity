@@ -252,7 +252,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                             progressDialog.show();
                             return;
                         }
-                        final int reqId = MessagesController.getInstance().createChat(nameTextView.getText().toString(), new ArrayList<Integer>(), descriptionTextView.getText().toString(), ChatObject.CHAT_TYPE_CHANNEL);
+                        final int reqId = MessagesController.getInstance().createChat(nameTextView.getText().toString(), new ArrayList<Integer>(), descriptionTextView.getText().toString(), ChatObject.CHAT_TYPE_CHANNEL, ChannelCreateActivity.this);
                         progressDialog = new ProgressDialog(getParentActivity());
                         progressDialog.setMessage(LocaleController.getString("Loading", R.string.Loading));
                         progressDialog.setCanceledOnTouchOutside(false);
@@ -393,6 +393,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
             }
             nameTextView.setMaxLines(4);
             nameTextView.setGravity(Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT));
+            nameTextView.setTypeface(AndroidUtilities.getTypeface());
             nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             nameTextView.setHintTextColor(0xff979797);
             nameTextView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -424,6 +425,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
 
             descriptionTextView = new EditText(context);
             descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+            descriptionTextView.setTypeface(AndroidUtilities.getTypeface());
             descriptionTextView.setHintTextColor(0xff979797);
             descriptionTextView.setTextColor(0xff212121);
             descriptionTextView.setPadding(0, 0, 0, AndroidUtilities.dp(6));
@@ -466,7 +468,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
             TextView helpTextView = new TextView(context);
             helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             helpTextView.setTextColor(0xff6d6d72);
-            helpTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            helpTextView.setTypeface(AndroidUtilities.getTypeface());
             helpTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             helpTextView.setText(LocaleController.getString("DescriptionInfo", R.string.DescriptionInfo));
             linearLayout.addView(helpTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 24, 10, 24, 20));
@@ -622,6 +624,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
 
             checkTextView = new TextView(context);
             checkTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+            checkTextView.setTypeface(AndroidUtilities.getTypeface());
             checkTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             checkTextView.setVisibility(View.GONE);
             linkContainer.addView(checkTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 17, 3, 17, 7));
@@ -781,6 +784,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
 
             emptyTextView = new TextView(context);
             emptyTextView.setTextColor(0xff808080);
+            emptyTextView.setTypeface(AndroidUtilities.getTypeface());
             emptyTextView.setTextSize(20);
             emptyTextView.setGravity(Gravity.CENTER);
             emptyTextView.setText(LocaleController.getString("NoContacts", R.string.NoContacts));

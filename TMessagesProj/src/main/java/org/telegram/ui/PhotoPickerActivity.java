@@ -343,6 +343,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
 
         emptyView = new TextView(context);
         emptyView.setTextColor(0xff808080);
+        emptyView.setTypeface(AndroidUtilities.getTypeface());
         emptyView.setTextSize(20);
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setVisibility(View.GONE);

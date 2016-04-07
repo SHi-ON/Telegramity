@@ -40,6 +40,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ioton.TelegramityUtilities;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -313,7 +314,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     public View createView(Context context) {
 
         final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", ApplicationLoader.PBG_COLOR);
+        final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
 
         if (user_id != 0 || ChatObject.isChannel(chat_id) && !currentChat.megagroup) {
             backColor = instanceOfProfileBackgroundColor;
@@ -847,7 +848,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             nameTextView[a].setSingleLine(true);
             nameTextView[a].setEllipsize(TextUtils.TruncateAt.END);
             nameTextView[a].setGravity(Gravity.LEFT);
-            nameTextView[a].setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            nameTextView[a].setTypeface(AndroidUtilities.getTypeface());
             nameTextView[a].setCompoundDrawablePadding(AndroidUtilities.dp(4));
             ViewProxy.setPivotX(nameTextView[a], 0);
             ViewProxy.setPivotY(nameTextView[a], 0);
@@ -855,7 +856,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             onlineTextView[a] = new TextView(context);
             onlineTextView[a].setTextColor(AvatarDrawable.getProfileTextColorForId(user_id != 0 || ChatObject.isChannel(chat_id) && !currentChat.megagroup ? 5 : chat_id));
-            onlineTextView[a].setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            onlineTextView[a].setTypeface(AndroidUtilities.getTypeface());
             onlineTextView[a].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             onlineTextView[a].setLines(1);
             onlineTextView[a].setMaxLines(1);
@@ -982,7 +983,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private void leaveChatPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         if (ChatObject.isChannel(chat_id) && !currentChat.megagroup) {
-            if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
+            if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
                 builder.setMessage(LocaleController.getString("ChanLeaveAlert", R.string.ChanLeaveAlert));
             } else {
                 builder.setMessage(ChatObject.isChannel(chat_id) ? LocaleController.getString("ChannelLeaveAlert", R.string.ChannelLeaveAlert) : LocaleController.getString("AreYouSureDeleteAndExit", R.string.AreYouSureDeleteAndExit));
@@ -1938,7 +1939,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (!currentChat.creator && !currentChat.left && !currentChat.kicked && !currentChat.megagroup) {
                         leaveChannelRow = rowCount++;
                     }
-                    if (currentChat.megagroup && (currentChat.editor || currentChat.creator)) {
+                    if (currentChat.megagroup && (currentChat.editor || currentChat.creator || currentChat.democracy)) {
                         if (info == null || info.participants_count < MessagesController.getInstance().maxMegagroupCount) {
                             addMemberRow = rowCount++;
                         }
@@ -2036,7 +2037,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 int leftIcon = currentEncryptedChat != null ? R.drawable.ic_lock_header : 0;
                 if (a != 0) {
-                    if (user.verified || ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(user.username)) {
+                    if (user.verified || TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(user.username)) {
                         if (nameTextView[a].getCompoundDrawables()[2] == null || nameTextView[a].getCompoundDrawables()[0] == null && leftIcon != 0) {
                             nameTextView[a].setCompoundDrawablesWithIntrinsicBounds(leftIcon, 0, R.drawable.check_profile_fixed, 0);
                         }
@@ -2092,7 +2093,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     nameTextView[a].setText(chat.title);
                 }
                 if (a != 0) {
-                    if (chat.verified || ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                    if (chat.verified || TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                         if (nameTextView[a].getCompoundDrawables()[2] == null) {
                             nameTextView[a].setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.check_profile_fixed, 0);
                         }
@@ -2108,14 +2109,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     int result[] = new int[1];
                     String shortNumber = LocaleController.formatShortNumber(info.participants_count, result);
                     String text = LocaleController.formatPluralString("Members", result[0]).replace(String.format("%d", result[0]), shortNumber);
-                    if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
+                    if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
                         onlineTextView[a].setText(LocaleController.getString("ChanSub", R.string.ChanSub));
                     } else {
                         onlineTextView[a].setText(text);
                     }
                 } else {
                     if (!onlineTextView[a].getText().equals(newString)) {
-                        if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
+                        if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
                             onlineTextView[a].setText(LocaleController.getString("ChanSub", R.string.ChanSub));
                         } else {
                             onlineTextView[a].setText(newString);
@@ -2187,12 +2188,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (ChatObject.isChannel(chat)) {
                     ActionBarMenuItem item = null;
-                    if (chat.creator) {
+                    if (chat.creator || chat.megagroup && chat.editor) {
                         item = menu.addItem(10, R.drawable.ic_ab_other);
                         item.addSubItem(edit_channel, LocaleController.getString("ChannelEdit", R.string.ChannelEdit), 0);
-                    } else if (chat.megagroup && chat.editor) {
-                        item = menu.addItem(10, R.drawable.ic_ab_other);
-                        item.addSubItem(edit_name, LocaleController.getString("EditName", R.string.EditName), 0);
                     }
                     if (!chat.creator && !chat.left && !chat.kicked && chat.megagroup) {
                         if (item == null) {
@@ -2426,7 +2424,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         identiconDrawable.setEncryptedChat(encryptedChat);
                         textCell.setTextAndValueDrawable(LocaleController.getString("EncryptionKey", R.string.EncryptionKey), identiconDrawable);
                     } else if (i == leaveChannelRow) {
-                        if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
+                        if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(currentChat.username)) {
                             textCell.setText(LocaleController.getString("ChanLeave", R.string.ChanLeave));
                         } else {
                             textCell.setText(LocaleController.getString("LeaveChannel", R.string.LeaveChannel));
