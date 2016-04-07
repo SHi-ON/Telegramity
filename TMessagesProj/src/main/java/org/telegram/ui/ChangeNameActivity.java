@@ -88,6 +88,7 @@ public class ChangeNameActivity extends BaseFragment {
 
         firstNameField = new EditText(context);
         firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        firstNameField.setTypeface(AndroidUtilities.getTypeface());
         firstNameField.setHintTextColor(0xff979797);
         firstNameField.setTextColor(0xff212121);
         firstNameField.setMaxLines(1);
@@ -113,6 +114,7 @@ public class ChangeNameActivity extends BaseFragment {
 
         lastNameField = new EditText(context);
         lastNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        lastNameField.setTypeface(AndroidUtilities.getTypeface());
         lastNameField.setHintTextColor(0xff979797);
         lastNameField.setTextColor(0xff212121);
         lastNameField.setMaxLines(1);

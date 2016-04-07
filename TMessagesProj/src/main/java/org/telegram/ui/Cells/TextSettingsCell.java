@@ -11,6 +11,8 @@ package org.telegram.ui.Cells;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.ui.Components.LayoutHelper;
 
@@ -42,7 +45,7 @@ public class TextSettingsCell extends FrameLayout {
         textView = new TextView(context);
         textView.setTextColor(0xff212121);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        textView.setTypeface(AndroidUtilities.getTypeface());
         textView.setLines(1);
         textView.setMaxLines(1);
         textView.setSingleLine(true);
@@ -53,7 +56,7 @@ public class TextSettingsCell extends FrameLayout {
         valueTextView = new TextView(context);
         valueTextView.setTextColor(0xff2f8cc9);
         valueTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        valueTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        valueTextView.setTypeface(AndroidUtilities.getTypeface());
         valueTextView.setLines(1);
         valueTextView.setMaxLines(1);
         valueTextView.setSingleLine(true);
@@ -97,6 +100,14 @@ public class TextSettingsCell extends FrameLayout {
         setWillNotDraw(!divider);
     }
 
+    public void setTextFont(String path) {
+        if (path != "device") {
+            textView.setTypeface(Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), "fonts/" + path + ".ttf"));
+        } else {
+            textView.setTypeface(Typeface.DEFAULT);
+        }
+    }
+
     public void setTextAndValue(String text, String value, boolean divider) {
         textView.setText(text);
         valueImageView.setVisibility(INVISIBLE);
@@ -111,12 +122,12 @@ public class TextSettingsCell extends FrameLayout {
         requestLayout();
     }
 
-    public void setTextAndIcon(String text, int resId, boolean divider) {
+    public void setTextAndIcon(String text, Drawable resDrawable, boolean divider) {
         textView.setText(text);
         valueTextView.setVisibility(INVISIBLE);
-        if (resId != 0) {
+        if (resDrawable != null) {
             valueImageView.setVisibility(VISIBLE);
-            valueImageView.setImageResource(resId);
+            valueImageView.setImageDrawable(resDrawable);
         } else {
             valueImageView.setVisibility(INVISIBLE);
         }

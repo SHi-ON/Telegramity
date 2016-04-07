@@ -176,7 +176,7 @@ public class DocumentSelectActivity extends BaseFragment {
 
         selectedMessagesCountTextView = new NumberTextView(actionMode.getContext());
         selectedMessagesCountTextView.setTextSize(18);
-        selectedMessagesCountTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        selectedMessagesCountTextView.setTypeface(AndroidUtilities.getTypeface());
         selectedMessagesCountTextView.setTextColor(0xff737373);
         selectedMessagesCountTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -191,6 +191,7 @@ public class DocumentSelectActivity extends BaseFragment {
         fragmentView = getParentActivity().getLayoutInflater().inflate(R.layout.document_select_layout, null, false);
         listAdapter = new ListAdapter(context);
         emptyView = (TextView) fragmentView.findViewById(R.id.searchEmptyView);
+        emptyView.setTypeface(AndroidUtilities.getTypeface());
         emptyView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

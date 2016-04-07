@@ -179,6 +179,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
 
         titleTextView = new TextView(context);
         titleTextView.setTextColor(0xff757575);
+        titleTextView.setTypeface(AndroidUtilities.getTypeface());
         titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
         linearLayout.addView(titleTextView);
@@ -191,6 +192,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
 
         passwordEditText = new EditText(context);
         passwordEditText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        passwordEditText.setTypeface(AndroidUtilities.getTypeface());
         passwordEditText.setTextColor(0xff000000);
         passwordEditText.setMaxLines(1);
         passwordEditText.setLines(1);
@@ -246,6 +248,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
 
         bottomTextView = new TextView(context);
         bottomTextView.setTextColor(0xff757575);
+        bottomTextView.setTypeface(AndroidUtilities.getTypeface());
         bottomTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         bottomTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
         bottomTextView.setText(LocaleController.getString("YourEmailInfo", R.string.YourEmailInfo));
@@ -269,6 +272,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
 
         bottomButton = new TextView(context);
         bottomButton.setTextColor(0xff4d83b3);
+        bottomButton.setTypeface(AndroidUtilities.getTypeface());
         bottomButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         bottomButton.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.BOTTOM);
         bottomButton.setText(LocaleController.getString("YourEmailSkip", R.string.YourEmailSkip));

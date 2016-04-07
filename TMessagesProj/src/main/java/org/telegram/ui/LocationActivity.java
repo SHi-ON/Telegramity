@@ -314,7 +314,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             nameTextView.setTextColor(0xff212121);
             nameTextView.setMaxLines(1);
-            nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            nameTextView.setTypeface(AndroidUtilities.getTypeface());
             nameTextView.setEllipsize(TextUtils.TruncateAt.END);
             nameTextView.setSingleLine(true);
             nameTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
@@ -323,6 +323,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             distanceTextView = new TextView(context);
             distanceTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             distanceTextView.setTextColor(0xff2f8cc9);
+            distanceTextView.setTypeface(AndroidUtilities.getTypeface());
             distanceTextView.setMaxLines(1);
             distanceTextView.setEllipsize(TextUtils.TruncateAt.END);
             distanceTextView.setSingleLine(true);
@@ -817,10 +818,10 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         if (messageObject != null && avatarImageView != null) {
             int fromId = messageObject.messageOwner.from_id;
             if (messageObject.isForwarded()) {
-                if (messageObject.messageOwner.fwd_from_id.user_id != 0) {
-                    fromId = messageObject.messageOwner.fwd_from_id.user_id;
+                if (messageObject.messageOwner.fwd_from.channel_id != 0) {
+                    fromId = -messageObject.messageOwner.fwd_from.channel_id;
                 } else {
-                    fromId = -messageObject.messageOwner.fwd_from_id.channel_id;
+                    fromId = messageObject.messageOwner.fwd_from.from_id;
                 }
             }
             String name = "";

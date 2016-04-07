@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.messenger.MessagesController;
@@ -94,6 +95,7 @@ public class BlockedUsersActivity extends BaseFragment implements NotificationCe
 
         emptyTextView = new TextView(context);
         emptyTextView.setTextColor(0xff808080);
+        emptyTextView.setTypeface(AndroidUtilities.getTypeface());
         emptyTextView.setTextSize(20);
         emptyTextView.setGravity(Gravity.CENTER);
         emptyTextView.setVisibility(View.INVISIBLE);

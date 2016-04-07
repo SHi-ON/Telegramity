@@ -87,6 +87,7 @@ public class RevelationActivity extends BaseFragment {
         firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         firstNameField.setHintTextColor(0xff979797);
         firstNameField.setTextColor(0xff212121);
+        firstNameField.setTypeface(AndroidUtilities.getTypeface());
         firstNameField.setMaxLines(1);
         firstNameField.setLines(1);
         firstNameField.setPadding(0, 0, 0, 0);
@@ -116,14 +117,14 @@ public class RevelationActivity extends BaseFragment {
 
         checkTextView = new TextView(context);
         checkTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        checkTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        checkTextView.setTypeface(AndroidUtilities.getTypeface());
         checkTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         ((LinearLayout) fragmentView).addView(checkTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 24, 12, 24, 0));
 
         TextView helpTextView = new TextView(context);
         helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         helpTextView.setTextColor(0xff6d6d72);
-        helpTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        helpTextView.setTypeface(AndroidUtilities.getTypeface());
         helpTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         helpTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString("IDHelp", R.string.IDHelp)));
         ((LinearLayout) fragmentView).addView(helpTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 24, 10, 24, 0));
@@ -166,7 +167,15 @@ public class RevelationActivity extends BaseFragment {
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+        SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        TextView titleTextView = new TextView(getParentActivity());
+        titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
+        titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        titleTextView.setTextColor(aBBackgroundColor);
+        titleTextView.setTypeface(AndroidUtilities.getTypeface());
+        titleTextView.setPadding(24, 18, 24, 0);
+        builder.setCustomTitle(titleTextView);
         switch (error) {
             case "USERNAME_INVALID":
                 builder.setMessage(LocaleController.getString("UsernameInvalid", R.string.UsernameInvalid));

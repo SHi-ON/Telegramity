@@ -145,6 +145,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
 
             titleTextView = new TextView(context);
             titleTextView.setTextColor(0xff757575);
+            titleTextView.setTypeface(AndroidUtilities.getTypeface());
             if (type == 1) {
                 if (UserConfig.passcodeHash.length() != 0) {
                     titleTextView.setText(LocaleController.getString("EnterNewPasscode", R.string.EnterNewPasscode));
@@ -166,6 +167,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
 
             passwordEditText = new EditText(context);
             passwordEditText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+            passwordEditText.setTypeface(AndroidUtilities.getTypeface());
             passwordEditText.setTextColor(0xff000000);
             passwordEditText.setMaxLines(1);
             passwordEditText.setLines(1);
@@ -281,7 +283,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                 dropDown.setMaxLines(1);
                 dropDown.setEllipsize(TextUtils.TruncateAt.END);
                 dropDown.setTextColor(0xffffffff);
-                dropDown.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                dropDown.setTypeface(AndroidUtilities.getTypeface());
                 dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down, 0);
                 dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
                 dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);

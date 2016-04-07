@@ -400,7 +400,7 @@ public class LoginActivity extends BaseFragment {
         NotificationCenter.getInstance().postNotificationName(NotificationCenter.mainUserInfoChanged);
     }
 
-    public class PhoneView extends SlideView implements AdapterView.OnItemSelectedListener {
+    public class PhoneView extends SlideView implements AdapterView.OnItemSelectedListener, NotificationCenter.NotificationCenterDelegate {
 
         private EditText codeField;
         private HintEditText phoneField;
@@ -427,6 +427,7 @@ public class LoginActivity extends BaseFragment {
             countryButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             countryButton.setPadding(AndroidUtilities.dp(12), AndroidUtilities.dp(10), AndroidUtilities.dp(12), 0);
             countryButton.setTextColor(0xff212121);
+            countryButton.setTypeface(AndroidUtilities.getTypeface());
             countryButton.setMaxLines(1);
             countryButton.setSingleLine(true);
             countryButton.setEllipsize(TextUtils.TruncateAt.END);
@@ -472,6 +473,7 @@ public class LoginActivity extends BaseFragment {
 
             codeField = new EditText(context);
             codeField.setInputType(InputType.TYPE_CLASS_PHONE);
+            codeField.setTypeface(AndroidUtilities.getTypeface());
             codeField.setTextColor(0xff212121);
             AndroidUtilities.clearCursorDrawable(codeField);
             codeField.setPadding(AndroidUtilities.dp(10), 0, 0, 0);
@@ -573,6 +575,7 @@ public class LoginActivity extends BaseFragment {
 
             phoneField = new HintEditText(context);
             phoneField.setInputType(InputType.TYPE_CLASS_PHONE);
+            phoneField.setTypeface(AndroidUtilities.getTypeface());
             phoneField.setTextColor(0xff212121);
             phoneField.setHintTextColor(0xff979797);
             phoneField.setPadding(0, 0, 0, 0);
@@ -670,7 +673,7 @@ public class LoginActivity extends BaseFragment {
             textView = new TextView(context);
             textView.setText(LocaleController.getString("StartText", R.string.StartText));
             textView.setTextColor(0xff757575);
-            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            textView.setTypeface(AndroidUtilities.getTypeface());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             textView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
@@ -754,6 +757,17 @@ public class LoginActivity extends BaseFragment {
         }
 
         @Override
+        public void didReceivedNotification(int id, final Object... args) {
+            /*if (id == NotificationCenter.didReceiveCall) {
+                if (codeField != null) {
+                    String phone = (String) args[0];
+                    phone = PhoneFormat.stripExceptNumbers(phone);
+                    codeField.setText(phone);
+                }
+            }*/
+        }
+
+        @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             if (ignoreSelection) {
                 ignoreSelection = false;
@@ -786,6 +800,7 @@ public class LoginActivity extends BaseFragment {
                 needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                 return;
             }
+            //NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didReceiveCall);
 
             ConnectionsManager.getInstance().cleanUp();
             TLRPC.TL_auth_sendCode req = new TLRPC.TL_auth_sendCode();
@@ -858,6 +873,7 @@ public class LoginActivity extends BaseFragment {
                     codeField.requestFocus();
                 }
             }
+            //NotificationCenter.getInstance().addObserver(this, NotificationCenter.didReceiveCall);
         }
 
         @Override
@@ -928,6 +944,7 @@ public class LoginActivity extends BaseFragment {
 
             codeField = new EditText(context);
             codeField.setTextColor(0xff212121);
+            codeField.setTypeface(AndroidUtilities.getTypeface());
             codeField.setHint(LocaleController.getString("Code", R.string.Code));
             AndroidUtilities.clearCursorDrawable(codeField);
             codeField.setHintTextColor(0xff979797);
@@ -985,6 +1002,7 @@ public class LoginActivity extends BaseFragment {
             problemText.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             problemText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             problemText.setTextColor(0xff4d83b3);
+            problemText.setTypeface(AndroidUtilities.getTypeface());
             problemText.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             problemText.setPadding(0, AndroidUtilities.dp(2), 0, AndroidUtilities.dp(12));
             addView(problemText, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 0, 20, 0, 0));
@@ -1019,7 +1037,7 @@ public class LoginActivity extends BaseFragment {
             wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);
             linearLayout.addView(wrongNumber, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 0, 0, 0, 10));
             wrongNumber.setText(LocaleController.getString("WrongNumber", R.string.WrongNumber));
-            wrongNumber.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            wrongNumber.setTypeface(AndroidUtilities.getTypeface());
             wrongNumber.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1059,15 +1077,15 @@ public class LoginActivity extends BaseFragment {
             String str = String.format(LocaleController.getString("SentSmsCode", R.string.SentSmsCode) + " %s", number);
             try {
                 SpannableStringBuilder stringBuilder = new SpannableStringBuilder(str);
-                TypefaceSpan span = new TypefaceSpan(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                TypefaceSpan span = new TypefaceSpan(AndroidUtilities.getTypeface());
                 int idx = str.indexOf(number);
                 stringBuilder.setSpan(span, idx, idx + number.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 confirmTextView.setText(stringBuilder);
-                confirmTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium"));
+                confirmTextView.setTypeface(AndroidUtilities.getTypeface());
             } catch (Exception e) {
                 FileLog.e("tmessages", e);
                 confirmTextView.setText(str);
-                confirmTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                confirmTextView.setTypeface(AndroidUtilities.getTypeface());
             }
 
             AndroidUtilities.showKeyboard(codeField);
@@ -1075,10 +1093,15 @@ public class LoginActivity extends BaseFragment {
 
             destroyTimer();
             destroyCodeTimer();
-            timeText.setText(LocaleController.formatString("CallText", R.string.CallText, 1, 0));
-            timeText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            lastCurrentTime = System.currentTimeMillis();
-            problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
+            if (time >= 3600 * 1000) {
+                timeText.setVisibility(GONE);
+                problemText.setVisibility(GONE);
+            } else {
+                timeText.setText(LocaleController.formatString("CallText", R.string.CallText, 1, 0));
+            timeText.setTypeface(AndroidUtilities.getTypeface());
+                lastCurrentTime = System.currentTimeMillis();
+                problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
+            }
 
             createTimer();
         }
@@ -1124,7 +1147,7 @@ public class LoginActivity extends BaseFragment {
         }
 
         private void createTimer() {
-            if (timeTimer != null) {
+            if (timeTimer != null || time >= 3600 * 1000) {
                 return;
             }
             timeTimer = new Timer();
@@ -1142,7 +1165,7 @@ public class LoginActivity extends BaseFragment {
                                 int minutes = time / 1000 / 60;
                                 int seconds = time / 1000 - minutes * 60;
                                 timeText.setText(LocaleController.formatString("CallText", R.string.CallText, minutes, seconds));
-                                timeText.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                                timeText.setTypeface(AndroidUtilities.getTypeface());
                             } else {
                                 timeText.setText(LocaleController.getString("Calling", R.string.Calling));
                                 destroyTimer();
@@ -1428,6 +1451,7 @@ public class LoginActivity extends BaseFragment {
             TextView cancelButton = new TextView(context);
             cancelButton.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
             cancelButton.setTextColor(0xff4d83b3);
+            cancelButton.setTypeface(AndroidUtilities.getTypeface());
             cancelButton.setText(LocaleController.getString("ForgotPassword", R.string.ForgotPassword));
             cancelButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             cancelButton.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
@@ -1496,7 +1520,7 @@ public class LoginActivity extends BaseFragment {
             resetAccountButton.setTextColor(0xffff6666);
             resetAccountButton.setVisibility(GONE);
             resetAccountButton.setText(LocaleController.getString("ResetMyAccount", R.string.ResetMyAccount));
-            resetAccountButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            resetAccountButton.setTypeface(AndroidUtilities.getTypeface());
             resetAccountButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             resetAccountButton.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             resetAccountButton.setPadding(0, AndroidUtilities.dp(14), 0, 0);
@@ -1769,6 +1793,7 @@ public class LoginActivity extends BaseFragment {
             cancelButton = new TextView(context);
             cancelButton.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.BOTTOM);
             cancelButton.setTextColor(0xff4d83b3);
+            cancelButton.setTypeface(AndroidUtilities.getTypeface());
             cancelButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             cancelButton.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             cancelButton.setPadding(0, AndroidUtilities.dp(14), 0, 0);
@@ -1998,6 +2023,7 @@ public class LoginActivity extends BaseFragment {
             wrongNumber.setText(LocaleController.getString("CancelRegistration", R.string.CancelRegistration));
             wrongNumber.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_HORIZONTAL);
             wrongNumber.setTextColor(0xff4d83b3);
+            wrongNumber.setTypeface(AndroidUtilities.getTypeface());
             wrongNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             wrongNumber.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);

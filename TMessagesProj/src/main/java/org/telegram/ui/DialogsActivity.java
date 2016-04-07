@@ -38,39 +38,41 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ioton.TelegramityUtilities;
+
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
+import org.telegram.messenger.AnimationCompat.ViewProxy;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
+import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.support.widget.LinearLayoutManager;
-import org.telegram.messenger.support.widget.RecyclerView;
-import org.telegram.messenger.FileLog;
-import org.telegram.tgnet.TLRPC;
-import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
-import org.telegram.ui.ActionBar.BottomSheet;
-import org.telegram.ui.Adapters.DialogsAdapter;
-import org.telegram.ui.Adapters.DialogsSearchAdapter;
-import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
-import org.telegram.ui.Cells.ProfileSearchCell;
-import org.telegram.ui.Cells.UserCell;
-import org.telegram.ui.Cells.DialogCell;
+import org.telegram.messenger.UserObject;
+import org.telegram.messenger.support.widget.LinearLayoutManager;
+import org.telegram.messenger.support.widget.RecyclerView;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.MenuDrawable;
-import org.telegram.ui.Components.PlayerView;
+import org.telegram.ui.Adapters.DialogsAdapter;
+import org.telegram.ui.Adapters.DialogsSearchAdapter;
+import org.telegram.ui.Cells.DialogCell;
+import org.telegram.ui.Cells.ProfileSearchCell;
+import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.Components.EmptyTextProgressView;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.PlayerView;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ResourceLoader;
 
@@ -278,7 +280,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 actionBar.setBackButtonDrawable(new MenuDrawable());
             }
-            actionBar.setTitle(LocaleController.getString("AppName", R.string.AppName));
+            if (BuildVars.DEBUG_VERSION) {
+                actionBar.setTitle(LocaleController.getString("AppNameBeta", R.string.AppNameBeta));
+            } else {
+                actionBar.setTitle(LocaleController.getString("AppName", R.string.AppName));
+            }
         }
         actionBar.setAllowOverlayTitle(true);
 
@@ -480,7 +486,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     CharSequence items[];
                     if (chat != null && chat.megagroup) {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), chat == null || !chat.creator ? LocaleController.getString("LeaveMegaMenu", R.string.LeaveMegaMenu) : LocaleController.getString("DeleteMegaMenu", R.string.DeleteMegaMenu)};
-                    } else if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                    } else if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), LocaleController.getString("ChanLeave", R.string.ChanLeave)};
                     } else {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), chat == null || !chat.creator ? LocaleController.getString("LeaveChannelMenu", R.string.LeaveChannelMenu) : LocaleController.getString("ChannelDeleteMenu", R.string.ChannelDeleteMenu)};
@@ -512,7 +518,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 } else {
                                     if (chat == null || !chat.creator) {
                                         builder.setMessage(LocaleController.getString("ChannelLeaveAlert", R.string.ChannelLeaveAlert));
-                                    } else if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                                    } else if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                                         builder.setMessage(LocaleController.getString("ChanLeaveAlert", R.string.ChanLeaveAlert));
                                     } else {
                                         builder.setMessage(LocaleController.getString("ChannelDeleteAlert", R.string.ChannelDeleteAlert));
@@ -854,7 +860,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         ContactsController.getInstance().readContacts();
                         break;
                     case Manifest.permission.WRITE_EXTERNAL_STORAGE:
-                        ImageLoader.getInstance().createMediaPaths();
+                        ImageLoader.getInstance().checkMediaPaths();
                         break;
                 }
             }

@@ -81,7 +81,7 @@ public class ContextLinkCell extends View implements MediaController.FileDownloa
 
         if (titleTextPaint == null) {
             titleTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-            titleTextPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            titleTextPaint.setTypeface(AndroidUtilities.getTypeface());
             titleTextPaint.setColor(0xff212121);
             titleTextPaint.setTextSize(AndroidUtilities.dp(15));
 
@@ -434,10 +434,10 @@ public class ContextLinkCell extends View implements MediaController.FileDownloa
                 fileName = FileLoader.getAttachFileName(result.document);
                 cacheFile = FileLoader.getPathToAttach(result.document);
             } else if (result.content_url != null) {
-                fileName = Utilities.MD5(result.content_url) + "." + ImageLoader.getHttpUrlExtension(result.content_url);
+                fileName = Utilities.MD5(result.content_url) + "." + ImageLoader.getHttpUrlExtension(result.content_url, "jpg");
                 cacheFile = new File(FileLoader.getInstance().getDirectory(FileLoader.MEDIA_DIR_CACHE), fileName);
             } else if (result.thumb_url != null) {
-                fileName = Utilities.MD5(result.thumb_url) + "." + ImageLoader.getHttpUrlExtension(result.thumb_url);
+                fileName = Utilities.MD5(result.thumb_url) + "." + ImageLoader.getHttpUrlExtension(result.thumb_url, "jpg");
                 cacheFile = new File(FileLoader.getInstance().getDirectory(FileLoader.MEDIA_DIR_CACHE), fileName);
             }
         } else if (gif != null) {

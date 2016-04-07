@@ -29,6 +29,7 @@ import android.util.Base64;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.ioton.TelegramityUtilities;
 import com.parse.Parse;
 import com.parse.ParseInstallation;
 
@@ -40,20 +41,14 @@ import org.telegram.ui.Components.ForegroundDetector;
 import java.io.File;
 import java.io.RandomAccessFile;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
 public class ApplicationLoader extends Application {
 
     private static Drawable cachedWallpaper;
-    public static final String OFFICIAL_CHAN = "ioton_telegramity";
-    public static final String TGYLNK = "BL6mIDvhlAL5kCBf8yOwRg";
+
     private static int selectedColor;
     private static boolean isCustomTheme;
-    public static int ABBG_COLOR = 0xffef3f3e;
-    public static int DH_COLOR = 0xff2196f3;
-    public static int PBG_COLOR = 0xff9c27b0;
-    /*Default Values:
-    editor.putInt("actionBarBackgroundColor",0xff54759e);
-    editor.putInt("drawerHeaderColor",0xff4c84b5);
-    editor.putInt("profileBackgroundColor",0xff4c84b6);*/
 
     private static final Object sync = new Object();
 
@@ -210,7 +205,7 @@ public class ApplicationLoader extends Application {
         }
 
         try {
-            PowerManager pm = (PowerManager)ApplicationLoader.applicationContext.getSystemService(Context.POWER_SERVICE);
+            PowerManager pm = (PowerManager) ApplicationLoader.applicationContext.getSystemService(Context.POWER_SERVICE);
             isScreenOn = pm.isScreenOn();
             FileLog.e("tmessages", "screen state = " + isScreenOn);
         } catch (Exception e) {
@@ -258,7 +253,7 @@ public class ApplicationLoader extends Application {
             SendMessagesHelper.getInstance().checkUnsentMessages();
         }
 
-        ApplicationLoader app = (ApplicationLoader)ApplicationLoader.applicationContext;
+        ApplicationLoader app = (ApplicationLoader) ApplicationLoader.applicationContext;
         app.initPlayServices();
         FileLog.e("tmessages", "app initied");
 
@@ -297,6 +292,16 @@ public class ApplicationLoader extends Application {
         // defaultACL.setPublicReadAccess(true);
 
         startPushService();
+
+        String customPath = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE).getString("customFontPath", TelegramityUtilities.DEFAULT_FONT_PATH);
+        if (customPath != "device") {
+            String customAssetPath = String.format("fonts/%s.ttf", customPath);
+            CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                            .setDefaultFontPath(customAssetPath)
+                            .setFontAttrId(R.attr.fontPath)
+                            .build()
+            );
+        }
     }
 
     public static void startPushService() {
@@ -312,7 +317,7 @@ public class ApplicationLoader extends Application {
 //                alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30000, pintent);
 
                 PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
-                AlarmManager alarm = (AlarmManager)applicationContext.getSystemService(Context.ALARM_SERVICE);
+                AlarmManager alarm = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
                 alarm.cancel(pintent);
             }
         } else {
@@ -324,7 +329,7 @@ public class ApplicationLoader extends Application {
         applicationContext.stopService(new Intent(applicationContext, NotificationsService.class));
 
         PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
-        AlarmManager alarm = (AlarmManager)applicationContext.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarm = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pintent);
     }
 
@@ -348,6 +353,8 @@ public class ApplicationLoader extends Application {
                         FileLog.d("tmessages", "GCM Registration not found.");
                         Intent intent = new Intent(applicationContext, GcmRegistrationIntentService.class);
                         startService(intent);
+                    } else {
+                        FileLog.d("tmessages", "GCM regId = " + UserConfig.pushString);
                     }
                 } else {
                     FileLog.d("tmessages", "No valid Google Play Services APK found.");

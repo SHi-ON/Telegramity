@@ -15,6 +15,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -27,6 +28,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Parcelable;
+import android.provider.Browser;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Spannable;
@@ -47,16 +50,18 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ioton.TelegramityUtilities;
+
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.UpdateManager;
 
-import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.tgnet.TLRPC;
 import org.telegram.messenger.AnimationCompat.AnimatorListenerAdapterProxy;
 import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
 import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
 import org.telegram.messenger.AnimationCompat.ViewProxy;
+import org.telegram.tgnet.ConnectionsManager;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.ForegroundDetector;
 import org.telegram.ui.Components.NumberPicker;
 import org.telegram.ui.Components.TypefaceSpan;
@@ -83,7 +88,6 @@ public class AndroidUtilities {
     private static int prevOrientation = -10;
     private static boolean waitingForSms = false;
     private static final Object smsLock = new Object();
-
     public static int statusBarHeight = 0;
     public static float density = 1;
     public static Point displaySize = new Point();
@@ -95,6 +99,7 @@ public class AndroidUtilities {
     private static int adjustOwnerClassGuid = 0;
 
     public static Pattern WEB_URL = null;
+
     static {
         try {
             final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
@@ -121,7 +126,6 @@ public class AndroidUtilities {
             FileLog.e("tmessages", e);
         }
     }
-
 
 
     static {
@@ -153,7 +157,7 @@ public class AndroidUtilities {
         }
         try {
             prevOrientation = activity.getRequestedOrientation();
-            WindowManager manager = (WindowManager)activity.getSystemService(Activity.WINDOW_SERVICE);
+            WindowManager manager = (WindowManager) activity.getSystemService(Activity.WINDOW_SERVICE);
             if (manager != null && manager.getDefaultDisplay() != null) {
                 int rotation = manager.getDefaultDisplay().getRotation();
                 int orientation = activity.getResources().getConfiguration().orientation;
@@ -209,18 +213,24 @@ public class AndroidUtilities {
         }
     }
 
-    public static Typeface getTypeface(String assetPath) {
+    public static Typeface getTypeface() {
+        String customPath = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE).getString("customFontPath", TelegramityUtilities.DEFAULT_FONT_PATH);
         synchronized (typefaceCache) {
-            if (!typefaceCache.containsKey(assetPath)) {
+            if (!typefaceCache.containsKey(customPath)) {
                 try {
-                    Typeface t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
-                    typefaceCache.put(assetPath, t);
+                    Typeface typeface;
+                    if (customPath == "device") {
+                        typeface = Typeface.DEFAULT;
+                    } else {
+                        typeface = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), "fonts/" + customPath + ".ttf");
+                    }
+                    typefaceCache.put(customPath, typeface);
                 } catch (Exception e) {
-                    FileLog.e("Typefaces", "Could not get typeface '" + assetPath + "' because " + e.getMessage());
+                    FileLog.e("Typefaces", "Could not get typeface '" + customPath + "' because " + e.getMessage());
                     return null;
                 }
             }
-            return typefaceCache.get(assetPath);
+            return typefaceCache.get(customPath);
         }
     }
 
@@ -242,7 +252,7 @@ public class AndroidUtilities {
         if (view == null) {
             return;
         }
-        InputMethodManager inputManager = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputManager = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
 
@@ -343,7 +353,7 @@ public class AndroidUtilities {
     }
 
     public static long makeBroadcastId(int id) {
-        return 0x0000000100000000L | ((long)id & 0x00000000FFFFFFFFL);
+        return 0x0000000100000000L | ((long) id & 0x00000000FFFFFFFFL);
     }
 
     public static int getMyLayerVersion(int layer) {
@@ -406,6 +416,31 @@ public class AndroidUtilities {
                 leftSide = dp(320);
             }
             return Math.min(smallSide, maxSide - leftSide);
+        }
+    }
+
+    public static void openUrl(Context context, String url) {
+        if (context == null || url == null) {
+            return;
+        }
+        openUrl(context, Uri.parse(url));
+    }
+
+    public static void openUrl(Context context, Uri uri) {
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        int actionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        if (context == null || uri == null) {
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra("android.support.customtabs.extra.SESSION", (Parcelable) null);
+            intent.putExtra("android.support.customtabs.extra.TOOLBAR_COLOR", actionBarBackgroundColor);
+            intent.putExtra("android.support.customtabs.extra.TITLE_VISIBILITY", 1);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+            context.startActivity(intent);
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
         }
     }
 
@@ -546,7 +581,7 @@ public class AndroidUtilities {
             if (mAttachInfo != null) {
                 Field mStableInsetsField = mAttachInfo.getClass().getDeclaredField("mStableInsets");
                 mStableInsetsField.setAccessible(true);
-                Rect insets = (Rect)mStableInsetsField.get(mAttachInfo);
+                Rect insets = (Rect) mStableInsetsField.get(mAttachInfo);
                 return insets.bottom;
             }
         } catch (Exception e) {
@@ -670,7 +705,7 @@ public class AndroidUtilities {
             }
             SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(stringBuilder);
             for (int a = 0; a < bolds.size() / 2; a++) {
-                spannableStringBuilder.setSpan(new TypefaceSpan(AndroidUtilities.getTypeface("fonts/rmedium.ttf")), bolds.get(a * 2), bolds.get(a * 2 + 1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableStringBuilder.setSpan(new TypefaceSpan(AndroidUtilities.getTypeface()), bolds.get(a * 2), bolds.get(a * 2 + 1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             for (int a = 0; a < colors.size() / 3; a++) {
                 spannableStringBuilder.setSpan(new ForegroundColorSpan(colors.get(a * 3 + 2)), colors.get(a * 3), colors.get(a * 3 + 1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -816,7 +851,7 @@ public class AndroidUtilities {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Telegram");
             if (!storageDir.mkdirs()) {
-                if (!storageDir.exists()){
+                if (!storageDir.exists()) {
                     FileLog.d("tmessages", "failed to create directory");
                     return null;
                 }
@@ -863,7 +898,7 @@ public class AndroidUtilities {
                     }
 
                     final String selection = "_id=?";
-                    final String[] selectionArgs = new String[] {
+                    final String[] selectionArgs = new String[]{
                             split[1]
                     };
 
@@ -1056,5 +1091,12 @@ public class AndroidUtilities {
             }
         }
         return true;
+    }
+
+    public static byte[] calcAuthKeyHash(byte[] auth_key) {
+        byte[] sha1 = Utilities.computeSHA1(auth_key);
+        byte[] key_hash = new byte[16];
+        System.arraycopy(sha1, 0, key_hash, 0, 16);
+        return key_hash;
     }
 }

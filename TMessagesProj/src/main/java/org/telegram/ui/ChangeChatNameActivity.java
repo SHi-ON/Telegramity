@@ -92,6 +92,7 @@ public class ChangeChatNameActivity extends BaseFragment {
 
         firstNameField = new EditText(context);
         firstNameField.setText(currentChat.title);
+        firstNameField.setTypeface(AndroidUtilities.getTypeface());
         firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         firstNameField.setHintTextColor(0xff979797);
         firstNameField.setTextColor(0xff212121);

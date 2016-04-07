@@ -87,6 +87,7 @@ public class ChatAttachView extends FrameLayout implements NotificationCenter.No
             textView.setGravity(Gravity.CENTER_HORIZONTAL);
             textView.setEllipsize(TextUtils.TruncateAt.END);
             textView.setTextColor(0xff757575);
+            textView.setTypeface(AndroidUtilities.getTypeface());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
             addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 64, 0, 0));
         }
@@ -173,7 +174,7 @@ public class ChatAttachView extends FrameLayout implements NotificationCenter.No
                 LocaleController.getString("ChatCamera", R.string.ChatCamera),
                 LocaleController.getString("ChatGallery", R.string.ChatGallery),
                 LocaleController.getString("ChatVideo", R.string.ChatVideo),
-                LocaleController.getString("AttachAudio", R.string.AttachAudio),
+                LocaleController.getString("AttachMusic", R.string.AttachMusic),
                 LocaleController.getString("ChatDocument", R.string.ChatDocument),
                 LocaleController.getString("AttachContact", R.string.AttachContact),
                 LocaleController.getString("ChatLocation", R.string.ChatLocation),

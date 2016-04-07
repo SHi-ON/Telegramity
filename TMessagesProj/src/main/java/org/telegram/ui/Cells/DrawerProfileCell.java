@@ -25,6 +25,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ioton.TelegramityUtilities;
+
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -52,7 +54,7 @@ public class DrawerProfileCell extends FrameLayout {
         super(context);
 
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        int drawerHeaderColor = themePreferences.getInt("drawerHeaderColor", ApplicationLoader.DH_COLOR);
+        int drawerHeaderColor = themePreferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
         setBackgroundColor(drawerHeaderColor);
 
         shadowView = new ImageView(context);
@@ -68,7 +70,7 @@ public class DrawerProfileCell extends FrameLayout {
         nameTextView = new TextView(context);
         nameTextView.setTextColor(0xffffffff);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameTextView.setTypeface(AndroidUtilities.getTypeface());
         nameTextView.setLines(1);
         nameTextView.setMaxLines(1);
         nameTextView.setSingleLine(true);
@@ -78,7 +80,7 @@ public class DrawerProfileCell extends FrameLayout {
         onlineTextView = new TextView(context);
         onlineTextView.setTextColor(0xffc2e5ff);
         onlineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        onlineTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        onlineTextView.setTypeface(AndroidUtilities.getTypeface());
         onlineTextView.setLines(1);
         onlineTextView.setMaxLines(1);
         onlineTextView.setSingleLine(true);
@@ -88,7 +90,7 @@ public class DrawerProfileCell extends FrameLayout {
         phoneTextView = new TextView(context);
         phoneTextView.setTextColor(0xffc2e5ff);
         phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-        phoneTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        phoneTextView.setTypeface(AndroidUtilities.getTypeface());
         phoneTextView.setLines(1);
         phoneTextView.setMaxLines(1);
         phoneTextView.setSingleLine(true);

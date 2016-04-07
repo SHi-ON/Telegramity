@@ -29,7 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BuildConfig;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
@@ -122,7 +122,7 @@ public class IntroActivity extends Activity {
         viewPager = (ViewPager) findViewById(R.id.intro_view_pager);
         TextView startMessagingButton = (TextView) findViewById(R.id.start_messaging_button);
         startMessagingButton.setText(LocaleController.getString("StartMessaging", R.string.StartMessaging).toUpperCase());
-        startMessagingButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        startMessagingButton.setTypeface(AndroidUtilities.getTypeface());
         if (Build.VERSION.SDK_INT >= 21) {
             StateListAnimator animator = new StateListAnimator();
             animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(startMessagingButton, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
@@ -225,7 +225,7 @@ public class IntroActivity extends Activity {
                 finish();
             }
         });
-        if (BuildConfig.DEBUG) {
+        if (BuildVars.DEBUG_VERSION) {
             startMessagingButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -276,8 +276,8 @@ public class IntroActivity extends Activity {
 
             headerTextView.setText(getString(titles[position]));
             messageTextView.setText(AndroidUtilities.replaceTags(getString(messages[position])));
-            headerTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            messageTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            headerTextView.setTypeface(AndroidUtilities.getTypeface());
+            messageTextView.setTypeface(AndroidUtilities.getTypeface());
             return view;
         }
 

@@ -284,6 +284,7 @@ public class ChangePhoneActivity extends BaseFragment {
             countryButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             countryButton.setPadding(AndroidUtilities.dp(12), AndroidUtilities.dp(10), AndroidUtilities.dp(12), 0);
             countryButton.setTextColor(0xff212121);
+            countryButton.setTypeface(AndroidUtilities.getTypeface());
             countryButton.setMaxLines(1);
             countryButton.setSingleLine(true);
             countryButton.setEllipsize(TextUtils.TruncateAt.END);
@@ -330,6 +331,7 @@ public class ChangePhoneActivity extends BaseFragment {
             codeField = new EditText(context);
             codeField.setInputType(InputType.TYPE_CLASS_PHONE);
             codeField.setTextColor(0xff212121);
+            codeField.setTypeface(AndroidUtilities.getTypeface());
             AndroidUtilities.clearCursorDrawable(codeField);
             codeField.setPadding(AndroidUtilities.dp(10), 0, 0, 0);
             codeField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
@@ -430,6 +432,7 @@ public class ChangePhoneActivity extends BaseFragment {
 
             phoneField = new HintEditText(context);
             phoneField.setInputType(InputType.TYPE_CLASS_PHONE);
+            phoneField.setTypeface(AndroidUtilities.getTypeface());
             phoneField.setTextColor(0xff212121);
             phoneField.setHintTextColor(0xff979797);
             phoneField.setPadding(0, 0, 0, 0);
@@ -749,6 +752,7 @@ public class ChangePhoneActivity extends BaseFragment {
 
             codeField = new EditText(context);
             codeField.setTextColor(0xff212121);
+            codeField.setTypeface(AndroidUtilities.getTypeface());
             codeField.setHint(LocaleController.getString("Code", R.string.Code));
             AndroidUtilities.clearCursorDrawable(codeField);
             codeField.setHintTextColor(0xff979797);
@@ -824,6 +828,7 @@ public class ChangePhoneActivity extends BaseFragment {
             TextView wrongNumber = new TextView(context);
             wrongNumber.setGravity(Gravity.LEFT | Gravity.CENTER_HORIZONTAL);
             wrongNumber.setTextColor(0xff4d83b3);
+            wrongNumber.setTypeface(AndroidUtilities.getTypeface());
             wrongNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             wrongNumber.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);
@@ -874,7 +879,7 @@ public class ChangePhoneActivity extends BaseFragment {
             String str = String.format(Locale.US, LocaleController.getString("SentSmsCode", R.string.SentSmsCode) + " %s", number);
             try {
                 SpannableStringBuilder stringBuilder = new SpannableStringBuilder(str);
-                TypefaceSpan span = new TypefaceSpan(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                TypefaceSpan span = new TypefaceSpan(AndroidUtilities.getTypeface());
                 int idx = str.indexOf(number);
                 stringBuilder.setSpan(span, idx, idx + number.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 confirmTextView.setText(stringBuilder);

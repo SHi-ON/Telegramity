@@ -81,7 +81,7 @@ public class SharedDocumentCell extends FrameLayout implements MediaController.F
         extTextView = new TextView(context);
         extTextView.setTextColor(0xffffffff);
         extTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        extTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        extTextView.setTypeface(AndroidUtilities.getTypeface());
         extTextView.setLines(1);
         extTextView.setMaxLines(1);
         extTextView.setSingleLine(true);
@@ -102,7 +102,7 @@ public class SharedDocumentCell extends FrameLayout implements MediaController.F
         nameTextView = new TextView(context);
         nameTextView.setTextColor(0xff212121);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameTextView.setTypeface(AndroidUtilities.getTypeface());
         nameTextView.setLines(1);
         nameTextView.setMaxLines(1);
         nameTextView.setSingleLine(true);
@@ -117,7 +117,7 @@ public class SharedDocumentCell extends FrameLayout implements MediaController.F
         dateTextView = new TextView(context);
         dateTextView.setTextColor(0xff999999);
         dateTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        dateTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        dateTextView.setTypeface(AndroidUtilities.getTypeface());
         dateTextView.setLines(1);
         dateTextView.setMaxLines(1);
         dateTextView.setSingleLine(true);
@@ -208,6 +208,11 @@ public class SharedDocumentCell extends FrameLayout implements MediaController.F
         if (document != null && document.messageOwner.media != null && document.messageOwner.media.document != null) {
             int idx;
             String name = FileLoader.getDocumentFileName(document.messageOwner.media.document);
+            if (name.length() == 0) {
+                if (document.isMusic()) {
+                    name = document.getMusicAuthor() + " - " + document.getMusicTitle();
+                }
+            }
             placeholderImabeView.setVisibility(VISIBLE);
             extTextView.setVisibility(VISIBLE);
             placeholderImabeView.setImageResource(getThumbForNameOrMime(name, document.messageOwner.media.document.mime_type));

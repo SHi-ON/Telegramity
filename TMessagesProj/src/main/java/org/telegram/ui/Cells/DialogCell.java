@@ -19,12 +19,12 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 
+import com.ioton.TelegramityUtilities;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.Emoji;
@@ -135,16 +135,17 @@ public class DialogCell extends BaseCell {
             namePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             namePaint.setTextSize(AndroidUtilities.dp(17));
             namePaint.setColor(0xff212121);
-            namePaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            namePaint.setTypeface(AndroidUtilities.getTypeface());
 
             nameEncryptedPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             nameEncryptedPaint.setTextSize(AndroidUtilities.dp(17));
             nameEncryptedPaint.setColor(0xff00a60e);
-            nameEncryptedPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            nameEncryptedPaint.setTypeface(AndroidUtilities.getTypeface());
 
             messagePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             messagePaint.setTextSize(AndroidUtilities.dp(16));
             messagePaint.setColor(0xff8f8f8f);
+            messagePaint.setTypeface(AndroidUtilities.getTypeface());
             messagePaint.linkColor = 0xff8f8f8f;
 
             linePaint = new Paint();
@@ -156,6 +157,7 @@ public class DialogCell extends BaseCell {
             messagePrintingPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             messagePrintingPaint.setTextSize(AndroidUtilities.dp(16));
             messagePrintingPaint.setColor(0xff4d83b3);
+            messagePrintingPaint.setTypeface(AndroidUtilities.getTypeface());
 
             timePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             timePaint.setTextSize(AndroidUtilities.dp(13));
@@ -164,7 +166,7 @@ public class DialogCell extends BaseCell {
             countPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             countPaint.setTextSize(AndroidUtilities.dp(13));
             countPaint.setColor(0xffffffff);
-            countPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            countPaint.setTypeface(AndroidUtilities.getTypeface());
 
             lockDrawable = getResources().getDrawable(R.drawable.list_secret);
             checkDrawable = getResources().getDrawable(R.drawable.dialogs_check);
@@ -289,7 +291,7 @@ public class DialogCell extends BaseCell {
                     nameLockTop = AndroidUtilities.dp(17.5f);
                 }
                 drawVerified = chat.verified;
-                if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                     drawVerified = true;
                 }
 
@@ -319,7 +321,7 @@ public class DialogCell extends BaseCell {
                         }
                     }
                     drawVerified = user.verified;
-                    if (ApplicationLoader.OFFICIAL_CHAN.equalsIgnoreCase(user.username)) {
+                    if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(user.username)) {
                         drawVerified = true;
                     }
                 }
@@ -368,10 +370,10 @@ public class DialogCell extends BaseCell {
         } else {
             TLRPC.User fromUser = null;
             TLRPC.Chat fromChat = null;
-            if (message.messageOwner.from_id > 0) {
+            if (message.isFromUser()) {
                 fromUser = MessagesController.getInstance().getUser(message.messageOwner.from_id);
-            } else if (message.messageOwner.from_id < 0) {
-                fromChat = MessagesController.getInstance().getChat(-message.messageOwner.from_id);
+            } else {
+                fromChat = MessagesController.getInstance().getChat(message.messageOwner.to_id.channel_id);
             }
 
             if (lastMessageDate != 0) {
@@ -869,7 +871,11 @@ public class DialogCell extends BaseCell {
         if (messageLayout != null) {
             canvas.save();
             canvas.translate(messageLeft, messageTop);
-            messageLayout.draw(canvas);
+            try {
+                messageLayout.draw(canvas);
+            } catch (Exception e) {
+                FileLog.e("tmessages", e);
+            }
             canvas.restore();
         }
 

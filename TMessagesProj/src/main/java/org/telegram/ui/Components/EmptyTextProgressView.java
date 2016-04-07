@@ -38,6 +38,7 @@ public class EmptyTextProgressView extends FrameLayout {
         textView = new TextView(context);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTextColor(0xff808080);
+        textView.setTypeface(AndroidUtilities.getTypeface());
         textView.setGravity(Gravity.CENTER);
         textView.setVisibility(INVISIBLE);
         textView.setPadding(AndroidUtilities.dp(20), 0, AndroidUtilities.dp(20), 0);

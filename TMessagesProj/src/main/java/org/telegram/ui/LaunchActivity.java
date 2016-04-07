@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,7 +26,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.provider.Browser;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -50,6 +50,7 @@ import android.widget.Toast;
 import com.ioton.AdvancedSettingsActivity;
 import com.ioton.PremiumActivity;
 import com.ioton.RevelationActivity;
+import com.ioton.TelegramityUtilities;
 import com.parse.ParseAnalytics;
 
 import org.json.JSONObject;
@@ -69,6 +70,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
+import org.telegram.messenger.Utilities;
 import org.telegram.messenger.query.StickersQuery;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
@@ -85,11 +87,13 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import ir.adad.client.AdListener;
 import ir.adad.client.Adad;
 import ir.adad.client.Banner;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class LaunchActivity extends Activity implements ActionBarLayout.ActionBarLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.MessagesActivityDelegate {
 
@@ -179,7 +183,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             banner.setAdListener(mAdListener);
 
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", MODE_PRIVATE);
-            int adBGColor = preferences.getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR);
+            int adBGColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
 
             FrameLayout backgroundAdFrameLayout = new FrameLayout(this);
             backgroundAdFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
@@ -379,7 +383,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                     presentFragment(new AdvancedSettingsActivity());
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (position == 13) {
-                    joinChannel(ApplicationLoader.TGYLNK, 0);
+                    joinChannel(TelegramityUtilities.TGYLNK, 0);
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (position == 14) {
                     Intent intent = new Intent(Intent.ACTION_EDIT);
@@ -392,12 +396,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                     }
                     startActivity(intent);
                 } else if (position == 15) {
-                    try {
-                        Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl)));
-                        startActivityForResult(pickIntent, 500);
-                    } catch (Exception e) {
-                        FileLog.e("tmessages", e);
-                    }
+                    AndroidUtilities.openUrl(LaunchActivity.this, LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl));
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }
@@ -702,7 +701,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                 error = true;
                             }
                         } else {
-                            if (type != null && (type.equals("text/plain") || type.equals("message/rfc822")) && (intent.getStringExtra(Intent.EXTRA_TEXT) != null || intent.getCharSequenceExtra(Intent.EXTRA_TEXT) != null)) {
+                            if ((type == null || type != null && (type.equals("text/plain") || type.equals("message/rfc822"))) && (intent.getStringExtra(Intent.EXTRA_TEXT) != null || intent.getCharSequenceExtra(Intent.EXTRA_TEXT) != null)) {
                                 String text = intent.getStringExtra(Intent.EXTRA_TEXT);
                                 if (text == null) {
                                     text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT).toString();
@@ -714,8 +713,8 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                         text = subject + "\n" + text;
                                     }
                                     sendingText = text;
-                                } else {
-                                    error = true;
+                                } else if (subject != null && subject.length() > 0) {
+                                    sendingText = subject;
                                 }
                             }
                             Parcelable parcelable = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -725,38 +724,48 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                     parcelable = Uri.parse(parcelable.toString());
                                 }
                                 Uri uri = (Uri) parcelable;
-                                if (uri != null && (type != null && type.startsWith("image/") || uri.toString().toLowerCase().endsWith(".jpg"))) {
-                                    if (photoPathsArray == null) {
-                                        photoPathsArray = new ArrayList<>();
-                                    }
-                                    photoPathsArray.add(uri);
-                                } else {
-                                    path = AndroidUtilities.getPath(uri);
-                                    if (path != null) {
-                                        if (path.startsWith("file:")) {
-                                            path = path.replace("file://", "");
+                                if (uri != null) {
+                                    if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+                                        String pathString = Utilities.readlink(uri.getPath());
+                                        if (pathString != null && pathString.contains("/data/data/" + getPackageName() + "/files")) {
+                                            error = true;
                                         }
-                                        if (type != null && type.startsWith("video/")) {
-                                            videoPath = path;
-                                        } else {
-                                            if (documentsPathsArray == null) {
-                                                documentsPathsArray = new ArrayList<>();
-                                                documentsOriginalPathsArray = new ArrayList<>();
-                                            }
-                                            documentsPathsArray.add(path);
-                                            documentsOriginalPathsArray.add(uri.toString());
-                                        }
-                                    } else {
-                                        if (documentsUrisArray == null) {
-                                            documentsUrisArray = new ArrayList<>();
-                                        }
-                                        documentsUrisArray.add(uri);
-                                        documentsMimeType = type;
                                     }
                                 }
-                                if (sendingText != null) {
-                                    if (sendingText.contains("WhatsApp")) { //remove unnecessary caption 'sent from WhatsApp' from photos forwarded from WhatsApp
-                                        sendingText = null;
+                                if (!error) {
+                                    if (uri != null && (type != null && type.startsWith("image/") || uri.toString().toLowerCase().endsWith(".jpg"))) {
+                                        if (photoPathsArray == null) {
+                                            photoPathsArray = new ArrayList<>();
+                                        }
+                                        photoPathsArray.add(uri);
+                                    } else {
+                                        path = AndroidUtilities.getPath(uri);
+                                        if (path != null) {
+                                            if (path.startsWith("file:")) {
+                                                path = path.replace("file://", "");
+                                            }
+                                            if (type != null && type.startsWith("video/")) {
+                                                videoPath = path;
+                                            } else {
+                                                if (documentsPathsArray == null) {
+                                                    documentsPathsArray = new ArrayList<>();
+                                                    documentsOriginalPathsArray = new ArrayList<>();
+                                                }
+                                                documentsPathsArray.add(path);
+                                                documentsOriginalPathsArray.add(uri.toString());
+                                            }
+                                        } else {
+                                            if (documentsUrisArray == null) {
+                                                documentsUrisArray = new ArrayList<>();
+                                            }
+                                            documentsUrisArray.add(uri);
+                                            documentsMimeType = type;
+                                        }
+                                    }
+                                    if (sendingText != null) {
+                                        if (sendingText.contains("WhatsApp")) { //remove unnecessary caption 'sent from WhatsApp' from photos forwarded from WhatsApp
+                                            sendingText = null;
+                                        }
                                     }
                                 }
                             } else if (sendingText == null) {
@@ -772,8 +781,30 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                             ArrayList<Parcelable> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
                             String type = intent.getType();
                             if (uris != null) {
+                                for (int a = 0; a < uris.size(); a++) {
+                                    Parcelable parcelable = uris.get(a);
+                                    if (!(parcelable instanceof Uri)) {
+                                        parcelable = Uri.parse(parcelable.toString());
+                                    }
+                                    Uri uri = (Uri) parcelable;
+                                    if (uri != null) {
+                                        if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+                                            String pathString = Utilities.readlink(uri.getPath());
+                                            if (pathString != null && pathString.contains("/data/data/" + getPackageName() + "/files")) {
+                                                uris.remove(a);
+                                                a--;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (uris.isEmpty()) {
+                                    uris = null;
+                                }
+                            }
+                            if (uris != null) {
                                 if (type != null && type.startsWith("image/")) {
-                                    for (Parcelable parcelable : uris) {
+                                    for (int a = 0; a < uris.size(); a++) {
+                                        Parcelable parcelable = uris.get(a);
                                         if (!(parcelable instanceof Uri)) {
                                             parcelable = Uri.parse(parcelable.toString());
                                         }
@@ -784,7 +815,8 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                         photoPathsArray.add(uri);
                                     }
                                 } else {
-                                    for (Parcelable parcelable : uris) {
+                                    for (int a = 0; a < uris.size(); a++) {
+                                        Parcelable parcelable = uris.get(a);
                                         if (!(parcelable instanceof Uri)) {
                                             parcelable = Uri.parse(parcelable.toString());
                                         }
@@ -825,6 +857,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                             String botUser = null;
                             String botChat = null;
                             String message = null;
+                            Integer messageId = null;
                             boolean hasUrl = false;
                             String scheme = data.getScheme();
                             if (scheme != null) {
@@ -850,8 +883,17 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                                     }
                                                     message += data.getQueryParameter("text");
                                                 }
-                                            } else if (path.length() >= 3) {
-                                                username = data.getLastPathSegment();
+                                            } else if (path.length() >= 1) {
+                                                List<String> segments = data.getPathSegments();
+                                                if (segments.size() > 0) {
+                                                    username = segments.get(0);
+                                                    if (segments.size() > 1) {
+                                                        messageId = Utilities.parseInt(segments.get(1));
+                                                        if (messageId == 0) {
+                                                            messageId = null;
+                                                        }
+                                                    }
+                                                }
                                                 botUser = data.getQueryParameter("start");
                                                 botChat = data.getQueryParameter("startgroup");
                                             }
@@ -891,7 +933,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                 }
                             }
                             if (username != null || group != null || sticker != null || message != null) {
-                                runLinkRequest(username, group, sticker, botUser, botChat, message, hasUrl, 0);
+                                runLinkRequest(username, group, sticker, botUser, botChat, message, hasUrl, messageId, 0);
                             } else {
                                 try {
                                     Cursor cursor = getContentResolver().query(intent.getData(), null, null, null, null);
@@ -1078,7 +1120,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         return false;
     }
 
-    private void runLinkRequest(final String username, final String group, final String sticker, final String botUser, final String botChat, final String message, final boolean hasUrl, final int state) {
+    private void runLinkRequest(final String username, final String group, final String sticker, final String botUser, final String botChat, final String message, final boolean hasUrl, final Integer messageId, final int state) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(LocaleController.getString("Loading", R.string.Loading));
         progressDialog.setCanceledOnTouchOutside(false);
@@ -1143,6 +1185,9 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                         if (botUser != null && res.users.size() > 0 && res.users.get(0).bot) {
                                             args.putString("botUser", botUser);
                                         }
+                                        if (messageId != null) {
+                                            args.putInt("message_id", messageId);
+                                        }
                                         ChatActivity fragment = new ChatActivity(args);
                                         NotificationCenter.getInstance().postNotificationName(NotificationCenter.closeChats);
                                         actionBarLayout.presentFragment(fragment, false, true, true);
@@ -1198,7 +1243,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    runLinkRequest(username, group, sticker, botUser, botChat, message, hasUrl, 1);
+                                                    runLinkRequest(username, group, sticker, botUser, botChat, message, hasUrl, messageId, 1);
                                                 }
                                             });
                                             builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -1715,7 +1760,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         if (requestCode == 3 || requestCode == 4 || requestCode == 5) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (requestCode == 4) {
-                    ImageLoader.getInstance().createMediaPaths();
+                    ImageLoader.getInstance().checkMediaPaths();
                 } else if (requestCode == 5) {
                     ContactsController.getInstance().readContacts();
                 }
@@ -1899,13 +1944,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 builder.setNegativeButton(LocaleController.getString("MoreInfo", R.string.MoreInfo), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        try {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LocaleController.getString("NobodyLikesSpamUrl", R.string.NobodyLikesSpamUrl)));
-                            intent.putExtra(Browser.EXTRA_APPLICATION_ID, getPackageName());
-                            startActivity(intent);
-                        } catch (Exception e) {
-                            FileLog.e("tmessages", e);
-                        }
+                        AndroidUtilities.openUrl(LaunchActivity.this, LocaleController.getString("NobodyLikesSpamUrl", R.string.NobodyLikesSpamUrl));
                     }
                 });
             }
@@ -2103,7 +2142,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
 
     @Override
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
+        if (keyCode == KeyEvent.KEYCODE_MENU && !UserConfig.isWaitingForPasscodeEnter) {
             if (AndroidUtilities.isTablet()) {
                 if (layersActionBarLayout.getVisibility() == View.VISIBLE && !layersActionBarLayout.fragmentsStack.isEmpty()) {
                     layersActionBarLayout.onKeyUp(keyCode, event);
@@ -2321,5 +2360,10 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             }
         }
         drawerLayoutAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

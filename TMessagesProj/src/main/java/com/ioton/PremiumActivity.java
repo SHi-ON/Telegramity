@@ -8,6 +8,7 @@
 
 package com.ioton;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -344,17 +346,19 @@ public class PremiumActivity extends BaseFragment {
         TextView text_tv = new TextView(ctx);
         text_tv.setPadding(25, 5, 25, 5);
         text_tv.setText(alertMessage);
-        text_tv.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        text_tv.setTypeface(AndroidUtilities.getTypeface());
 
-        TextView title_tv = new TextView(ctx);
-        title_tv.setPadding(25, 15, 25, 15);
-        title_tv.setText(LocaleController.getString("AppName", R.string.AppName));
-        title_tv.setTextSize(18);
-        title_tv.setTextColor(ctx.getSharedPreferences("AdvancedPreferences", ctx.MODE_PRIVATE).getInt("actionBarBackgroundColor", ApplicationLoader.ABBG_COLOR));
-        title_tv.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        TextView titleTextView = new TextView(ctx);
+        titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
+        titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        titleTextView.setTextColor(aBBackgroundColor);
+        titleTextView.setTypeface(AndroidUtilities.getTypeface());
+        titleTextView.setPadding(24, 18, 24, 0);
 
         AlertDialog.Builder bld = new AlertDialog.Builder(ctx);
-        bld.setCustomTitle(title_tv);
+        bld.setCustomTitle(titleTextView);
         bld.setView(text_tv);
         bld.setNeutralButton(LocaleController.getString("OK", R.string.OK), null);
         bld.create().show();
@@ -413,9 +417,6 @@ public class PremiumActivity extends BaseFragment {
                 }
                 TextSettingsCell textCell = (TextSettingsCell) view;
                 if (i == removeAdsRow) {
-//                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-//                    int size = preferences.getInt("fons_size", AndroidUtilities.isTablet() ? 18 : 16);
-//                    int size = 1500;
                     SharedPreferences premPreferences = ctx.getSharedPreferences("PremiumState", ctx.MODE_PRIVATE);
                     String userStatusStr;
                     if (premPreferences.getBoolean("isUserPremium", false)) {
