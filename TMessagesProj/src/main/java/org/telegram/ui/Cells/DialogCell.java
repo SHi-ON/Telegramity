@@ -291,7 +291,7 @@ public class DialogCell extends BaseCell {
                     nameLockTop = AndroidUtilities.dp(17.5f);
                 }
                 drawVerified = chat.verified;
-                if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                if (chat != null && TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                     drawVerified = true;
                 }
 
@@ -321,7 +321,7 @@ public class DialogCell extends BaseCell {
                         }
                     }
                     drawVerified = user.verified;
-                    if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(user.username)) {
+                    if (user != null && TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(user.username)) {
                         drawVerified = true;
                     }
                 }
