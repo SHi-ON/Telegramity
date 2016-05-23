@@ -149,6 +149,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.messageSendError);
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.didSetPasscode);
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.needReloadRecentDialogsSearch);
+            NotificationCenter.getInstance().addObserver(this, NotificationCenter.didLoadedReplyMessages);
         }
 
 
@@ -177,6 +178,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messageSendError);
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didSetPasscode);
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.needReloadRecentDialogsSearch);
+            NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didLoadedReplyMessages);
         }
         delegate = null;
     }
@@ -431,10 +433,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
                     if (searchString != null) {
-                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.closeChats);
-                        presentFragment(new ChatActivity(args));
+                        if (MessagesController.checkCanOpenChat(args, DialogsActivity.this)) {
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.closeChats);
+                            presentFragment(new ChatActivity(args));
+                        }
                     } else {
-                        presentFragment(new ChatActivity(args));
+                        if (MessagesController.checkCanOpenChat(args, DialogsActivity.this)) {
+                            presentFragment(new ChatActivity(args));
+                        }
                     }
                 }
             }
@@ -486,7 +492,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     CharSequence items[];
                     if (chat != null && chat.megagroup) {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), chat == null || !chat.creator ? LocaleController.getString("LeaveMegaMenu", R.string.LeaveMegaMenu) : LocaleController.getString("DeleteMegaMenu", R.string.DeleteMegaMenu)};
-                    } else if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                    } else if (chat != null && TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), LocaleController.getString("ChanLeave", R.string.ChanLeave)};
                     } else {
                         items = new CharSequence[]{LocaleController.getString("ClearHistoryCache", R.string.ClearHistoryCache), chat == null || !chat.creator ? LocaleController.getString("LeaveChannelMenu", R.string.LeaveChannelMenu) : LocaleController.getString("ChannelDeleteMenu", R.string.ChannelDeleteMenu)};
@@ -518,7 +524,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 } else {
                                     if (chat == null || !chat.creator) {
                                         builder.setMessage(LocaleController.getString("ChannelLeaveAlert", R.string.ChannelLeaveAlert));
-                                    } else if (TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                                    } else if (chat != null && TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
                                         builder.setMessage(LocaleController.getString("ChanLeaveAlert", R.string.ChanLeaveAlert));
                                     } else {
                                         builder.setMessage(LocaleController.getString("ChannelDeleteAlert", R.string.ChannelDeleteAlert));
@@ -902,9 +908,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             }
         } else if (id == NotificationCenter.emojiDidLoaded) {
-            if (listView != null) {
-                updateVisibleRows(0);
-            }
+            updateVisibleRows(0);
         } else if (id == NotificationCenter.updateInterfaces) {
             updateVisibleRows((Integer) args[0]);
         } else if (id == NotificationCenter.appDidLogout) {
@@ -939,6 +943,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (dialogsSearchAdapter != null) {
                 dialogsSearchAdapter.loadRecentSearch();
             }
+        } else if (id == NotificationCenter.didLoadedReplyMessages) {
+            updateVisibleRows(0);
         }
     }
 

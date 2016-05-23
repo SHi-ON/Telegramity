@@ -914,6 +914,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         };
         windowView.setBackgroundDrawable(backgroundDrawable);
         windowView.setFocusable(false);
+        if (Build.VERSION.SDK_INT >= 23) {
+            windowView.setFitsSystemWindows(true); //TODO ?
+        }
 
         animatingImageView = new ClippingImageView(activity);
         animatingImageView.setAnimationValues(animationValues);
@@ -1208,10 +1211,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
                     if (currentMessageObject != null) {
                         isVideo = currentMessageObject.isVideo();
-                        if (currentMessageObject.messageOwner.media instanceof TLRPC.TL_messageMediaWebPage) {
+                        /*if (currentMessageObject.messageOwner.media instanceof TLRPC.TL_messageMediaWebPage) {
                             AndroidUtilities.openUrl(parentActivity, currentMessageObject.messageOwner.media.webpage.url);
                             return;
-                        }
+                        }*/
                         f = FileLoader.getPathToMessage(currentMessageObject.messageOwner);
                     } else if (currentFileLocation != null) {
                         f = FileLoader.getPathToAttach(currentFileLocation, avatarsUserId != 0);
@@ -1801,6 +1804,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                             scale = s;
                             containerView.invalidate();
                         }
+                    }
+
+                    @Override
+                    public Bitmap getBitmap() {
+                        return centerImage.getBitmap();
                     }
                 });
             }
@@ -2581,7 +2589,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             captionTextViewNew = captionTextView;
 
             captionItem.setIcon(R.drawable.photo_text2);
-            CharSequence str = Emoji.replaceEmoji(new SpannableStringBuilder(caption.toString()), MessageObject.textPaint.getFontMetricsInt(), AndroidUtilities.dp(20), false);
+            CharSequence str = Emoji.replaceEmoji(new SpannableStringBuilder(caption.toString()), MessageObject.getTextPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
             captionTextView.setTag(str);
             captionTextView.setText(str);
             ViewProxy.setAlpha(captionTextView, bottomLayout.getVisibility() == View.VISIBLE || pickerView.getVisibility() == View.VISIBLE ? 1.0f : 0.0f);
@@ -2975,11 +2983,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         }
                     });
                 }
-
-                @Override
-                public void onAnimationCancel(Object animation) {
-                    onAnimationEnd(animation);
-                }
             });
             transitionAnimationStartTime = System.currentTimeMillis();
             AndroidUtilities.runOnUIThread(new Runnable() {
@@ -3179,11 +3182,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                             }
                         }
                     });
-                }
-
-                @Override
-                public void onAnimationCancel(Object animation) {
-                    onAnimationEnd(animation);
                 }
             });
             transitionAnimationStartTime = System.currentTimeMillis();

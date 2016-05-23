@@ -10,9 +10,9 @@ package org.telegram.messenger;
 
 public class BuildVars {
     public static boolean DEBUG_VERSION = false;
-    public static int BUILD_VERSION = 5358;
+    public static int BUILD_VERSION = 6902;
+    public static String BUILD_VERSION_STRING = "3.7";
     public static int APP_ID = 39835; //obtain your own APP_ID at https://core.telegram.org/api/obtaining_api_id
-    public static String BUILD_VERSION_STRING = "3.6";
     public static String APP_HASH = "2535354cf42e12d2bfac6c00ba949d09"; //obtain your own APP_HASH at https://core.telegram.org/api/obtaining_api_id
     public static String HOCKEY_APP_HASH = "2535354cf42e12d2bfac6c00ba949d09";
     public static String HOCKEY_APP_HASH_DEBUG = "2535354cf42e12d2bfac6c00ba949d09";

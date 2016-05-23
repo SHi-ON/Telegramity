@@ -228,7 +228,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
         premiumSecuritySectionBottomRow = rowCount++;
         textDescriptionRow = rowCount++;
 
-        MessagesController.getInstance().loadFullUser(UserConfig.getCurrentUser(), classGuid);
+        MessagesController.getInstance().loadFullUser(UserConfig.getCurrentUser(), classGuid, true);
 
         return true;
     }
@@ -579,7 +579,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
             @Override
             public void onClick(View v) {
                 TLRPC.User user = MessagesController.getInstance().getUser(UserConfig.getClientUserId());
-                if (user.photo != null && user.photo.photo_big != null) {
+                if (user != null && user.photo != null && user.photo.photo_big != null) {
                     PhotoViewer.getInstance().setParentActivity(getParentActivity());
                     PhotoViewer.getInstance().openPhoto(user.photo.photo_big, AdvancedSettingsActivity.this);
                 }
@@ -1053,8 +1053,23 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     view = new TextInfoCell(mContext);
                     try {
                         PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                        ((TextInfoCell) view).setText(String.format(Locale.US, "Telegramity for Android v%s (%d)", pInfo.versionName, pInfo.versionCode));
-                    } catch (Exception e) {
+                        int code = pInfo.versionCode / 10;
+                        String abi = "";
+                        switch (pInfo.versionCode % 10) {
+                            case 0:
+                                abi = "arm";
+                                break;
+                            case 1:
+                                abi = "arm-v7a";
+                                break;
+                            case 2:
+                                abi = "x86";
+                                break;
+                            case 3:
+                                abi = " ";
+                                break;
+                        }
+                        ((TextInfoCell) view).setText(String.format(Locale.US, "Telegramity for Android v%s (%d) %s", pInfo.versionName, code, abi));                    } catch (Exception e) {
                         FileLog.e("tmessages", e);
                     }
                 }

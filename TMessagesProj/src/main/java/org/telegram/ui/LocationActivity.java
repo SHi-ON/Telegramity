@@ -930,7 +930,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         super.onResume();
         AndroidUtilities.removeAdjustResize(getParentActivity(), classGuid);
         if (mapView != null) {
-            mapView.onResume();
+            try {
+                mapView.onResume();
+            } catch (Throwable e) {
+                FileLog.e("tmessages", e);
+            }
         }
         updateUserData();
         fixLayoutInternal(true);
