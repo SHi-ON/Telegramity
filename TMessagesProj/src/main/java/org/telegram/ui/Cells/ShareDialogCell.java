@@ -9,9 +9,11 @@
 package org.telegram.ui.Cells;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -34,6 +36,7 @@ public class ShareDialogCell extends FrameLayout {
 
     public ShareDialogCell(Context context) {
         super(context);
+        setBackgroundResource(R.drawable.list_selector);
 
         imageView = new BackupImageView(context);
         imageView.setRoundRadius(AndroidUtilities.dp(27));
@@ -62,11 +65,20 @@ public class ShareDialogCell extends FrameLayout {
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(100), MeasureSpec.EXACTLY));
     }
 
-    public void setDialog(TLRPC.Dialog dialog, boolean checked, CharSequence name) {
-        int lower_id = (int) dialog.id;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (Build.VERSION.SDK_INT >= 21 && getBackground() != null) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+                getBackground().setHotspot(event.getX(), event.getY());
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public void setDialog(int uid, boolean checked, CharSequence name) {
         TLRPC.FileLocation photo = null;
-        if (lower_id > 0) {
-            TLRPC.User user = MessagesController.getInstance().getUser(lower_id);
+        if (uid > 0) {
+            TLRPC.User user = MessagesController.getInstance().getUser(uid);
             if (name != null) {
                 nameTextView.setText(name);
             } else if (user != null) {
@@ -79,7 +91,7 @@ public class ShareDialogCell extends FrameLayout {
                 photo = user.photo.photo_small;
             }
         } else {
-            TLRPC.Chat chat = MessagesController.getInstance().getChat(-lower_id);
+            TLRPC.Chat chat = MessagesController.getInstance().getChat(-uid);
             if (name != null) {
                 nameTextView.setText(name);
             } else if (chat != null) {

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -31,9 +32,11 @@ import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.TypefaceSpan;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.URLSpanNoUnderline;
 
 public class AboutLinkCell extends FrameLayout {
@@ -63,10 +66,10 @@ public class AboutLinkCell extends FrameLayout {
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(AndroidUtilities.dp(16));
         textPaint.setColor(0xff000000);
-        textPaint.linkColor = 0xff316f9f;
+        textPaint.linkColor = Theme.MSG_LINK_TEXT_COLOR;
 
         urlPaint = new Paint();
-        urlPaint.setColor(0x33316f9f);
+        urlPaint.setColor(Theme.MSG_LINK_SELECT_BACKGROUND_COLOR);
 
         imageView = new ImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -112,6 +115,12 @@ public class AboutLinkCell extends FrameLayout {
         float x = event.getX();
         float y = event.getY();
 
+        if (Build.VERSION.SDK_INT >= 21 && getBackground() != null) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+                getBackground().setHotspot(x, y);
+            }
+        }
+
         boolean result = false;
         if (textLayout != null) {
             if (event.getAction() == MotionEvent.ACTION_DOWN || pressedLink != null && event.getAction() == MotionEvent.ACTION_UP) {
@@ -133,7 +142,7 @@ public class AboutLinkCell extends FrameLayout {
                                 result = true;
                                 try {
                                     int start = buffer.getSpanStart(pressedLink);
-                                    urlPath.setCurrentLayout(textLayout, start);
+                                    urlPath.setCurrentLayout(textLayout, start, 0);
                                     textLayout.getSelectionPath(start, buffer.getSpanEnd(pressedLink), urlPath);
                                 } catch (Exception e) {
                                     FileLog.e("tmessages", e);
@@ -159,7 +168,7 @@ public class AboutLinkCell extends FrameLayout {
                             }
                         } else {
                             if (pressedLink instanceof URLSpan) {
-                                AndroidUtilities.openUrl(getContext(), ((URLSpan) pressedLink).getURL());
+                                Browser.openUrl(getContext(), ((URLSpan) pressedLink).getURL());
                             } else {
                                 pressedLink.onClick(this);
                             }

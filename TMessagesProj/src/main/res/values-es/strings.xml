@@ -66,6 +66,8 @@
     <string name="MuteDisable">Desactivar</string>
     <string name="Hashtags">HASHTAGS</string>
     <string name="Recent">RECIENTES</string>
+    <string name="ChatHints">CHATS</string>
+    <string name="ChatHintsDelete">¿Eliminar a %1$s de las sugerencias?</string>
     <string name="LinkPreview">Vista previa del enlace</string>
     <!--channels-->
     <string name="GroupType">Tipo de grupo</string>
@@ -206,6 +208,7 @@
     <string name="ChannelMessageGroupAudio">%1$s envió un mensaje de voz al canal %2$s</string>
     <string name="ChannelMessageGroupMusic">%1$s envió una pista al canal %2$s</string>
     <string name="ChannelMessageGroupSticker">%1$s envió un sticker al canal %2$s</string>
+    <string name="ChannelMessageGroupStickerEmoji">%1$s envió un %3$s sticker al canal %2$s</string>
     <string name="ChannelMessageNoText">%1$s publicó un mensaje</string>
     <string name="ChannelMessagePhoto">%1$s publicó una foto</string>
     <string name="ChannelMessageVideo">%1$s publicó un vídeo</string>
@@ -216,6 +219,7 @@
     <string name="ChannelMessageAudio">%1$s publicó un mensaje de voz</string>
     <string name="ChannelMessageMusic">%1$s publicó una pista</string>
     <string name="ChannelMessageSticker">%1$s publicó un sticker</string>
+    <string name="ChannelMessageStickerEmoji">%1$s publicó un %2$s sticker</string>
     <string name="WhoCanAddMembers">¿Quién puede invitar?</string>
     <string name="WhoCanAddMembersAllMembers">Todos</string>
     <string name="WhoCanAddMembersAdmins">Administradores</string>
@@ -255,10 +259,12 @@
     <string name="IsTyping">está escribiendo...</string>
     <string name="AreTyping">están escribiendo...</string>
     <string name="IsRecordingAudio">%1$s está grabando un mensaje de voz...</string>
+    <string name="IsSendingAudio">%1$s está enviando un audio...</string>
     <string name="IsSendingPhoto">%1$s está enviando una foto...</string>
     <string name="IsSendingVideo">%1$s está enviando un vídeo...</string>
     <string name="IsSendingFile">%1$s está enviando un archivo...</string>
     <string name="RecordingAudio">grabando mensaje de voz...</string>
+    <string name="SendingAudio">enviando audio...</string>
     <string name="SendingPhoto">enviando foto...</string>
     <string name="SendingVideoStatus">enviando vídeo...</string>
     <string name="SendingFile">enviando archivo...</string>
@@ -299,7 +305,7 @@
     <string name="SetTimer">Establecer autodestrucción</string>
     <string name="ServiceNotifications">Servicio de notificaciones</string>
     <string name="GettingLinkInfo">Obteniendo información...</string>
-    <string name="OpenInBrowser">Abrir en el navegador</string>
+    <string name="OpenInBrowser">ABRIR EN...</string>
     <string name="CopyUrl">Copiar URL</string>
     <string name="SendItems">Enviar %1$s</string>
     <string name="OpenUrlAlert">¿Abrir %1$s?</string>
@@ -331,6 +337,12 @@
     <string name="ReportChatOther">Otros</string>
     <string name="ReportChatDescription">Descripción</string>
     <string name="PinnedMessage">Mensaje anclado</string>
+    <string name="EditedMessage">editado</string>
+    <string name="AttachBotsHelp">Ve abajo para los bots</string>
+    <string name="TimeToEdit">%1$s</string>
+    <string name="TimeToEditExpired">Terminó el tiempo de edición.</string>
+    <string name="AddShortcut">Añadir acceso directo</string>
+    <string name="ShortcutAdded">Acceso directo añadido al escritorio</string>
     <!--notification-->
     <string name="MessageLifetimeChanged">%1$s activó la autodestrucción en %2$s</string>
     <string name="MessageLifetimeChangedOutgoing">Activaste la autodestrucción en %1$s</string>
@@ -348,6 +360,7 @@
     <string name="NotificationMessageAudio">%1$s te envió un mensaje de voz</string>
     <string name="NotificationMessageMusic">%1$s te envió una pista</string>
     <string name="NotificationMessageSticker">%1$s te envió un sticker</string>
+    <string name="NotificationMessageStickerEmoji">%1$s te envió un %2$s sticker</string>
     <string name="NotificationMessageGroupText">%1$s @ %2$s: %3$s</string>
     <string name="NotificationMessageGroupNoText">%1$s envió un mensaje al grupo %2$s</string>
     <string name="NotificationMessageGroupPhoto">%1$s envió una foto al grupo %2$s</string>
@@ -359,6 +372,7 @@
     <string name="NotificationMessageGroupAudio">%1$s envió un mensaje de voz al grupo %2$s</string>
     <string name="NotificationMessageGroupMusic">%1$s envió una pista al grupo %2$s</string>
     <string name="NotificationMessageGroupSticker">%1$s envió un sticker al grupo %2$s</string>
+    <string name="NotificationMessageGroupStickerEmoji">%1$s envió un %3$s sticker al grupo %2$s</string>
     <string name="NotificationInvitedToGroup">%1$s te invitó al grupo %2$s</string>
     <string name="NotificationEditedGroupName">%1$s cambió el nombre del grupo %2$s</string>
     <string name="NotificationEditedGroupPhoto">%1$s cambió la foto del grupo %2$s</string>
@@ -382,6 +396,7 @@
     <string name="NotificationActionPinnedVideo">%1$s ancló un vídeo en el grupo %2$s</string>
     <string name="NotificationActionPinnedFile">%1$s ancló un archivo en el grupo %2$s</string>
     <string name="NotificationActionPinnedSticker">%1$s ancló un sticker en el grupo %2$s</string>
+    <string name="NotificationActionPinnedStickerEmoji">%1$s ancló un %3$s sticker en el grupo %2$s</string>
     <string name="NotificationActionPinnedVoice">%1$s ancló un mensaje de voz en el grupo %2$s</string>
     <string name="NotificationActionPinnedContact">%1$s ancló un contacto en el grupo %2$s</string>
     <string name="NotificationActionPinnedGeo">%1$s ancló un mapa en el grupo %2$s</string>
@@ -393,6 +408,7 @@
     <string name="NotificationActionPinnedVideoChannel">%1$s ancló un vídeo</string>
     <string name="NotificationActionPinnedFileChannel">%1$s ancló un archivo</string>
     <string name="NotificationActionPinnedStickerChannel">%1$s ancló un sticker</string>
+    <string name="NotificationActionPinnedStickerEmojiChannel">%1$s ancló un %2$s sticker</string>
     <string name="NotificationActionPinnedVoiceChannel">%1$s ancló un mensaje de voz</string>
     <string name="NotificationActionPinnedContactChannel">%1$s ancló un contacto</string>
     <string name="NotificationActionPinnedGeoChannel">%1$s ancló un mapa</string>
@@ -504,6 +520,7 @@
     <string name="StickersCopy">Copiar enlace</string>
     <string name="StickersRemove">Eliminar</string>
     <string name="NoStickers">Sin stickers aún</string>
+    <string name="SendSticker">ENVIAR STICKER</string>
     <string name="TooMuchStickersets">Lo sentimos, alcanzaste el número máximo de packs de stickers.</string>
     <!--settings view-->
     <string name="ResetNotificationsText">Restablecer las notificaciones</string>
@@ -539,6 +556,7 @@
     <string name="TerminateAllSessions">Cerrar todas las otras sesiones</string>
     <string name="Events">Eventos</string>
     <string name="ContactJoined">Un contacto se unió a Telegram</string>
+    <string name="PinnedMessages">Mensajes anclados</string>
     <string name="Language">Idioma</string>
     <string name="AskAQuestionInfo">Por favor, considera que el soporte de Telegram está hecho por voluntarios. Respondemos lo antes posible, pero puede tomar tiempo.<![CDATA[<br><br>]]>Por favor, mira las <![CDATA[<a href=\"https://telegram.org/faq/es\">preguntas frecuentes de Telegram</a>]]>: tienen respuestas para la mayoría de las preguntas y <![CDATA[<a href=\"https://telegram.org/faq/es#solucin-de-problemas\">soluciones a problemas</a>]]>.</string>
     <string name="AskButton">Preguntar</string>
@@ -550,8 +568,10 @@
     <string name="IncorrectLocalization">Archivo de traducción incorrecto</string>
     <string name="Enabled">Activadas</string>
     <string name="Disabled">Desactivadas</string>
-    <string name="NotificationsService">Servicio de notificaciones</string>
-    <string name="NotificationsServiceDisableInfo">Si tus notificaciones funcionan bien con los Servicios de Google Play, puedes desactivar el Servicio de notificaciones. Sin embargo, recomendamos que lo dejes activo para mantener la app en segundo plano y recibir notificaciones al instante.</string>
+    <string name="NotificationsService">Servicio keep-alive</string>
+    <string name="NotificationsServiceInfo">Vuelve a abrir la app cuando el usuario o el sistema la cierra. Esto garantiza que la app pueda mostrar notificaciones.</string>
+    <string name="NotificationsServiceConnection">Conexión en segundo plano</string>
+    <string name="NotificationsServiceConnectionInfo">Conexión de bajo impacto, en segundo plano, para recibir notificaciones. Úsala para tener notificaciones fiables.</string>
     <string name="SortBy">Ordenar por</string>
     <string name="ImportContacts">Importar contactos</string>
     <string name="SortFirstName">Nombre</string>
@@ -870,7 +890,7 @@
     <string name="FromCamera">Desde la cámara</string>
     <string name="FromGalley">Desde la galería</string>
     <string name="DeletePhoto">Eliminar foto</string>
-    <string name="Set">Establecer</string>
+    <string name="Set">OK</string>
     <string name="OK">OK</string>
     <string name="Crop">RECORTAR</string>
     <!--messages-->
@@ -932,7 +952,15 @@
     <string name="AreYouSureSessions">¿Quieres terminar todas las otras sesiones?</string>
     <string name="AreYouSureDeleteAndExit">¿Quieres eliminar y dejar el grupo?</string>
     <string name="AreYouSureDeleteThisChat">¿Quieres eliminar este chat?</string>
-    <string name="AreYouSureShareMyContactInfo">¿Quieres compartir tu número?</string>
+    <string name="ShareYouLocationTitle">¿Compartir tu ubicación?</string>
+    <string name="ShareYouLocationInfo">Esto enviará tu ubicación actual al bot.</string>
+    <string name="ShareYouLocationUnable">La aplicación no pudo determinar tu ubicación actual</string>
+    <string name="ShareYouLocationUnableManually">Elegir manualmente</string>
+    <string name="ShareYouLocationInline">Este bot podría querer saber tu ubicación cada vez que le envías una solicitud. Esto puede ser usado para entregar resultados específicos para tu ubicación.</string>
+    <string name="ShareYouPhoneNumberTitle">¿Compartir tu número de teléfono?</string>
+    <string name="AreYouSureShareMyContactInfoBot">El bot sabrá tu número de teléfono. Puede ser útil para la integración con otros servicios.</string>
+    <string name="AreYouSureShareMyContactInfoUser">¿Quieres compartir tu número de teléfono %1$s con <![CDATA[<b>]]>%2$s<![CDATA[</b>]]>?</string>
+    <string name="AreYouSureShareMyContactInfo">¿Quieres compartir tu número de teléfono?</string>
     <string name="AreYouSureBlockContact">¿Quieres bloquear este contacto?</string>
     <string name="AreYouSureUnblockContact">¿Quieres desbloquear este contacto?</string>
     <string name="AreYouSureDeleteContact">¿Quieres eliminar este contacto?</string>
@@ -955,11 +983,13 @@
     <string name="AllowReadSms">Por favor, permite a Telegram recibir SMS, para ingresar el código automáticamente.</string>
     <string name="AllowReadCall">Por favor, permite a Telegram recibir llamadas, para ingresar el código automáticamente.</string>
     <string name="AllowReadCallAndSms">Por favor, permite a Telegram recibir llamadas y SMS, para ingresar el código automáticamente.</string>
+    <string name="UserRestricted">Lo sentimos, no estás autorizado para hacer esto.</string>
     <!--permissions-->
     <string name="PermissionContacts">Telegram necesita el acceso a tus contactos, para que puedas comunicarte con ellos en todos tus dispositivos.</string>
     <string name="PermissionStorage">Telegram necesita acceso a tu almacenamiento, para que puedas enviar y guardar fotos, vídeos, música y otros archivos.</string>
     <string name="PermissionNoAudio">Telegram necesita acceso a tu micrófono, para que puedas enviar mensajes de voz.</string>
     <string name="PermissionNoLocation">Telegram necesita acceso a tu ubicación, para que puedas compartirla con tus amigos.</string>
+    <string name="PermissionNoLocationPosition">Telegram necesita acceso a tu ubicación.</string>
     <string name="PermissionOpenSettings">AJUSTES</string>
     <!--Intro view-->
     <string name="Page1Title">Telegram</string>
@@ -990,12 +1020,12 @@
     <string name="Members_few">%1$d miembros</string>
     <string name="Members_many">%1$d miembros</string>
     <string name="Members_other">%1$d miembros</string>
-    <string name="AndMoreTyping_zero">y %1$d personas más están escribiendo</string>
+    <string name="AndMoreTyping_zero">y %1$d más están escribiendo</string>
     <string name="AndMoreTyping_one">y %1$d más están escribiendo</string>
-    <string name="AndMoreTyping_two">y %1$d personas más están escribiendo</string>
-    <string name="AndMoreTyping_few">y %1$d personas más están escribiendo</string>
-    <string name="AndMoreTyping_many">y %1$d personas más están escribiendo</string>
-    <string name="AndMoreTyping_other">y %1$d personas más están escribiendo</string>
+    <string name="AndMoreTyping_two">y %1$d más están escribiendo</string>
+    <string name="AndMoreTyping_few">y %1$d más están escribiendo</string>
+    <string name="AndMoreTyping_many">y %1$d más están escribiendo</string>
+    <string name="AndMoreTyping_other">y %1$d más están escribiendo</string>
     <string name="NewMessages_zero">Sin mensajes nuevos</string>
     <string name="NewMessages_one">%1$d nuevo mensaje</string>
     <string name="NewMessages_two">%1$d nuevos mensajes</string>

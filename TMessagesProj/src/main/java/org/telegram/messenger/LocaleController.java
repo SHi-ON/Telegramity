@@ -318,7 +318,31 @@ public class LocaleController {
         return systemDefaultLocale;
     }
 
-    public static String getLocaleString(Locale locale) {
+    private String getLocaleString(Locale locale) {
+        if (locale == null) {
+            return "en";
+        }
+        String languageCode = locale.getLanguage();
+        String countryCode = locale.getCountry();
+        String variantCode = locale.getVariant();
+        if (languageCode.length() == 0 && countryCode.length() == 0) {
+            return "en";
+        }
+        StringBuilder result = new StringBuilder(11);
+        result.append(languageCode);
+        if (countryCode.length() > 0 || variantCode.length() > 0) {
+            result.append('_');
+        }
+        result.append(countryCode);
+        if (variantCode.length() > 0) {
+            result.append('_');
+        }
+        result.append(variantCode);
+        return result.toString();
+    }
+
+    public static String getLocaleStringIso639() {
+        Locale locale = getInstance().getSystemDefaultLocale();
         if (locale == null) {
             return "en";
         }
@@ -359,7 +383,7 @@ public class LocaleController {
                 if (languageNameInEnglish.contains("&") || languageNameInEnglish.contains("|")) {
                     return false;
                 }
-                if (languageCode.contains("&") || languageCode.contains("|")) {
+                if (languageCode.contains("&") || languageCode.contains("|") || languageCode.contains("/") || languageCode.contains("\\")) {
                     return false;
                 }
 
@@ -592,7 +616,11 @@ public class LocaleController {
     private String getStringInternal(String key, int res) {
         String value = localeValues.get(key);
         if (value == null) {
-            value = ApplicationLoader.applicationContext.getString(res);
+            try {
+                value = ApplicationLoader.applicationContext.getString(res);
+            } catch (Exception e) {
+                FileLog.e("tmessages", e);
+            }
         }
         if (value == null) {
             value = "LOC_ERR:" + key;

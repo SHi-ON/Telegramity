@@ -62,6 +62,12 @@ import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.browser.Browser;
+import org.telegram.tgnet.ConnectionsManager;
+import org.telegram.tgnet.RequestDelegate;
+import org.telegram.tgnet.SerializedData;
+import org.telegram.tgnet.TLObject;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
@@ -95,6 +101,8 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.AvatarUpdater;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.NumberPicker;
+import org.telegram.ui.ActionBar.Theme;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -296,7 +304,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     @Override
     public View createView(Context context) {
         actionBar.setBackgroundColor(AvatarDrawable.getProfileBackColorForId(5));
-        actionBar.setItemsBackground(AvatarDrawable.getButtonColorForId(5));
+        actionBar.setItemsBackgroundColor(AvatarDrawable.getButtonColorForId(5));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAddToContainer(false);
         extraHeight = 88;
@@ -395,7 +403,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     final TextView message = new TextView(getParentActivity());
                     message.setText(Html.fromHtml(LocaleController.getString("AskAQuestionInfo", R.string.AskAQuestionInfo)));
                     message.setTextSize(18);
-                    message.setLinkTextColor(0xff316f9f);
+                    message.setLinkTextColor(Theme.MSG_LINK_TEXT_COLOR);
                     message.setTypeface(AndroidUtilities.getTypeface());
                     message.setPadding(AndroidUtilities.dp(8), AndroidUtilities.dp(5), AndroidUtilities.dp(8), AndroidUtilities.dp(6));
                     message.setMovementMethod(new LinkMovementMethodMy());
@@ -468,9 +476,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                     showDialog(builder.create());
                 } else if (i == telegramFaqRow) {
-                    AndroidUtilities.openUrl(getParentActivity(), LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl));
+                    Browser.openUrl(getParentActivity(), LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl));
                 } else if (i == privacyPolicyRow) {
-                    AndroidUtilities.openUrl(getParentActivity(), LocaleController.getString("PrivacyPolicyUrl", R.string.PrivacyPolicyUrl));
+                    Browser.openUrl(getParentActivity(), LocaleController.getString("PrivacyPolicyUrl", R.string.PrivacyPolicyUrl));
                 } else if (i == contactsReimportRow) {
                     //not implemented
                 } else if (i == contactsSortRow) {
@@ -513,7 +521,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         mask = MediaController.getInstance().roamingDownloadMask;
                     }
 
-                    builder.setApplyTopPaddings(false);
+                    builder.setApplyTopPadding(false);
+                    builder.setApplyBottomPadding(false);
                     LinearLayout linearLayout = new LinearLayout(getParentActivity());
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
                     for (int a = 0; a < 6; a++) {
@@ -556,10 +565,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             }
                         });
                     }
-                    BottomSheet.BottomSheetCell cell = new BottomSheet.BottomSheetCell(getParentActivity(), 2);
+                    BottomSheet.BottomSheetCell cell = new BottomSheet.BottomSheetCell(getParentActivity(), 1);
                     cell.setBackgroundResource(R.drawable.list_selector);
                     cell.setTextAndIcon(LocaleController.getString("Save", R.string.Save).toUpperCase(), 0);
-                    cell.setTextColor(0xff517fad);
+                    cell.setTextColor(Theme.AUTODOWNLOAD_SHEET_SAVE_TEXT_COLOR);
                     cell.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1073,7 +1082,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             photoBig = user.photo.photo_big;
         }
         AvatarDrawable avatarDrawable = new AvatarDrawable(user, true);
-        avatarDrawable.setColor(0xff5c98cd);
+
+        avatarDrawable.setColor(Theme.ACTION_BAR_MAIN_AVATAR_COLOR);
         if (avatarImage != null) {
             avatarImage.setImage(photo, "50_50", avatarDrawable);
             avatarImage.getImageReceiver().setVisible(!PhotoViewer.getInstance().isShowingImage(photoBig), false);
@@ -1228,9 +1238,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else if (i == raiseToSpeakRow) {
                     textCell.setTextAndCheck(LocaleController.getString("RaiseToSpeak", R.string.RaiseToSpeak), MediaController.getInstance().canRaiseToSpeak(), true);
                 } else if (i == customTabsRow) {
-                    textCell.setTextAndValueAndCheck(LocaleController.getString("ChromeCustomTabs", R.string.ChromeCustomTabs), LocaleController.getString("ChromeCustomTabsInfo", R.string.ChromeCustomTabsInfo), MediaController.getInstance().canCustomTabs(), true);
+                    textCell.setTextAndValueAndCheck(LocaleController.getString("ChromeCustomTabs", R.string.ChromeCustomTabs), LocaleController.getString("ChromeCustomTabsInfo", R.string.ChromeCustomTabsInfo), MediaController.getInstance().canCustomTabs(), false, true);
                 } else if (i == directShareRow) {
-                    textCell.setTextAndValueAndCheck(LocaleController.getString("DirectShare", R.string.DirectShare), LocaleController.getString("DirectShareInfo", R.string.DirectShareInfo), MediaController.getInstance().canDirectShare(), true);
+                    textCell.setTextAndValueAndCheck(LocaleController.getString("DirectShare", R.string.DirectShare), LocaleController.getString("DirectShareInfo", R.string.DirectShareInfo), MediaController.getInstance().canDirectShare(), false, true);
                 }
             } else if (type == 4) {
                 if (view == null) {

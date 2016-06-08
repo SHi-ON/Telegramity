@@ -66,6 +66,8 @@
     <string name="MuteDisable">Uitschakelen</string>
     <string name="Hashtags">HASHTAGS</string>
     <string name="Recent">RECENT</string>
+    <string name="ChatHints">CHATS</string>
+    <string name="ChatHintsDelete">%1$s uit suggesties verwijderen?</string>
     <string name="LinkPreview">Link-voorvertoning</string>
     <!--channels-->
     <string name="GroupType">Groepsvorm</string>
@@ -206,6 +208,7 @@
     <string name="ChannelMessageGroupAudio">%1$s heeft een spraakbericht gestuurd naar het kanaal %2$s</string>
     <string name="ChannelMessageGroupMusic">%1$s heeft een muziekbestand gestuurd naar het kanaal %2$s</string>
     <string name="ChannelMessageGroupSticker">%1$s heeft een sticker gestuurd naar het kanaal %2$s</string>
+    <string name="ChannelMessageGroupStickerEmoji">%1$s heeft een %3$s sticker gestuurd naar kanaal %2$s</string>
     <string name="ChannelMessageNoText">%1$s plaatste een bericht</string>
     <string name="ChannelMessagePhoto">%1$s plaatste een foto</string>
     <string name="ChannelMessageVideo">%1$s plaatste een video</string>
@@ -216,6 +219,7 @@
     <string name="ChannelMessageAudio">%1$s plaatste een spraakbericht</string>
     <string name="ChannelMessageMusic">%1$s plaatste een muziekbestand</string>
     <string name="ChannelMessageSticker">%1$s plaatste een sticker</string>
+    <string name="ChannelMessageStickerEmoji">%1$s plaatste een %2$s sticker</string>
     <string name="WhoCanAddMembers">Wie kan leden toevoegen?</string>
     <string name="WhoCanAddMembersAllMembers">Alle leden</string>
     <string name="WhoCanAddMembersAdmins">Alleen beheerders</string>
@@ -255,10 +259,12 @@
     <string name="IsTyping">is aan het typen</string>
     <string name="AreTyping">zijn aan het typen</string>
     <string name="IsRecordingAudio">%1$s neemt een spraakbericht op...</string>
+    <string name="IsSendingAudio">%1$s verstuurt een geluid...</string>
     <string name="IsSendingPhoto">%1$s verstuurt een foto</string>
     <string name="IsSendingVideo">%1$s verstuurt een video</string>
     <string name="IsSendingFile">%1$s verstuurt een bestand</string>
     <string name="RecordingAudio">neemt een spraakbericht op...</string>
+    <string name="SendingAudio">audio versturen...</string>
     <string name="SendingPhoto">foto versturen</string>
     <string name="SendingVideoStatus">video versturen</string>
     <string name="SendingFile">bestand versturen</string>
@@ -299,7 +305,7 @@
     <string name="SetTimer">Zelfvernietigingstimer instellen</string>
     <string name="ServiceNotifications">Servicemeldingen</string>
     <string name="GettingLinkInfo">Link-preview ophalen...</string>
-    <string name="OpenInBrowser">Openen in browser</string>
+    <string name="OpenInBrowser">OPENEN IN...</string>
     <string name="CopyUrl">Link kopiëren</string>
     <string name="SendItems">%1$s versturen</string>
     <string name="OpenUrlAlert">URL %1$s openen?</string>
@@ -331,6 +337,12 @@
     <string name="ReportChatOther">Overig</string>
     <string name="ReportChatDescription">Beschrijving</string>
     <string name="PinnedMessage">Vastgezet bericht</string>
+    <string name="EditedMessage">bewerkt</string>
+    <string name="AttachBotsHelp">Scrollen voor bots</string>
+    <string name="TimeToEdit">%1$s</string>
+    <string name="TimeToEditExpired">Bewerken kan niet meer.</string>
+    <string name="AddShortcut">Snelkoppeling toevoegen</string>
+    <string name="ShortcutAdded">Snelkoppeling aan startscherm toegevoegd</string>
     <!--notification-->
     <string name="MessageLifetimeChanged">%1$s heeft de zelfvernietigingstimer ingesteld op %2$s</string>
     <string name="MessageLifetimeChangedOutgoing">Je hebt de zelfvernietigingstimer ingesteld op %1$s</string>
@@ -348,6 +360,7 @@
     <string name="NotificationMessageAudio">%1$s heeft je een spraakbericht gestuurd</string>
     <string name="NotificationMessageMusic">%1$s heeft je een muziekbestand gestuurd</string>
     <string name="NotificationMessageSticker">%1$s heeft je een sticker gestuurd</string>
+    <string name="NotificationMessageStickerEmoji">%1$s heeft je een %2$s sticker gestuurd</string>
     <string name="NotificationMessageGroupText">%1$s @ %2$s: %3$s</string>
     <string name="NotificationMessageGroupNoText">%1$s heeft een bericht gestuurd naar de groep %2$s</string>
     <string name="NotificationMessageGroupPhoto">%1$s heeft een foto gestuurd naar de groep %2$s</string>
@@ -359,6 +372,7 @@
     <string name="NotificationMessageGroupAudio">%1$s heeft een spraakbericht gestuurd naar de groep %2$s</string>
     <string name="NotificationMessageGroupMusic">%1$s heeft een muziekbestand gestuurd naar de groep %2$s</string>
     <string name="NotificationMessageGroupSticker">%1$s heeft een sticker gestuurd naar de groep %2$s</string>
+    <string name="NotificationMessageGroupStickerEmoji">%1$s heeft een %3$s sticker gestuurd naar de groep %2$s</string>
     <string name="NotificationInvitedToGroup">%1$s heeft je uitgenodigd voor de groep %2$s</string>
     <string name="NotificationEditedGroupName">%1$s heeft de naam van de groep %2$s gewijzigd</string>
     <string name="NotificationEditedGroupPhoto">%1$s heeft de afbeelding van de groep %2$s gewijzigd</string>
@@ -382,6 +396,7 @@
     <string name="NotificationActionPinnedVideo">%1$s heeft video vastgezet in de groep %2$s</string>
     <string name="NotificationActionPinnedFile">%1$s heeft bestand vastgezet in de groep %2$s</string>
     <string name="NotificationActionPinnedSticker">%1$s heeft sticker vastgezet in de groep %2$s</string>
+    <string name="NotificationActionPinnedStickerEmoji">%1$s heeft een %3$s sticker vastgezet in de groep %2$s</string>
     <string name="NotificationActionPinnedVoice">%1$s heeft spraakbericht vastgezet in de groep %2$s</string>
     <string name="NotificationActionPinnedContact">%1$s heeft contact vastgezet in de groep %2$s</string>
     <string name="NotificationActionPinnedGeo">%1$s heeft locatie vastgezet in de groep %2$s</string>
@@ -393,6 +408,7 @@
     <string name="NotificationActionPinnedVideoChannel">%1$s heeft video vastgezet</string>
     <string name="NotificationActionPinnedFileChannel">%1$s heeft bestand vastgezet</string>
     <string name="NotificationActionPinnedStickerChannel">%1$s heeft sticker vastgezet</string>
+    <string name="NotificationActionPinnedStickerEmojiChannel">%1$s heeft een %2$s sticker vastgezet</string>
     <string name="NotificationActionPinnedVoiceChannel">%1$s heeft spraakbericht vastgezet</string>
     <string name="NotificationActionPinnedContactChannel">%1$s heeft contact vastgezet</string>
     <string name="NotificationActionPinnedGeoChannel">%1$s heeft locatie vastgezet</string>
@@ -504,6 +520,7 @@
     <string name="StickersCopy">Link kopiëren</string>
     <string name="StickersRemove">Verwijder</string>
     <string name="NoStickers">Nog geen stickers</string>
+    <string name="SendSticker">STICKER STUREN</string>
     <string name="TooMuchStickersets">Je hebt het maximale aantal stickerbundels bereikt.</string>
     <!--settings view-->
     <string name="ResetNotificationsText">Meldingen gereset</string>
@@ -539,6 +556,7 @@
     <string name="TerminateAllSessions">Beëindig alle andere sessies</string>
     <string name="Events">Gebeurtenissen</string>
     <string name="ContactJoined">Contact lid van Telegram</string>
+    <string name="PinnedMessages">Vastgezet berichten</string>
     <string name="Language">Taal</string>
     <string name="AskAQuestionInfo">De ondersteuning van Telegram wordt gedaan door vrijwilligers. We doen ons best om zo snel mogelijk te antwoorden.<![CDATA[<br><br>]]>Bekijk ook de <![CDATA[<a href=\"https://telegram.org/faq#general\">veelgestelde vragen</a>]]>: Hier staan de antwoorden op de meeste vragen en belangrijke tips voor <![CDATA[<a href=\"https://telegram.org/faq#troubleshooting\">het oplossen van problemen</a>]]>.</string>
     <string name="AskButton">Vraag een vrijwilliger</string>
@@ -551,7 +569,9 @@
     <string name="Enabled">Inschakelen</string>
     <string name="Disabled">Uitgeschakeld</string>
     <string name="NotificationsService">Meldingenservice</string>
-    <string name="NotificationsServiceDisableInfo">Als Google Play Services genoeg voor je is om meldingen te ontvangen kun je de meldingenservice uitschakelen. We raden echter aan dit ingeschakeld te laten om de app in de achtergrond te laten draaien en directe meldingen te ontvangen.</string>
+    <string name="NotificationsServiceInfo">App automatisch herstarten bij afsluiten om meldingen weer te kunnen blijven geven.</string>
+    <string name="NotificationsServiceConnection">Achtergrondverbinding</string>
+    <string name="NotificationsServiceConnectionInfo">Achtergrondverbinding voor meldingen. Inschakelen voor betrouwbare meldingen.</string>
     <string name="SortBy">Sorteren op</string>
     <string name="ImportContacts">Importeer contacten</string>
     <string name="SortFirstName">Voornaam</string>
@@ -932,7 +952,15 @@
     <string name="AreYouSureSessions">Alle apparaten behalve het huidige apparaat uitloggen?</string>
     <string name="AreYouSureDeleteAndExit">Verwijderen en de groep verlaten?</string>
     <string name="AreYouSureDeleteThisChat">Chat echt verwijderen?</string>
-    <string name="AreYouSureShareMyContactInfo">Weet je zeker dat je je contactinformatie wilt delen?</string>
+    <string name="ShareYouLocationTitle">Locatie delen?</string>
+    <string name="ShareYouLocationInfo">Huidige locatie naar deze bot sturen?</string>
+    <string name="ShareYouLocationUnable">Huidige locatie kon niet worden vastgesteld</string>
+    <string name="ShareYouLocationUnableManually">Handmatig kiezen</string>
+    <string name="ShareYouLocationInline">Deze bot wil toegang tot je locatie voor ieder verzoek dat je stuurt. Dit kan gebruikt worden voor locatiespecifieke resultaten.</string>
+    <string name="ShareYouPhoneNumberTitle">Telefoonnummer delen?</string>
+    <string name="AreYouSureShareMyContactInfoBot">De bot krijgt je telefoonnummer, dit kan handig zijn voor de integratie met andere diensten.</string>
+    <string name="AreYouSureShareMyContactInfoUser">Telefoonnummer %1$s delen met <![CDATA[<b>]]>%2$s<![CDATA[</b>]]>?</string>
+    <string name="AreYouSureShareMyContactInfo">Telefoonnummer echt delen?</string>
     <string name="AreYouSureBlockContact">Weet je zeker dat je deze persoon wilt blokkeren?</string>
     <string name="AreYouSureUnblockContact">Weet je zeker dat je deze persoon wilt deblokkeren?</string>
     <string name="AreYouSureDeleteContact">Contact echt verwijderen?</string>
@@ -955,11 +983,13 @@
     <string name="AllowReadSms">Sta het ontvangen van SMS toe zodat we automatisch je inlogcode kunnen invoeren.</string>
     <string name="AllowReadCall">Sta het ontvangen van oproepen toe zodat we automatisch je inlogcode kunnen invoeren.</string>
     <string name="AllowReadCallAndSms">Sta het ontvangen van oproepen en SMS toe zodat we automatisch je inlogcode kunnen invoeren.</string>
+    <string name="UserRestricted">Je mag deze actie niet uitvoeren.</string>
     <!--permissions-->
     <string name="PermissionContacts">Telegram heeft toegang tot je contacten nodig zodat je kan chatten met je vrienden vanaf al je apparaten.</string>
     <string name="PermissionStorage">Telegram heeft toegang tot je opslaggeheugen nodig zodat je foto\'s, video\'s, muziek en andere media kunt opslaan en versturen.</string>
     <string name="PermissionNoAudio">Telegram heeft toegang tot je microfoon nodig om spraakberichten te kunnen verzenden.</string>
     <string name="PermissionNoLocation">Telegram heeft toegang tot je locatie nodig om deze te kunnen delen met je vrienden.</string>
+    <string name="PermissionNoLocationPosition">Telegram heeft toegang tot je locatie nodig.</string>
     <string name="PermissionOpenSettings">INSTELLINGEN</string>
     <!--Intro view-->
     <string name="Page1Title">Telegram</string>
@@ -990,12 +1020,12 @@
     <string name="Members_few">%1$d leden</string>
     <string name="Members_many">%1$d leden</string>
     <string name="Members_other">%1$d leden</string>
-    <string name="AndMoreTyping_zero">en nog %1$d personen zijn aan het typen</string>
-    <string name="AndMoreTyping_one">en nog %1$d persoon is aan het typen</string>
-    <string name="AndMoreTyping_two">en nog %1$d personen zijn aan het typen</string>
-    <string name="AndMoreTyping_few">en nog %1$d personen zijn aan het typen</string>
-    <string name="AndMoreTyping_many">en nog %1$d personen zijn aan het typen</string>
-    <string name="AndMoreTyping_other">en nog %1$d personen zijn aan het typen</string>
+    <string name="AndMoreTyping_zero">en %1$d meer zijn aan het typen</string>
+    <string name="AndMoreTyping_one">en %1$d meer is aan het typen</string>
+    <string name="AndMoreTyping_two">en %1$d meer zijn aan het typen</string>
+    <string name="AndMoreTyping_few">en %1$d meer zijn aan het typen</string>
+    <string name="AndMoreTyping_many">en %1$d meer zijn aan het typen</string>
+    <string name="AndMoreTyping_other">en %1$d meer zijn aan het typen</string>
     <string name="NewMessages_zero">geen nieuwe berichten</string>
     <string name="NewMessages_one">%1$d nieuw bericht</string>
     <string name="NewMessages_two">%1$d nieuwe berichten</string>

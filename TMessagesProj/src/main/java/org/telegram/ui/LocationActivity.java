@@ -143,8 +143,12 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.locationPermissionGranted);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.closeChats);
-        if (mapView != null) {
-            mapView.onDestroy();
+        try {
+            if (mapView != null) {
+                mapView.onDestroy();
+            }
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
         }
         if (adapter != null) {
             adapter.destroy();
@@ -364,6 +368,15 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             routeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        Activity activity = getParentActivity();
+                        if (activity != null) {
+                            if (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                showPermissionAlert(true);
+                                return;
+                            }
+                        }
+                    }
                     if (myLocation != null) {
                         try {
                             Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "http://maps.google.com/maps?saddr=%f,%f&daddr=%f,%f", myLocation.getLatitude(), myLocation.getLongitude(), messageObject.messageOwner.media.geo.lat, messageObject.messageOwner.media.geo._long)));
@@ -383,7 +396,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                         Activity activity = getParentActivity();
                         if (activity != null) {
                             if (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                showPermissionAlert();
+                                showPermissionAlert(true);
                                 return;
                             }
                         }
@@ -540,7 +553,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                         Activity activity = getParentActivity();
                         if (activity != null) {
                             if (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                showPermissionAlert();
+                                showPermissionAlert(false);
                                 return;
                             }
                         }
@@ -647,13 +660,17 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         return fragmentView;
     }
 
-    private void showPermissionAlert() {
+    private void showPermissionAlert(boolean byButton) {
         if (getParentActivity() == null) {
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
-        builder.setMessage(LocaleController.getString("PermissionNoLocation", R.string.PermissionNoLocation));
+        if (byButton) {
+            builder.setMessage(LocaleController.getString("PermissionNoLocationPosition", R.string.PermissionNoLocationPosition));
+        } else {
+            builder.setMessage(LocaleController.getString("PermissionNoLocation", R.string.PermissionNoLocation));
+        }
         builder.setNegativeButton(LocaleController.getString("PermissionOpenSettings", R.string.PermissionOpenSettings), new DialogInterface.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.GINGERBREAD)
             @Override
@@ -933,6 +950,13 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             try {
                 mapView.onResume();
             } catch (Throwable e) {
+                FileLog.e("tmessages", e);
+            }
+        }
+        if (googleMap != null) {
+            try {
+                googleMap.setMyLocationEnabled(true);
+            } catch (Exception e) {
                 FileLog.e("tmessages", e);
             }
         }
