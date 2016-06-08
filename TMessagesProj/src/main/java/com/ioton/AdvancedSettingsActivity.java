@@ -1,7 +1,7 @@
 /*
- * This is the source code of Telegramity for Android v. 3.x.x.
+ * This is the source code of Telegramity for Android
  *
- * Copyright Shayan Amani, 2015.
+ * Copyright Shayan Amani, 2016.
  */
 
 package com.ioton;
@@ -72,6 +72,7 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
 import org.telegram.ui.Cells.EmptyCell;
 import org.telegram.ui.Cells.HeaderCell;
@@ -142,7 +143,6 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
     @Override
     public boolean onFragmentCreate() {
-
         super.onFragmentCreate();
         avatarUpdater.parentFragment = this;
         avatarUpdater.delegate = new AvatarUpdater.AvatarUpdaterDelegate() {
@@ -250,15 +250,13 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
     @Override
     public View createView(final Context context) {
-
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
         final int instanceOfActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
         final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
         final int instanceOfDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
-
         needRestart = false;
         actionBar.setBackgroundColor(instanceOfProfileBackgroundColor);
-        actionBar.setItemsBackground(AvatarDrawable.getButtonColorForId(5));
+        actionBar.setItemsBackgroundColor(AvatarDrawable.getButtonColorForId(5));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAddToContainer(false);
         extraHeight = 88;
@@ -927,7 +925,8 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
             photoBig = user.photo.photo_big;
         }
         AvatarDrawable avatarDrawable = new AvatarDrawable(user, true);
-        avatarDrawable.setColor(0xff5c98cd);
+
+        avatarDrawable.setColor(Theme.ACTION_BAR_MAIN_AVATAR_COLOR);
         if (avatarImage != null) {
             avatarImage.setImage(photo, "50_50", avatarDrawable);
             avatarImage.getImageReceiver().setVisible(!PhotoViewer.getInstance().isShowingImage(photoBig), false);

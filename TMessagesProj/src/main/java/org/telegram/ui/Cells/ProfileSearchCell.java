@@ -19,6 +19,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 
+import com.ioton.TelegramityUtilities;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -35,6 +36,7 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.AvatarDrawable;
+import org.telegram.ui.ActionBar.Theme;
 
 public class ProfileSearchCell extends BaseCell {
 
@@ -107,8 +109,8 @@ public class ProfileSearchCell extends BaseCell {
 
             onlinePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             onlinePaint.setTextSize(AndroidUtilities.dp(16));
-            onlinePaint.setColor(0xff316f9f);
             onlinePaint.setTypeface(AndroidUtilities.getTypeface());
+            onlinePaint.setColor(Theme.MSG_LINK_TEXT_COLOR);
 
             offlinePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             offlinePaint.setTextSize(AndroidUtilities.dp(16));
@@ -229,6 +231,9 @@ public class ProfileSearchCell extends BaseCell {
                     }
                 }
                 drawCheck = chat.verified;
+                if (chat != null && TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                    drawCheck = true;
+                }
                 if (!LocaleController.isRTL) {
                     nameLockLeft = AndroidUtilities.dp(AndroidUtilities.leftBaseline);
                     nameLeft = AndroidUtilities.dp(AndroidUtilities.leftBaseline + 4) + (drawNameGroup ? groupDrawable.getIntrinsicWidth() : broadcastDrawable.getIntrinsicWidth());
@@ -257,6 +262,9 @@ public class ProfileSearchCell extends BaseCell {
                     nameLockTop = AndroidUtilities.dp(17);
                 }
                 drawCheck = user.verified;
+                if (chat != null && TelegramityUtilities.OFFICIAL_CHAN.equalsIgnoreCase(chat.username)) {
+                    drawCheck = true;
+                }
             }
         }
 
@@ -269,7 +277,7 @@ public class ProfileSearchCell extends BaseCell {
             } else if (user != null) {
                 nameString2 = UserObject.getUserName(user);
             }
-            nameString = nameString2.replace("\n", " ");
+            nameString = nameString2.replace('\n', ' ');
         }
         if (nameString.length() == 0) {
             if (user != null && user.phone != null && user.phone.length() != 0) {
@@ -355,7 +363,7 @@ public class ProfileSearchCell extends BaseCell {
             CharSequence onlineStringFinal = TextUtils.ellipsize(onlineString, currentOnlinePaint, onlineWidth - AndroidUtilities.dp(12), TextUtils.TruncateAt.END);
             onlineLayout = new StaticLayout(onlineStringFinal, currentOnlinePaint, onlineWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
             nameTop = AndroidUtilities.dp(13);
-            if (subLabel != null && !drawNameBot) {
+            if (subLabel != null && chat != null) {
                 nameLockTop -= AndroidUtilities.dp(12);
             }
         } else {

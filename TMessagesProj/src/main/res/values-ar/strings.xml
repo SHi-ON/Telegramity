@@ -66,6 +66,8 @@
     <string name="MuteDisable">تعطيل</string>
     <string name="Hashtags">الأوسمة</string>
     <string name="Recent">حديث</string>
+    <string name="ChatHints">المحادثات</string>
+    <string name="ChatHintsDelete">هل ترغب في حذف %1$s من الاقتراحات؟</string>
     <string name="LinkPreview">معاينة الرابط</string>
     <!--channels-->
     <string name="GroupType">نوع المجموعة</string>
@@ -206,6 +208,7 @@
     <string name="ChannelMessageGroupAudio">%1$s أرسل رسالة صوتية للقناة %2$s</string>
     <string name="ChannelMessageGroupMusic">%1$s  قام بإرسال مقطع صوتي للقناة %2$s</string>
     <string name="ChannelMessageGroupSticker">%1$s  قام بإرسال ملصق للقناة %2$s</string>
+    <string name="ChannelMessageGroupStickerEmoji">%1$s أرسل %3$s ملصق للقناة %2$s</string>
     <string name="ChannelMessageNoText">%1$s أرسل رسالة</string>
     <string name="ChannelMessagePhoto">%1$s أرسل صورة</string>
     <string name="ChannelMessageVideo">%1$s أرسل مقطع مرئي</string>
@@ -216,6 +219,7 @@
     <string name="ChannelMessageAudio">%1$s أرسل رسالة صوتية</string>
     <string name="ChannelMessageMusic">%1$s أرسل مقطع صوتي</string>
     <string name="ChannelMessageSticker">%1$s أرسل ملصق</string>
+    <string name="ChannelMessageStickerEmoji">%1$s أرسل %2$s ملصق</string>
     <string name="WhoCanAddMembers">من يستطيع إضافة أعضاء؟</string>
     <string name="WhoCanAddMembersAllMembers">جميع الأعضاء</string>
     <string name="WhoCanAddMembersAdmins">فقط المشرفون</string>
@@ -255,10 +259,12 @@
     <string name="IsTyping">يكتب… </string>
     <string name="AreTyping">يكتبون… </string>
     <string name="IsRecordingAudio">%1$s يقوم بتسجيل رسالة صوتية...</string>
+    <string name="IsSendingAudio">%1$s يقوم بإرسال مقطع صوتي...</string>
     <string name="IsSendingPhoto">%1$s يقوم بإرسال صورة...</string>
     <string name="IsSendingVideo">%1$s يقوم بإرسال مقطع مرئي...</string>
     <string name="IsSendingFile">%1$s يقوم بإرسال ملف...</string>
     <string name="RecordingAudio">جاري تسجيل الرسالة الصوتية...</string>
+    <string name="SendingAudio">جاري إرسال المقطع الصوتي...</string>
     <string name="SendingPhoto">جاري إرسال الصورة...</string>
     <string name="SendingVideoStatus">جاري إرسال المقطع المرئي...</string>
     <string name="SendingFile">جاري إرسال الملف...</string>
@@ -299,7 +305,7 @@
     <string name="SetTimer">عداد التدمير الذاتي</string>
     <string name="ServiceNotifications">إشعارات الخدمة</string>
     <string name="GettingLinkInfo">جاري جلب معلومات الرابط...</string>
-    <string name="OpenInBrowser">فتح في المتصفح</string>
+    <string name="OpenInBrowser">فتح بواسطة...</string>
     <string name="CopyUrl">انسخ الرابط</string>
     <string name="SendItems">أرسل %1$s</string>
     <string name="OpenUrlAlert">هل ترغب في فتح الرابط باستخدام %1$s ؟</string>
@@ -331,6 +337,12 @@
     <string name="ReportChatOther">أخرى</string>
     <string name="ReportChatDescription">الوصف</string>
     <string name="PinnedMessage">رسالة مثبتة</string>
+    <string name="EditedMessage">معدلة</string>
+    <string name="AttachBotsHelp">انتقل إلى الأسفل للبوتات</string>
+    <string name="TimeToEdit">%1$s</string>
+    <string name="TimeToEditExpired">المعذرة، انتهت مدة التعديل على الرسائل.</string>
+    <string name="AddShortcut">إضافة اختصار</string>
+    <string name="ShortcutAdded">تمت إضافة اختصار للشاشة الرئيسية</string>
     <!--notification-->
     <string name="MessageLifetimeChanged">%1$s قام بتعيين عداد التدمير الذاتي إلى to %2$s</string>
     <string name="MessageLifetimeChangedOutgoing">لقد قمت بتعيين التدمير الذاتي إلى %1$s</string>
@@ -348,6 +360,7 @@
     <string name="NotificationMessageAudio">%1$s قام بإرسال رسالة صوتية</string>
     <string name="NotificationMessageMusic">%1$s أرسل مقطع صوتي لك</string>
     <string name="NotificationMessageSticker">%1$s قام بإرسال ملصق</string>
+    <string name="NotificationMessageStickerEmoji">%1$s قام بإرسال %2$s ملصق</string>
     <string name="NotificationMessageGroupText">%1$s @ %2$s: %3$s</string>
     <string name="NotificationMessageGroupNoText">%1$s  قام بإرسال رسالة للمجموعة %2$s</string>
     <string name="NotificationMessageGroupPhoto">%1$s قام بإرسال صورة للمجموعة %2$s</string>
@@ -359,6 +372,7 @@
     <string name="NotificationMessageGroupAudio">%1$s أرسل رسالة صوتية للمجموعة %2$s</string>
     <string name="NotificationMessageGroupMusic">%1$s أرسل مقطع صوتي للمجموعة %2$s</string>
     <string name="NotificationMessageGroupSticker">%1$s قام بإرسال ملصق للمجموعة %2$s</string>
+    <string name="NotificationMessageGroupStickerEmoji">%1$s أرسل %3$s ملصق للمجموعة %2$s</string>
     <string name="NotificationInvitedToGroup">%1$s قام بدعوتك للمجموعة %2$s</string>
     <string name="NotificationEditedGroupName">%1$s قام بتعديل اسم المجموعة %2$s</string>
     <string name="NotificationEditedGroupPhoto">%1$s قام بتغيير صورة المجموعة %2$s</string>
@@ -382,6 +396,7 @@
     <string name="NotificationActionPinnedVideo">%1$s ثبت فيديو في المجموعة %2$s</string>
     <string name="NotificationActionPinnedFile">%1$s ثبت ملف في المجموعة %2$s</string>
     <string name="NotificationActionPinnedSticker">%1$s ثبت ملصق في المجموعة %2$s</string>
+    <string name="NotificationActionPinnedStickerEmoji">%1$s قام بتثبيت %3$s ملصق في المجموعة %2$s</string>
     <string name="NotificationActionPinnedVoice">%1$s ثبت رسالة صوتية في المجموعة %2$s</string>
     <string name="NotificationActionPinnedContact">%1$s ثبت جهة اتصال في المجموعة %2$s</string>
     <string name="NotificationActionPinnedGeo">%1$s ثبت خريطة في المجموعة %2$s</string>
@@ -393,6 +408,7 @@
     <string name="NotificationActionPinnedVideoChannel">%1$s ثبت فيديو</string>
     <string name="NotificationActionPinnedFileChannel">%1$s ثبت ملف</string>
     <string name="NotificationActionPinnedStickerChannel">%1$s ثبت ملصق</string>
+    <string name="NotificationActionPinnedStickerEmojiChannel">%1$s قام بتثبيت %2$s ملصق</string>
     <string name="NotificationActionPinnedVoiceChannel">%1$s ثبت رسالة صوتية</string>
     <string name="NotificationActionPinnedContactChannel">%1$s ثبت جهة اتصال</string>
     <string name="NotificationActionPinnedGeoChannel">%1$s ثبت خريطة</string>
@@ -504,6 +520,7 @@
     <string name="StickersCopy">نسخ الرابط</string>
     <string name="StickersRemove">حذف</string>
     <string name="NoStickers">لا يوجد ملصقات بعد</string>
+    <string name="SendSticker">أرسل ملصق</string>
     <string name="TooMuchStickersets">المعذرة، لقد وصلت الحد الأعلى لحزم الملصقات.</string>
     <!--settings view-->
     <string name="ResetNotificationsText">تم تعيين كافة الإشعارات افتراضيا</string>
@@ -539,6 +556,7 @@
     <string name="TerminateAllSessions">سجل الخروج من كافة الأجهزة الأخرى</string>
     <string name="Events">الأحداث</string>
     <string name="ContactJoined">اشترك صديق في تيليجرام</string>
+    <string name="PinnedMessages">رسائل مثبتة</string>
     <string name="Language">اللغة</string>
     <string name="AskAQuestionInfo">نرجو الأخذ بالعلم أن الدعم الفني في تيليجرام يقوم به مجموعة من المتطوعين. نحن نحاول الرد بسرعة قدر المستطاع، لكن ربما نستغرق القليل من الوقت.<![CDATA[<br><br>]]> <![CDATA[<a href=\"https://telegram.org/faq/ar\">صفحة الأسئلة الأكثر شيوعًا</a>]]>: يوجد بها حلول للمشاكل وإجابات لمعظم الأسئلة.</string>
     <string name="AskButton">اسأل أحد المتطوعين</string>
@@ -550,8 +568,10 @@
     <string name="IncorrectLocalization">ملف التعريب غير صحيح</string>
     <string name="Enabled">تمكين</string>
     <string name="Disabled">تعطيل</string>
-    <string name="NotificationsService">خدمة الإشعارات</string>
-    <string name="NotificationsServiceDisableInfo">إذا كانت خدمات Google play كافية بالنسبة لك لتلقي الإشعارات ، يمكنك تعطيل \" خدمة الإشعارات \" . ومع ذلك نحن نوصي بترك هذه الخدمة مفعلة للحفاظ على تشغيل التطبيق في الخلفية ، ولتلقي إشعارات الدردشة .</string>
+    <string name="NotificationsService">خدمة التشغيل المستمر</string>
+    <string name="NotificationsServiceInfo">إعادة تشغيل التطبيق في حال تم إقفاله من المستخدم أو النظام. هذا سيساعد في إظهار التطبيق للإشعارات.</string>
+    <string name="NotificationsServiceConnection">الاتصال في الخلفية</string>
+    <string name="NotificationsServiceConnectionInfo">استخدام اتصال طفيف في الخلفية للتأكد من وصول إشعارات تيليجرام. قم بالتفعيل لإشعارات أقوى.</string>
     <string name="SortBy">فرز حسب</string>
     <string name="ImportContacts">استيراد جهات الاتصال</string>
     <string name="SortFirstName">الاسم الأول</string>
@@ -932,7 +952,15 @@
     <string name="AreYouSureSessions">هل أنت متأكد من تسجيل الخروج من جميع الأجهزة الأخرى باستثناء هذا الجهاز؟</string>
     <string name="AreYouSureDeleteAndExit">هل أنت متأكد من أنك تريد حذف المجموعة والخروج منها؟</string>
     <string name="AreYouSureDeleteThisChat">هل أنت متأكد من رغبتك في حذف المحادثة؟</string>
-    <string name="AreYouSureShareMyContactInfo">هل أنت متأكد من أنك تريد مشاركة معلومات جهة الاتصال الخاصة بك؟</string>
+    <string name="ShareYouLocationTitle">هل ترغب في مشاركة موقعك؟</string>
+    <string name="ShareYouLocationInfo">هذا الخيار سيرسل موقعك الحالي للبوت.</string>
+    <string name="ShareYouLocationUnable">لا يستطيع التطبيق تحديد موقعك الحالي</string>
+    <string name="ShareYouLocationUnableManually">اختر بشكل يدوي</string>
+    <string name="ShareYouLocationInline">هذا البوت يرغب في معرفة موقعك في كل مرة ترسل له طلب. هذا يمكن الاستفادة منه لإعطائك نتائج مناسبة لموقعك.</string>
+    <string name="ShareYouPhoneNumberTitle">هل ترغب في مشاركة رقم هاتفك؟</string>
+    <string name="AreYouSureShareMyContactInfoBot">البوت سيعلم رقم هاتفك. سيكون هذا مفيد لتفعيله في خدمات أخرى.</string>
+    <string name="AreYouSureShareMyContactInfoUser">هل أنت متأكد من رغبتك في مشاركة رقم هاتفك %1$s مع <![CDATA[<b>]]>%2$s<![CDATA[</b>]]>؟</string>
+    <string name="AreYouSureShareMyContactInfo">هل أنت متأكد من رغبتك في مشاركة رقم هاتفك؟</string>
     <string name="AreYouSureBlockContact">هل أنت متأكد من رغبتك في حظر جهة الاتصال هذه؟</string>
     <string name="AreYouSureUnblockContact">هل أنت متأكد من رغبتك في إزالة الحظر عن جهة الاتصال هذه؟</string>
     <string name="AreYouSureDeleteContact">هل أنت متأكد من رغبتك في حذف جهة الاتصال هذه؟</string>
@@ -955,11 +983,13 @@
     <string name="AllowReadSms">فصلًا قم بالسماح لتيليجرام باستقبال رسائل قصيرة ليتمكن من إدخال الرمز لك تلقائيًا.</string>
     <string name="AllowReadCall">فصلًا قم بالسماح لتيليجرام باستقبال اتصالات ليتمكن من إدخال الرمز لك تلقائيًا.</string>
     <string name="AllowReadCallAndSms">فصلًا قم بالسماح لتيليجرام باستقبال اتصالات ورسائل قصيرة ليتمكن من إدخال الرمز لك تلقائيًا.</string>
+    <string name="UserRestricted">المعذرة، لا يمكنك القيام بذلك.</string>
     <!--permissions-->
     <string name="PermissionContacts">تيليجرام يحتاج للسماح له بالوصول لجهات الاتصال الخاصة بك لتتمكن من محادثة أصدقائك من كافة أجهزتك.</string>
     <string name="PermissionStorage">تيليجرام يحتاج للسماح له بالوصول للذاكرة الخاصة بك لتتمكن من إرسال وحفظ الصور، المقاطع المرئية، الموسيقى وغيرها من الوسائط.</string>
     <string name="PermissionNoAudio">تيليجرام يحتاج للسماح له بالوصول للمايكروفون الخاص بك لتتمكن من إرسال رسائل صوتية.</string>
     <string name="PermissionNoLocation">تيليجرام يحتاج للسماح له بالوصول لمكانك لتتمكن من مشاركته مع أصدقائك من خلاله.</string>
+    <string name="PermissionNoLocationPosition">تيليجرام يحتاج صلاحية الحصول على موقعك.</string>
     <string name="PermissionOpenSettings">الإعدادات</string>
     <!--Intro view-->
     <string name="Page1Title">تيليجرام</string>

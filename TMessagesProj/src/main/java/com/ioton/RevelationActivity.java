@@ -93,7 +93,7 @@ public class RevelationActivity extends BaseFragment {
         firstNameField.setPadding(0, 0, 0, 0);
         firstNameField.setSingleLine(true);
         firstNameField.setGravity(Gravity.LEFT);
-        firstNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+        firstNameField.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         firstNameField.setImeOptions(EditorInfo.IME_ACTION_DONE);
         firstNameField.setHint(LocaleController.getString("IDHint", R.string.IDHint));
         AndroidUtilities.clearCursorDrawable(firstNameField);
@@ -109,11 +109,6 @@ public class RevelationActivity extends BaseFragment {
         });
 
         ((LinearLayout) fragmentView).addView(firstNameField, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36, 24, 24, 24, 0));
-
-        /*if (user != null && user.username != null && user.username.length() > 0) {
-            firstNameField.setText(user.username);
-            firstNameField.setSelection(firstNameField.length());
-        }*/
 
         checkTextView = new TextView(context);
         checkTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
@@ -288,7 +283,6 @@ public class RevelationActivity extends BaseFragment {
                                     checkReqId = 0;
                                     if (lastCheckName != null && lastCheckName.equals(name)) {
                                         if (error == null && response instanceof TLRPC.TL_boolTrue) {
-                                            checkTextView.setText(LocaleController.getString("IDUnavailable", R.string.IDUnavailable));
                                             checkTextView.setTextColor(0xffcf3030);
                                             lastNameAvailable = true;
                                         } else {
@@ -307,85 +301,6 @@ public class RevelationActivity extends BaseFragment {
         }
         return true;
     }
-
-    /*private void revealName() {
-        if (!checkUserName(firstNameField.getText().toString(), true)) {
-            return;
-        }
-        TLRPC.User user = UserConfig.getCurrentUser();
-        if (getParentActivity() == null || user == null) {
-            return;
-        }
-        String currentName = user.username;
-        if (currentName == null) {
-            currentName = "";
-        }
-        String newName = firstNameField.getText().toString();
-        if (currentName.equals(newName)) {
-            finishFragment();
-            return;
-        }
-
-        final ProgressDialog progressDialog = new ProgressDialog(getParentActivity());
-        progressDialog.setMessage(LocaleController.getString("Loading", R.string.Loading));
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-
-        TLRPC.TL_account_updateUsername req = new TLRPC.TL_account_updateUsername();
-        req.username = newName;
-
-        NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateInterfaces, MessagesController.UPDATE_MASK_NAME);
-        final int reqId = ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
-            @Override
-            public void run(TLObject response, final TLRPC.TL_error error) {
-                if (error == null) {
-                    final TLRPC.User user = (TLRPC.User)response;
-                    AndroidUtilities.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                progressDialog.dismiss();
-                            } catch (Exception e) {
-                                FileLog.e("tmessages", e);
-                            }
-                            ArrayList<TLRPC.User> users = new ArrayList<>();
-                            users.add(user);
-                            MessagesController.getInstance().putUsers(users, false);
-                            MessagesStorage.getInstance().putUsersAndChats(users, null, false, true);
-                            UserConfig.saveConfig(true);
-                            finishFragment();
-                        }
-                    });
-                } else {
-                    AndroidUtilities.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                progressDialog.dismiss();
-                            } catch (Exception e) {
-                                FileLog.e("tmessages", e);
-                            }
-                            showErrorAlert(error.text);
-                        }
-                    });
-                }
-            }
-        }, ConnectionsManager.RequestFlagFailOnServerErrors);
-        ConnectionsManager.getInstance().bindRequestToGuid(reqId, classGuid);
-
-        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ConnectionsManager.getInstance().cancelRequest(reqId, true);
-                try {
-                    dialog.dismiss();
-                } catch (Exception e) {
-                    FileLog.e("tmessages", e);
-                }
-            }
-        });
-        progressDialog.show();
-    }*/
 
     @Override
     public void onTransitionAnimationEnd(boolean isOpen, boolean backward) {

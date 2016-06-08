@@ -380,6 +380,7 @@ public class NotificationsController {
                 int oldCount = popupArray.size();
                 HashMap<Long, Boolean> settingsCache = new HashMap<>();
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
+                boolean allowPinned = preferences.getBoolean("PinnedMessages", true);
                 int popup = 0;
 
                 for (int a = 0; a < messageObjects.size(); a++) {
@@ -398,6 +399,9 @@ public class NotificationsController {
                         continue;
                     }
                     if (messageObject.messageOwner.mentioned) {
+                        if (!allowPinned && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPinMessage) {
+                            continue;
+                        }
                         dialog_id = messageObject.messageOwner.from_id;
                     }
                     if (isPersonalMessage(messageObject)) {
@@ -407,11 +411,14 @@ public class NotificationsController {
 
                     Boolean value = settingsCache.get(dialog_id);
                     boolean isChat = (int) dialog_id < 0;
-                    popup = (int)dialog_id == 0 ? 0 : preferences.getInt(isChat ? "popupGroup" : "popupAll", 0);
+                    popup = (int) dialog_id == 0 ? 0 : preferences.getInt(isChat ? "popupGroup" : "popupAll", 0);
                     if (value == null) {
                         int notifyOverride = getNotifyOverride(preferences, dialog_id);
                         value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", true) || isChat && !preferences.getBoolean("EnableGroup", true)) && notifyOverride == 0);
                         settingsCache.put(dialog_id, value);
+                    }
+                    if (popup != 0 && messageObject.messageOwner.to_id.channel_id != 0 && !messageObject.isMegagroup()) {
+                        popup = 0;
                     }
                     if (value) {
                         if (popup != 0) {
@@ -683,7 +690,7 @@ public class NotificationsController {
         int chat_id = messageObject.messageOwner.to_id.chat_id != 0 ? messageObject.messageOwner.to_id.chat_id : messageObject.messageOwner.to_id.channel_id;
         int from_id = messageObject.messageOwner.to_id.user_id;
         if (from_id == 0) {
-            if (messageObject.isFromUser()) {
+            if (messageObject.isFromUser() || messageObject.getId() < 0) {
                 from_id = messageObject.messageOwner.from_id;
             } else {
                 from_id = -chat_id;
@@ -725,7 +732,7 @@ public class NotificationsController {
         }
 
         String msg = null;
-        if ((int)dialog_id == 0 || AndroidUtilities.needShowPasscode(false) || UserConfig.isWaitingForPasscodeEnter) {
+        if ((int) dialog_id == 0 || AndroidUtilities.needShowPasscode(false) || UserConfig.isWaitingForPasscodeEnter) {
             msg = LocaleController.getString("YouHaveNewMessage", R.string.YouHaveNewMessage);
         } else {
             if (chat_id == 0 && from_id != 0) {
@@ -765,7 +772,12 @@ public class NotificationsController {
                             msg = LocaleController.formatString("NotificationMessageMap", R.string.NotificationMessageMap, name);
                         } else if (messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                             if (messageObject.isSticker()) {
-                                msg = LocaleController.formatString("NotificationMessageSticker", R.string.NotificationMessageSticker, name);
+                                String emoji = messageObject.getStickerEmoji();
+                                if (emoji != null) {
+                                    msg = LocaleController.formatString("NotificationMessageStickerEmoji", R.string.NotificationMessageStickerEmoji, name, emoji);
+                                } else {
+                                    msg = LocaleController.formatString("NotificationMessageSticker", R.string.NotificationMessageSticker, name);
+                                }
                             } else if (messageObject.isGif()) {
                                 msg = LocaleController.formatString("NotificationMessageGif", R.string.NotificationMessageGif, name);
                             } else {
@@ -787,12 +799,6 @@ public class NotificationsController {
                             }
                             if (singleUserId != 0) {
                                 if (messageObject.messageOwner.to_id.channel_id != 0 && !messageObject.isMegagroup()) {
-                                    TLRPC.User user = MessagesController.getInstance().getUser(singleUserId);
-                                    if (user != null) {
-                                        name = UserObject.getUserName(user);
-                                    } else {
-                                        name = "";
-                                    }
                                     msg = LocaleController.formatString("ChannelAddedByNotification", R.string.ChannelAddedByNotification, name, chat.title);
                                 } else {
                                     if (singleUserId == UserConfig.getClientUserId()) {
@@ -891,10 +897,19 @@ public class NotificationsController {
                                         msg = LocaleController.formatString("NotificationActionPinnedVoiceChannel", R.string.NotificationActionPinnedVoiceChannel, chat.title);
                                     }
                                 } else if (object.isSticker()) {
-                                    if (!ChatObject.isChannel(chat) || chat.megagroup) {
-                                        msg = LocaleController.formatString("NotificationActionPinnedSticker", R.string.NotificationActionPinnedSticker, name, chat.title);
+                                    String emoji = messageObject.getStickerEmoji();
+                                    if (emoji != null) {
+                                        if (!ChatObject.isChannel(chat) || chat.megagroup) {
+                                            msg = LocaleController.formatString("NotificationActionPinnedStickerEmoji", R.string.NotificationActionPinnedStickerEmoji, name, chat.title, emoji);
+                                        } else {
+                                            msg = LocaleController.formatString("NotificationActionPinnedStickerEmojiChannel", R.string.NotificationActionPinnedStickerEmojiChannel, chat.title, emoji);
+                                        }
                                     } else {
-                                        msg = LocaleController.formatString("NotificationActionPinnedStickerChannel", R.string.NotificationActionPinnedStickerChannel, chat.title);
+                                        if (!ChatObject.isChannel(chat) || chat.megagroup) {
+                                            msg = LocaleController.formatString("NotificationActionPinnedSticker", R.string.NotificationActionPinnedSticker, name, chat.title);
+                                        } else {
+                                            msg = LocaleController.formatString("NotificationActionPinnedStickerChannel", R.string.NotificationActionPinnedStickerChannel, chat.title);
+                                        }
                                     }
                                 } else if (object.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     if (!ChatObject.isChannel(chat) || chat.megagroup) {
@@ -962,7 +977,12 @@ public class NotificationsController {
                                     msg = LocaleController.formatString("ChannelMessageMap", R.string.ChannelMessageMap, name, chat.title);
                                 } else if (messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     if (messageObject.isSticker()) {
-                                        msg = LocaleController.formatString("ChannelMessageSticker", R.string.ChannelMessageSticker, name, chat.title);
+                                        String emoji = messageObject.getStickerEmoji();
+                                        if (emoji != null) {
+                                            msg = LocaleController.formatString("ChannelMessageStickerEmoji", R.string.ChannelMessageStickerEmoji, name, chat.title, emoji);
+                                        } else {
+                                            msg = LocaleController.formatString("ChannelMessageSticker", R.string.ChannelMessageSticker, name, chat.title);
+                                        }
                                     } else if (messageObject.isGif()) {
                                         msg = LocaleController.formatString("ChannelMessageGIF", R.string.ChannelMessageGIF, name, chat.title);
                                     } else {
@@ -990,7 +1010,12 @@ public class NotificationsController {
                                     msg = LocaleController.formatString("ChannelMessageGroupMap", R.string.ChannelMessageGroupMap, name, chat.title);
                                 } else if (messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     if (messageObject.isSticker()) {
-                                        msg = LocaleController.formatString("ChannelMessageGroupSticker", R.string.ChannelMessageGroupSticker, name, chat.title);
+                                        String emoji = messageObject.getStickerEmoji();
+                                        if (emoji != null) {
+                                            msg = LocaleController.formatString("ChannelMessageGroupStickerEmoji", R.string.ChannelMessageGroupStickerEmoji, name, chat.title, emoji);
+                                        } else {
+                                            msg = LocaleController.formatString("ChannelMessageGroupSticker", R.string.ChannelMessageGroupSticker, name, chat.title);
+                                        }
                                     } else if (messageObject.isGif()) {
                                         msg = LocaleController.formatString("ChannelMessageGroupGif", R.string.ChannelMessageGroupGif, name, chat.title);
                                     } else {
@@ -1019,7 +1044,12 @@ public class NotificationsController {
                                 msg = LocaleController.formatString("NotificationMessageGroupMap", R.string.NotificationMessageGroupMap, name, chat.title);
                             } else if (messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                 if (messageObject.isSticker()) {
-                                    msg = LocaleController.formatString("NotificationMessageGroupSticker", R.string.NotificationMessageGroupSticker, name, chat.title);
+                                    String emoji = messageObject.getStickerEmoji();
+                                    if (emoji != null) {
+                                        msg = LocaleController.formatString("NotificationMessageGroupStickerEmoji", R.string.NotificationMessageGroupStickerEmoji, name, chat.title, emoji);
+                                    } else {
+                                        msg = LocaleController.formatString("NotificationMessageGroupSticker", R.string.NotificationMessageGroupSticker, name, chat.title);
+                                    }
                                 } else if (messageObject.isGif()) {
                                     msg = LocaleController.formatString("NotificationMessageGroupGif", R.string.NotificationMessageGroupGif, name, chat.title);
                                 } else {
@@ -1513,7 +1543,7 @@ public class NotificationsController {
             if (silent != 1 && !notifyDisabled) {
                 if (ApplicationLoader.mainInterfacePaused || inAppPreview) {
                     if (lastMessage.length() > 100) {
-                        lastMessage = lastMessage.substring(0, 100).replace("\n", " ").trim() + "...";
+                        lastMessage = lastMessage.substring(0, 100).replace('\n', ' ').trim() + "...";
                     }
                     mBuilder.setTicker(lastMessage);
                 }

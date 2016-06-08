@@ -106,4 +106,9 @@ public class EmptyTextProgressView extends FrameLayout {
             super.requestLayout();
         }
     }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
 }

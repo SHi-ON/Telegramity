@@ -54,6 +54,7 @@
     <string name="AddMember">افزودن عضو</string>
     <string name="AddMutual">مخاطبان را به کانال خود اضاقه کنید</string>
     <string name="AddRecipient">افزودن گیرنده</string>
+    <string name="AddShortcut">اضافه کردن میانبر</string>
     <string name="AddStickers">استیکر اضافه کنید</string>
     <string name="AddStickersInstalled">استیکرهای جدید اضافه شدند</string>
     <string name="AddStickersNotFound">استیکرها پیدا نشدن</string>
@@ -64,7 +65,7 @@
     <string name="AddToTheGroupTitle">افزودن %1$s به چت %2$s ؟</string>
     <string name="Alert">هشدار</string>
     <string name="AllPhotos">همه عکس ها</string>
-    <string name="AllVideo">همه ویدیوها</string>
+    <string name="AllVideo">همه ویدئوها</string>
     <string name="AllowReadCall">لطفا به تلگرامیتی اجازه دریافت تماس را بدهید تا بتواند به صورت خودکار کد شما را وارد کند.</string>
     <string name="AllowReadCallAndSms">لطفا به تلگرامیتی اجازه دریافت تماس و پیامک را بدهید تا بتواند به صورت خودکار کد شما را وارد کند.</string>
     <string name="AllowReadSms">لطفا به تلگرامیتی اجازه دریافت پیامک را بدهید تا بتواند به صورت خودکار کد شما را وارد کند.</string>
@@ -74,12 +75,12 @@
     <string name="AlwaysShareWithPlaceholder">همیشه با اینا به اشتراک بگذار</string>
     <string name="AlwaysShareWithTitle">همیشه به اشتراک بگذار</string>
     <string name="AlwaysShowPopup">همیشه پاپ آپ  را نشون بده</string>
-    <string name="AndMoreTyping_few">و %1$d عضو دیگه در حال تایپ هستن</string>
-    <string name="AndMoreTyping_many">و %1$d عضو دیگه در حال تایپ هستن</string>
-    <string name="AndMoreTyping_one">و %1$d عضو دیگه در حال تایپ هستن</string>
-    <string name="AndMoreTyping_other">و %1$d عضو دیگه در حال تایپ هستن</string>
-    <string name="AndMoreTyping_two">و %1$d عضو دیگه در حال تایپ هستن</string>
-    <string name="AndMoreTyping_zero">و %1$d عضو دیگه در حال تایپ هستن</string>
+    <string name="AndMoreTyping_few">و %1$d عضو دیگر در حال تایپ هستند</string>
+    <string name="AndMoreTyping_many">و %1$d عضو دیگر در حال تایپ هستند</string>
+    <string name="AndMoreTyping_one">و %1$d عضو دیگر در حال تایپ هستند</string>
+    <string name="AndMoreTyping_other">و %1$d عضو دیگر در حال تایپ هستند</string>
+    <string name="AndMoreTyping_two">و %1$d عضو دیگر در حال تایپ هستند</string>
+    <string name="AndMoreTyping_zero">و %1$d عضو دیگر در حال تایپ هستند</string>
     <string name="AndOther_few">و %1$d سایر</string>
     <string name="AndOther_many">و %1$d سایر</string>
     <string name="AndOther_one">و %1$d سایر</string>
@@ -100,17 +101,20 @@
     <string name="AreYouSureDeleteMessages">آیا واقعا می خواهید %1$s حذف شود؟</string>
     <string name="AreYouSureDeletePhoto">از حذف این عکس مطمئن هستید؟</string>
     <string name="AreYouSureDeleteThisChat">از حذف این گفت و گو اطمینان دارید؟</string>
-    <string name="AreYouSureDeleteVideo">از حذف این ویدیو مطمئن هستید؟</string>
+    <string name="AreYouSureDeleteVideo">از حذف این ویدئو مطمئن هستید؟</string>
     <string name="AreYouSureLogout">آیا واقعا می خواهید خارج شوید؟\n\nتوجه کنید که بی وقفه و در یک زمان می توانید تلگرامیتی را روی تمامی دستگاه هایتان استفاده کنید.\n\nبه یاد داشته باشید که تمامی گفت و گو های محرمانه شما هنگام خروج از بین می روند.</string>
     <string name="AreYouSureRegistration">از لغو عضویت مطمئن هستید؟</string>
     <string name="AreYouSureSecretChat">آیا می خواهید یک گفت و گوی محرمانه را شروع کنید؟</string>
     <string name="AreYouSureSessions">از پایان دادن به سایر نشست ها اطمینان دارید؟ </string>
-    <string name="AreYouSureShareMyContactInfo">آیا مایل به اشتراک گذاری اطلاعات تماس خود هستید؟</string>
+    <string name="AreYouSureShareMyContactInfo">مطمئنید که می خواهید شماره تلفنتان را به اشتراک بگذارید؟</string>
+    <string name="AreYouSureShareMyContactInfoBot">روبات شماره تلفن شما را خواهد دانست. این می تواند برای یکپارچگی با دیگر سرویس ها قابل استفاده باشد.</string>
+    <string name="AreYouSureShareMyContactInfoUser">آیا از اشتراک شماره تلفن خود %1$s با &lt;b>%2$s&lt;/b>اطمینان دارید؟</string>
     <string name="AreYouSureUnblockContact">آیا واقعا می خواهید مخاطب را رفع مسدودیت کنید؟</string>
     <string name="AskAQuestion">سوالی دارید؟</string>
     <string name="AskAQuestionInfo">لطفا توجه داشته باشید که پشتیبانی تلگرام توسط داوطلبان انجام می شود. ما تلاش می کنیم تا در اسرع وقت پاسخ دهیم، اما ممکن است مدتی طول بکشد.<![CDATA[<br><br>]]> لطفا به اینجا سر بزنید <![CDATA[<a href=\"https://telegram.org/faq#general\">Telegram FAQ</a>]]>: پاسخ بسیاری از سوالات و نکات مهم در اینجا وجود دارد <![CDATA[<a href=\"https://telegram.org/faq#troubleshooting\"> عیب یابی </a>]]>.</string>
     <string name="AskButton">از یک داوطلب بپرسید</string>
     <string name="AttachAudio">پیام صوتی</string>
+    <string name="AttachBotsHelp">برای ربات ها به پایین پیمایش کنید</string>
     <string name="AttachContact">مخاطب</string>
     <string name="AttachDocument">فایل</string>
     <string name="AttachGif">گیف</string>
@@ -118,7 +122,7 @@
     <string name="AttachMusic">موسیقی</string>
     <string name="AttachPhoto">عکس</string>
     <string name="AttachSticker">استیکر</string>
-    <string name="AttachVideo">ویدیو</string>
+    <string name="AttachVideo">ویدئو</string>
     <string name="AudioTitle">صداهای به اشتراک گذاشته شده</string>
     <string name="AudioUnknownArtist">هنرمند ناشناخته</string>
     <string name="AudioUnknownTitle">عنوان نامشخص</string>
@@ -219,13 +223,15 @@
     <string name="ChannelMessageGroupNoText">%1$s یک پیام برای کانال %2$s ارسال کرد</string>
     <string name="ChannelMessageGroupPhoto">%1$s یک عکس به کانال %2$s ارسال کرد</string>
     <string name="ChannelMessageGroupSticker">%1$s یک استیکر به کانال %2$s ارسال کرد</string>
-    <string name="ChannelMessageGroupVideo">%1$s یک ویدیو به کانال %2$s ارسال کرد</string>
+    <string name="ChannelMessageGroupStickerEmoji">%1$s یک استیکر %3$s به کانال %2$s ارسال کرد</string>
+    <string name="ChannelMessageGroupVideo">%1$s یک ویدئو به کانال %2$s ارسال کرد</string>
     <string name="ChannelMessageMap">%1$s یک موقعیت مکانی ارسال کرد</string>
     <string name="ChannelMessageMusic">%1$s یک آهنگ ارسال کرد</string>
     <string name="ChannelMessageNoText">%1$s پیامی ارسال کرد</string>
     <string name="ChannelMessagePhoto">%1$s عکسی ارسال کرد</string>
     <string name="ChannelMessageSticker">%1$s یک استیکر ارسال کرد</string>
-    <string name="ChannelMessageVideo">%1$s ویدیویی ارسال کرد</string>
+    <string name="ChannelMessageStickerEmoji">%1$s یک استیکر %2$s ارسال کرد</string>
+    <string name="ChannelMessageVideo">%1$s ویدئویی ارسال کرد</string>
     <string name="ChannelModerator">مدیر</string>
     <string name="ChannelMute">بی صدا</string>
     <string name="ChannelNotifyMembersInfoOn">هنگامی که مطلب می فرستید کاربران مطلع می شوند</string>
@@ -264,9 +270,11 @@
     <string name="ChatCamera">دوربین</string>
     <string name="ChatDocument">فایل</string>
     <string name="ChatGallery">گالری</string>
+    <string name="ChatHints">گفت و گو ها</string>
+    <string name="ChatHintsDelete">%1$s از پیشنهاد ها حذف شود؟</string>
     <string name="ChatLocation">مکان</string>
     <string name="ChatTakePhoto">عکس بگیر</string>
-    <string name="ChatVideo">ویدیو</string>
+    <string name="ChatVideo">ویدئو</string>
     <string name="ChooseCountry">کشور مورد نظر را انتخاب نمایید</string>
     <string name="ChromeCustomTabs">مرورگر درون-برنامه</string>
     <string name="ChromeCustomTabsInfo">باز کردن لینک های خارجی درون برنامه</string>
@@ -283,7 +291,7 @@
     <string name="Comments">نظرات</string>
     <string name="CommentsInfo">اگر شما نظرات را فعال کنید،افراد قادر خواهند بود در کانال در مورد پست های شما بحث کنند.</string>
     <string name="CompatibilityChat">%1$s از یک نسخه قدیمی تلگرامیتی استفاده می کنه، برای همین تصاویر سرّی در حالت سازگار نمایش داده میشه . زمانی که %2$s تلگرامیتی  را به روز کنه ، عکس هایی با تایمر 1 دقیقه یا کمتر در حالت \"ضربه بزن و نگه دار تا ببینی\" شروع به کار می کنن، و هر موقع طرف مقابل از صفحه عکس بگیره شما مطلع میشید.</string>
-    <string name="CompressVideo">ویدیو  را فشرده کنید</string>
+    <string name="CompressVideo">ویدئو  را فشرده کنید</string>
     <string name="Connecting">در حال اتصال...</string>
     <string name="ContactJoined">مخاطب وارد تلگرامیتی شد</string>
     <string name="Contacts">مخاطبان</string>
@@ -368,8 +376,9 @@
     <string name="EditImage">ویرایش عکس</string>
     <string name="EditMessageError">متاسفیم، شما نمی توانید این پیام را ویرایش کنید.</string>
     <string name="EditName">ویرایش نام</string>
-    <string name="EditVideo">ویرایش ویدیو</string>
-    <string name="EditedVideo">ویدیو ویرایش شده</string>
+    <string name="EditVideo">ویرایش ویدئو</string>
+    <string name="EditedMessage">ویرایش شده</string>
+    <string name="EditedVideo">ویدئو ویرایش شده</string>
     <string name="EmailPasswordConfirmText">"لطفا برای تنظیم تایید دو مرحله ای مراحل زیر  را انجام بدین:
 
 1. ایمیلتون  را چک کنید(پوشه هرزنامه  را یادتون نره)
@@ -470,12 +479,12 @@
     <string name="ForwardedSticker_other">%1$d استیکر های ارسال شده</string>
     <string name="ForwardedSticker_two">%1$d استیکر های ارسال شده</string>
     <string name="ForwardedSticker_zero">%1$d استیکر های ارسال شده</string>
-    <string name="ForwardedVideo_few">%1$d ویدیو های فرستاده شده</string>
-    <string name="ForwardedVideo_many">%1$d ویدیو های فرستاده شده</string>
-    <string name="ForwardedVideo_one">ویدیو فرستاده شده</string>
-    <string name="ForwardedVideo_other">%1$d ویدیو های فرستاده شده</string>
-    <string name="ForwardedVideo_two">%1$d ویدیو های فرستاده شده</string>
-    <string name="ForwardedVideo_zero">%1$d ویدیو های فرستاده شده</string>
+    <string name="ForwardedVideo_few">%1$d ویدئو های فرستاده شده</string>
+    <string name="ForwardedVideo_many">%1$d ویدئو های فرستاده شده</string>
+    <string name="ForwardedVideo_one">ویدئو فرستاده شده</string>
+    <string name="ForwardedVideo_other">%1$d ویدئو های فرستاده شده</string>
+    <string name="ForwardedVideo_two">%1$d ویدئو های فرستاده شده</string>
+    <string name="ForwardedVideo_zero">%1$d ویدئو های فرستاده شده</string>
     <string name="FreeOfTotal">%1$s آزاد از %2$s</string>
     <string name="From">از</string>
     <string name="FromCamera">از دوربین موبایل</string>
@@ -535,9 +544,10 @@
     <string name="InviteToGroupError">متاسفیم، بر اساس تنظیمات حریم خصوصی این کاربر، شما نمی توانید او را به گروه ها اضافه کنید.</string>
     <string name="InviteUser">اینی که می گی که تلگرامیتی نداره! می خوای دعوتش کنی ؟</string>
     <string name="IsRecordingAudio">%1$s در حال ضبط پیام صوتی است...</string>
-    <string name="IsSendingFile">%1$s در حال فرستادن فایله...</string>
-    <string name="IsSendingPhoto">%1$s در حال فرستادن عکسه...</string>
-    <string name="IsSendingVideo">%1$s در حال فرستادن ویدیو...</string>
+    <string name="IsSendingAudio">%1$s در حال فرستادن صدا است...</string>
+    <string name="IsSendingFile">%1$s در حال فرستادن فایل است...</string>
+    <string name="IsSendingPhoto">%1$s در حال فرستادن تصویر است...</string>
+    <string name="IsSendingVideo">%1$s در حال فرستادن ویدئو است...</string>
     <string name="IsTyping">در حال نوشتنه...</string>
     <string name="JoinToGroup">"آیا می خواهید به گفتگوی '%1$s' بپیوندید؟"</string>
     <string name="JoinToGroupErrorFull">ببخشید ظرفیت گروه تکمیله</string>
@@ -545,7 +555,7 @@
     <string name="KMetersAway">کیلومتر فاصله</string>
     <string name="KeepMedia">نگهداری فایل ها</string>
     <string name="KeepMediaForever">همیشگی</string>
-    <string name="KeepMediaInfo">عکس ها، ویدیوها و فایل های دیگر از چت های ابری که شما در طول این دوره به آنها <![CDATA[<b>دسترسی نداشتید</b>]]> از این دستگاه جهت آزاد ساختن فضای حافظه داخلی پاک خواهند شد.\n\nهمه فایل های رسانه در فضای ابری تلگرام باقی می مانند و شما می توانید آنها را در صورت نیاز بعداً دانلود نمایید.</string>
+    <string name="KeepMediaInfo">عکس ها، ویدئوها و فایل های دیگر از چت های ابری که شما در طول این دوره به آنها <![CDATA[<b>دسترسی نداشتید</b>]]> از این دستگاه جهت آزاد ساختن فضای حافظه داخلی پاک خواهند شد.\n\nهمه فایل های رسانه در فضای ابری تلگرام باقی می مانند و شما می توانید آنها را در صورت نیاز بعداً دانلود نمایید.</string>
     <string name="KickFromBroadcast">از لیست سخن‌پراکنی حذف کنید</string>
     <string name="KickFromGroup">حذف از گروه</string>
     <string name="Language">زبان</string>
@@ -607,7 +617,7 @@
     <string name="LocalDocumentCache">اسناد</string>
     <string name="LocalMusicCache">آهنگ ها</string>
     <string name="LocalPhotoCache">عکس ها</string>
-    <string name="LocalVideoCache">ویدیو ها</string>
+    <string name="LocalVideoCache">ویدئو ها</string>
     <string name="LogOut">خروج</string>
     <string name="LoginPassword">گذرواژه</string>
     <string name="LoginPasswordText">شما تایید دو مرحله‌ای را فعال کردید، در نتیجه حساب شما با یک گذرواژه‌ اضافه محافظت می شود.</string>
@@ -719,7 +729,7 @@
     <string name="NoSound">بدون صدا</string>
     <string name="NoStickers">هیچ استیکری وجود نداره</string>
     <string name="NoUsernameFound">هیچ حساب تلگرامی با این نام کاربری وجود ندارد.</string>
-    <string name="NoVideo">هنوز هیچ ویدیویی وجود نداره</string>
+    <string name="NoVideo">هنوز هیچ ویدئویی وجود نداره</string>
     <string name="NobodyLikesSpam1">ببخشید،شما در حال حاضر فقط میتوانید به مخاطبین خود پیام بفرستید.</string>
     <string name="NobodyLikesSpam2">ببخشید،شما در حال حاضر فقط میتوانید مخاطبین خود را به گروه اضافه کنید</string>
     <string name="NobodyLikesSpamUrl">https://telegram.org/faq#can-39t-send-messages-to-non-contacts</string>
@@ -740,6 +750,8 @@
     <string name="NotificationActionPinnedPhotoChannel">%1$s یک عکس سنجاق کرد</string>
     <string name="NotificationActionPinnedSticker">%1$s یک استیکر در گروه %2$s سنجاق کرد</string>
     <string name="NotificationActionPinnedStickerChannel">%1$s یک استیکر سنجاق کرد</string>
+    <string name="NotificationActionPinnedStickerEmoji">%1$s یک استیکر %3$s در گروه %2$s سنجاق کرد</string>
+    <string name="NotificationActionPinnedStickerEmojiChannel">%1$s یک استیکر %2$s سنجاق کرد</string>
     <string name="NotificationActionPinnedText">%1$s سنجاق کرد \"%2$s\" در گروه %3$s</string>
     <string name="NotificationActionPinnedTextChannel">%1$s سنجاق کرد \"%2$s\"</string>
     <string name="NotificationActionPinnedVideo">%1$s یک ویدئو در گروه %2$s سنجاق کرد</string>
@@ -771,15 +783,17 @@
     <string name="NotificationMessageGroupNoText">%1$s یک پیام برای گروه %2$s ارسال کرد</string>
     <string name="NotificationMessageGroupPhoto">%1$s یک عکس برای گروه %2$s ارسال کرد</string>
     <string name="NotificationMessageGroupSticker">%1$s یک استیکر به گروه %2$s ارسال کرد</string>
+    <string name="NotificationMessageGroupStickerEmoji">%1$s یک استیکر %3$s برای گروه %2$s ارسال کرد</string>
     <string name="NotificationMessageGroupText">%1$s @ %2$s: %3$s</string>
-    <string name="NotificationMessageGroupVideo">%1$s یک ویدیو برای گروه %2$s ارسال کرد</string>
+    <string name="NotificationMessageGroupVideo">%1$s یک ویدئو برای گروه %2$s ارسال کرد</string>
     <string name="NotificationMessageMap">%1$s یک مکان برای شما ارسال کرد</string>
     <string name="NotificationMessageMusic">%1$s یک آهنگ برای شما ارسال کرد</string>
     <string name="NotificationMessageNoText">%1$s یک پیام برای شما ارسال کرد</string>
     <string name="NotificationMessagePhoto">%1$s یک عکس برای شما ارسال کرد</string>
     <string name="NotificationMessageSticker">%1$s یک استیکر برای شما ارسال کرد</string>
+    <string name="NotificationMessageStickerEmoji">%1$s برای شما یک استیکر %2$s فرستاد</string>
     <string name="NotificationMessageText">%1$s: %2$s</string>
-    <string name="NotificationMessageVideo">%1$s یک ویدیو برای شما ارسال کرد</string>
+    <string name="NotificationMessageVideo">%1$s یک ویدئو برای شما ارسال کرد</string>
     <string name="NotificationMessagesPeopleDisplayOrder">%1$s %2$s</string>
     <string name="NotificationUnrecognizedDevice">"%1$s,
  ما یک ورود به اکانت شما را از دستگاه دیگری در %2$s شناسایی کردیم.
@@ -801,7 +815,9 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="NotificationsPriorityLow">کم</string>
     <string name="NotificationsPriorityMax">حداکثر</string>
     <string name="NotificationsService">سرویس اعلان ها</string>
-    <string name="NotificationsServiceDisableInfo">اگه گوگل پلی برای اعلانات کافی است می توانید سرویس اعلان ها  را غیرفعال کنید. البته ما پیشنهاد می کنیم این گزینه  را فعال بگذارید تا برنامه در حال اجرا باشد و اعلان ها  را بلافاصله نشان دهد.</string>
+    <string name="NotificationsServiceConnection">اتصال پس زمینه</string>
+    <string name="NotificationsServiceConnectionInfo">نگهداشتن یک اتصال سبک در پس زمینه به تلگرام برای دریافت اعلان ها. فعال برای اعلان های قابل اعتماد.</string>
+    <string name="NotificationsServiceInfo">اجرای دوباره برنامه هنگام بسته شدن توسط کاربر یا سیستم. این مورد اطمینان می دهد که برنامه می تواند اعلان ها را نمایش دهد.</string>
     <string name="NumberUnknown">نامعلوم</string>
     <string name="OK">باشه</string>
     <string name="Of">%1$d از %2$d</string>
@@ -817,9 +833,9 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="OnlyWhenScreenOn">فقط وقتی صفحه روشن است</string>
     <string name="Open">بازش کنید</string>
     <string name="OpenChannelProfile">اطلاعات کانال</string>
-    <string name="OpenInBrowser">باز کردن در مرورگر</string>
+    <string name="OpenInBrowser">باز کردن در...</string>
     <string name="OpenUrlAlert">لینک %1$s باز شود؟</string>
-    <string name="OriginalVideo">ویدیو اصلی</string>
+    <string name="OriginalVideo">ویدئو اصلی</string>
     <string name="OtherSessions">نشست های فعال</string>
     <string name="Page1Message">سریع ترین برنامه پیام رسان جهان.<![CDATA[<br/>]]>امن و رایگان همچنین با امکانات جذاب.</string>
     <string name="Page1Title">تلگرامیتی</string>
@@ -851,8 +867,9 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="PermissionContacts">تلگرامیتی نیاز به دسترسی به مخاطبان دارد تا شما بتوانید به دوستانتان در همه دستگاه های خود متصل شوید.</string>
     <string name="PermissionNoAudio">تلگرامیتی نیاز به دسترسی به میکروفون دارد تا بتوانید پیام های صوتی بفرستید.</string>
     <string name="PermissionNoLocation">تلگرامیتی نیاز به دسترسی به موقعیت مکانی دارد تا بتوانید آن را با دوستانتان به اشتراک بگذارید</string>
+    <string name="PermissionNoLocationPosition">تلگرام نیاز دارد تا به مکان شما دسترسی داشته باشد.</string>
     <string name="PermissionOpenSettings">تنظیمات</string>
-    <string name="PermissionStorage">تلگرامیتی نیاز به دسترسی به حافظه ذخیره سازی دارد تا بتوانید عکس، صدا، ویدیو و دیگر رسانه ها را به اشتراک بگذارید و ذخیره نمایید.</string>
+    <string name="PermissionStorage">تلگرامیتی نیاز به دسترسی به حافظه ذخیره سازی دارد تا بتوانید عکس، صدا، ویدئو و دیگر رسانه ها را به اشتراک بگذارید و ذخیره نمایید.</string>
     <string name="Phone">تلفن</string>
     <string name="PhoneHome">خانه</string>
     <string name="PhoneMain">اصلی</string>
@@ -871,11 +888,12 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="Photos_two">%1$d عکس</string>
     <string name="Photos_zero">%1$d عکس</string>
     <string name="PickerPhotos">عکس ها</string>
-    <string name="PickerVideo">ویدیو</string>
+    <string name="PickerVideo">ویدئو</string>
     <string name="PinMessage">سنجاق شود</string>
     <string name="PinMessageAlert">آیا می خواهید این پیام در این گروه سنجاق شود؟</string>
     <string name="PinNotify">همه اعضا را آگاه کن</string>
     <string name="PinnedMessage">پیام سنجاق شده</string>
+    <string name="PinnedMessages">پیام های سنجاق شده</string>
     <string name="PleaseDownload">اول رسانه ها  را دانلود کنید</string>
     <string name="PleaseEnterCurrentPassword">لطفا گذرواژه‌ی خود  را وارد کنید</string>
     <string name="PleaseEnterFirstPassword">یه گذرواژه وارد کنید</string>
@@ -977,17 +995,19 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="SendMessagesTo">پیام ها  را به %1$s ارسال کنم؟</string>
     <string name="SendMessagesToGroup">پیام‌ها به %1$s ارسال بشه؟</string>
     <string name="SendSelectedLocation">ارسال مکان انتخابی</string>
-    <string name="SendingFile">داره فایل می فرسته ...</string>
-    <string name="SendingPhoto">داره عکس می فرسته ...</string>
-    <string name="SendingVideo">در حال ارسال ویدیو ...</string>
-    <string name="SendingVideoStatus">داره ویدیو می فرسته ...</string>
+    <string name="SendSticker">ارسال استیکر</string>
+    <string name="SendingAudio">در حال فرستادن صدا...</string>
+    <string name="SendingFile">در حال فرستادن فایل...</string>
+    <string name="SendingPhoto">در حال فرستادن تصویر...</string>
+    <string name="SendingVideo">در حال فرستادن ویدئو...</string>
+    <string name="SendingVideoStatus">در حال فرستادن ویدئو...</string>
     <string name="SentAppCode">ما کد را به برنامه تلگرام روی دستگاه دیگر شما فرستادیم.</string>
     <string name="SentCallCode">"ما یک تماس فعال به شماره &lt;b>%1$s&lt;/b> فرستادیم.
 
 شماره را نگیرید, تلگرامیتی همه چیز را به صورت خودکار پردازش خواهد کرد."</string>
     <string name="SentCallOnly">ما در حال تماس با شماره &lt;b>%1$s&lt;/b> برای گفتن کد هستیم.</string>
     <string name="SentSmsCode">یه پیامک حاوی کد فعال سازی برای تلفن &lt;b>%1$s&lt;/b> فرستادیم.</string>
-    <string name="ServiceNotifications">سرویس اعلان ها</string>
+    <string name="ServiceNotifications">اعلان های خدمات</string>
     <string name="SessionsInfo">نشست هایتان روی دستگاه های دیگر را کنترل نمایید</string>
     <string name="SessionsTitle">نشست های فعال</string>
     <string name="Set">تنظیم کنید</string>
@@ -1010,10 +1030,17 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="ShareLocation">مکان</string>
     <string name="ShareMyContactInfo">اشتراک گذاری شماره من</string>
     <string name="ShareSendTo">ارسال به...</string>
+    <string name="ShareYouLocationInfo">مکان جاری شما به روبات ارسال خواهد شد.</string>
+    <string name="ShareYouLocationInline">این روبات تمایل دارد هر زمان که به آن درخواستی می فرستید مکان شما را بداند. این امکان می تواند برای ارائه نتیجه های وابسته به مکان استفاده شود.</string>
+    <string name="ShareYouLocationTitle">مکان شما به اشتراک گذاشته شود؟</string>
+    <string name="ShareYouLocationUnable">برنامه قادر به تشخیص مکان جاری شما نیست.</string>
+    <string name="ShareYouLocationUnableManually">انتخاب دستی</string>
+    <string name="ShareYouPhoneNumberTitle">شماره تلفن شما به اشتراک گذاشته شود؟</string>
     <string name="SharedMedia">رسانه به اشتراک گذاشته شده</string>
     <string name="SharedMediaTitle">رسانه های مشترک</string>
     <string name="Sharpen">تیز</string>
     <string name="Short">کوتاه</string>
+    <string name="ShortcutAdded">میانبر به صفحه اصلی افزوده شد</string>
     <string name="ShortMessageLifetimeForever">خاموش</string>
     <string name="ShowAllMedia">نمایش همه رسانه ها</string>
     <string name="ShowDiscussion">نظرات را نشان بده</string>
@@ -1061,6 +1088,8 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="TerminateSessionInfo">برای پایان دادن به نشست روی آن ضربه بزنید.</string>
     <string name="TerminateSessionQuestion">این نشست را پایان می دهید؟</string>
     <string name="TextSize">سایز متن پیام ها</string>
+    <string name="TimeToEdit">%1$s</string>
+    <string name="TimeToEditExpired">متاسفانه زمان ویرایش به پایان رسیده است.</string>
     <string name="Times_few">%1$d بار</string>
     <string name="Times_many">%1$d بار</string>
     <string name="Times_one">%1$d بار</string>
@@ -1092,6 +1121,7 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="UpgradeGroup">ارتقا به سوپرگروه</string>
     <string name="UsbActive">انتقال USB فعال است</string>
     <string name="UserAlreadyInGroup">این کاربر هم اکنون در گروه عضو است</string>
+    <string name="UserRestricted">متاسفانه شما اجازه انجام این کار را ندارید.</string>
     <string name="Username">نام کاربری</string>
     <string name="UsernameAvailable">%1$s در دسترس است</string>
     <string name="UsernameChecking">در حال بررسی نام کاربری...</string>
@@ -1112,7 +1142,7 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="Vibrate">لرزش</string>
     <string name="VibrationDefault">پیش فرض</string>
     <string name="VibrationDisabled">غیرفعال</string>
-    <string name="VideoCaption">عنوان ویدیو</string>
+    <string name="VideoCaption">عنوان ویدئو</string>
     <string name="Vignette">شکل</string>
     <string name="WaitingForNetwork">در انتظار شبکه...</string>
     <string name="Warmth">گرمی</string>

@@ -119,6 +119,7 @@ public class ChangePhoneHelpActivity extends BaseFragment {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         textView.setGravity(Gravity.CENTER_HORIZONTAL);
         textView.setTextColor(0xff4d83b3);
+        textView.setTypeface(AndroidUtilities.getTypeface());
         textView.setText(LocaleController.getString("PhoneNumberChange", R.string.PhoneNumberChange));
         textView.setPadding(0, AndroidUtilities.dp(10), 0, AndroidUtilities.dp(10));
         linearLayout.addView(textView);

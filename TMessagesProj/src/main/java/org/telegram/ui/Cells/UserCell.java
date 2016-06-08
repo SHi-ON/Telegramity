@@ -27,7 +27,7 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.CheckBox;
 import org.telegram.ui.Components.CheckBoxSquare;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.SimpleTextView;
+import org.telegram.ui.ActionBar.SimpleTextView;
 
 public class UserCell extends FrameLayout {
 
@@ -40,15 +40,15 @@ public class UserCell extends FrameLayout {
     private ImageView adminImage;
 
     private AvatarDrawable avatarDrawable;
-    private TLObject currentObject = null;
+    private TLObject currentObject;
 
     private CharSequence currentName;
     private CharSequence currrntStatus;
     private int currentDrawable;
 
-    private String lastName = null;
-    private int lastStatus = 0;
-    private TLRPC.FileLocation lastAvatar = null;
+    private String lastName;
+    private int lastStatus;
+    private TLRPC.FileLocation lastAvatar;
 
     private int statusColor = 0xffa8a8a8;
     private int statusOnlineColor = 0xff3b84c0;
@@ -91,17 +91,21 @@ public class UserCell extends FrameLayout {
 
         if (admin) {
             adminImage = new ImageView(context);
-            adminImage.setImageResource(R.drawable.admin_star);
             addView(adminImage, LayoutHelper.createFrame(16, 16, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, LocaleController.isRTL ? 24 : 0, 13.5f, LocaleController.isRTL ? 0 : 24, 0));
         }
     }
 
-    public void setIsAdmin(boolean value) {
+    public void setIsAdmin(int value) {
         if (adminImage == null) {
             return;
         }
-        adminImage.setVisibility(value ? VISIBLE : GONE);
-        nameTextView.setPadding(LocaleController.isRTL && value ? AndroidUtilities.dp(16) : 0, 0, !LocaleController.isRTL && value ? AndroidUtilities.dp(16) : 0, 0);
+        adminImage.setVisibility(value != 0 ? VISIBLE : GONE);
+        nameTextView.setPadding(LocaleController.isRTL && value != 0 ? AndroidUtilities.dp(16) : 0, 0, !LocaleController.isRTL && value != 0 ? AndroidUtilities.dp(16) : 0, 0);
+        if (value == 1) {
+            adminImage.setImageResource(R.drawable.admin_star);
+        } else if (value == 2) {
+            adminImage.setImageResource(R.drawable.admin_star2);
+        }
     }
 
     public void setData(TLObject user, CharSequence name, CharSequence status, int resId) {
@@ -230,7 +234,7 @@ public class UserCell extends FrameLayout {
         } else if (currentUser != null) {
             if (currentUser.bot) {
                 statusTextView.setTextColor(statusColor);
-                if (currentUser.bot_chat_history) {
+                if (currentUser.bot_chat_history || adminImage != null && adminImage.getVisibility() == VISIBLE) { //TODO fix
                     statusTextView.setText(LocaleController.getString("BotStatusRead", R.string.BotStatusRead));
                 } else {
                     statusTextView.setText(LocaleController.getString("BotStatusCantRead", R.string.BotStatusCantRead));

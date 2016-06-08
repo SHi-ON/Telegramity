@@ -146,6 +146,7 @@ public class ConnectionsManager {
                                 TLRPC.TL_error error = null;
                                 if (response != 0) {
                                     NativeByteBuffer buff = NativeByteBuffer.wrap(response);
+                                    buff.reused = true;
                                     resp = object.deserializeResponse(buff, buff.readInt32(true), true);
                                 } else if (errorText != null) {
                                     error = new TLRPC.TL_error();
@@ -214,8 +215,12 @@ public class ConnectionsManager {
         native_setNetworkAvailable(isNetworkOnline());
     }
 
-    public void init(int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String configPath, String logPath, int userId) {
-        native_init(version, layer, apiId, deviceModel, systemVersion, appVersion, langCode, configPath, logPath, userId);
+    public void setPushConnectionEnabled(boolean value) {
+        native_setPushConnectionEnabled(value);
+    }
+
+    public void init(int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String configPath, String logPath, int userId, boolean enablePushConnection) {
+        native_init(version, layer, apiId, deviceModel, systemVersion, appVersion, langCode, configPath, logPath, userId, enablePushConnection);
         checkConnection();
         BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
             @Override
@@ -269,6 +274,7 @@ public class ConnectionsManager {
     public static void onUnparsedMessageReceived(int address) {
         try {
             NativeByteBuffer buff = NativeByteBuffer.wrap(address);
+            buff.reused = true;
             final TLObject message = TLClassStore.Instance().TLdeserialize(buff, buff.readInt32(true), true);
             if (message instanceof TLRPC.Updates) {
                 FileLog.d("tmessages", "java received " + message);
@@ -336,6 +342,7 @@ public class ConnectionsManager {
     public static void onUpdateConfig(int address) {
         try {
             NativeByteBuffer buff = NativeByteBuffer.wrap(address);
+            buff.reused = true;
             final TLRPC.TL_config message = TLRPC.TL_config.TLdeserialize(buff, buff.readInt32(true), true);
             if (message != null) {
                 Utilities.stageQueue.postRunnable(new Runnable() {
@@ -355,8 +362,10 @@ public class ConnectionsManager {
             @Override
             public void run() {
                 try {
-                    getInstance().wakeLock.acquire(20000);
-                    FileLog.d("tmessages", "acquire wakelock");
+                    if (!getInstance().wakeLock.isHeld()) {
+                        getInstance().wakeLock.acquire(10000);
+                        FileLog.d("tmessages", "acquire wakelock");
+                    }
                 } catch (Exception e) {
                     FileLog.e("tmessages", e);
                 }
@@ -381,8 +390,9 @@ public class ConnectionsManager {
     public static native void native_applyDatacenterAddress(int datacenterId, String ipAddress, int port);
     public static native int native_getConnectionState();
     public static native void native_setUserId(int id);
-    public static native void native_init(int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String configPath, String logPath, int userId);
+    public static native void native_init(int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String configPath, String logPath, int userId, boolean enablePushConnection);
     public static native void native_setJava(boolean useJavaByteBuffers);
+    public static native void native_setPushConnectionEnabled(boolean value);
 
     public int generateClassGuid() {
         return lastClassGuid++;

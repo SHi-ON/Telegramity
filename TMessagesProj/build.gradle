@@ -5,10 +5,10 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.android.support:support-v4:23.3.0'
     compile "com.google.android.gms:play-services-gcm:8.4.0"
     compile "com.google.android.gms:play-services-maps:8.4.0"
-    compile 'net.hockeyapp.android:HockeySDK:3.6.+'
+    compile 'net.hockeyapp.android:HockeySDK:4.0.+'
     compile 'com.googlecode.mp4parser:isoparser:1.0.+'
 	compile 'com.parse.bolts:bolts-android:1.4.0'
     compile 'com.parse:parse-android:1.13.0'
@@ -24,7 +24,7 @@ dependencies {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '23.0.3'
 
     useLibrary 'org.apache.http.legacy'
     defaultConfig.applicationId = "org.telegram.engmariaamani.messenger"
@@ -73,7 +73,7 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 6904
+    defaultConfig.versionCode = 6985
 
     sourceSets.main {
         jniLibs.srcDir 'libs'
@@ -124,6 +124,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 23
-        versionName "3.7.1 - TGY-Build 917"
+        versionName "3.9.1 - TGY-Build 985"
     }
 }
+
+apply plugin: 'com.google.gms.google-services'

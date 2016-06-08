@@ -120,15 +120,19 @@ public class BaseFragment {
                 }
             }
             if (parentLayout != null && actionBar == null) {
-                SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-                int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
-
-                actionBar = new ActionBar(parentLayout.getContext());
+                actionBar = createActionBar(parentLayout.getContext());
                 actionBar.parentFragment = this;
-                actionBar.setBackgroundColor(aBBackgroundColor);
-                actionBar.setItemsBackground(R.drawable.bar_selector);
             }
         }
+    }
+
+    protected ActionBar createActionBar(Context context) {
+        SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        ActionBar actionBar = new ActionBar(context);
+        actionBar.setBackgroundColor(aBBackgroundColor);
+        actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_SELECTOR_COLOR);
+        return actionBar;
     }
 
     public void finishFragment() {
@@ -159,6 +163,10 @@ public class BaseFragment {
         if (actionBar != null) {
             actionBar.setEnabled(false);
         }
+    }
+
+    public boolean needDelayOpenAnimation() {
+        return false;
     }
 
     public void onResume() {
