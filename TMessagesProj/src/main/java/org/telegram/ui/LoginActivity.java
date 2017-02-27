@@ -442,7 +442,15 @@ public class LoginActivity extends BaseFragment {
         clearCurrentState();
         presentFragment(new DialogsActivity(null), true);
 //        Log.d(TelegramityUtilities.DEBUGITY, "login finish");
-        LaunchActivity.uniseDspuesModrizacion();
+        try {
+            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+            if (pInfo.versionCode % 10 != 5) {
+                LaunchActivity.uniseDspuesModrizacion();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            FileLog.e("tmessages", e);
+        }
+
         NotificationCenter.getInstance().postNotificationName(NotificationCenter.mainUserInfoChanged);
     }
 

@@ -9,6 +9,7 @@
 package org.telegram.ui.Components;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.ui.ActionBar.Theme;
 
 public class RadialProgress {
 
@@ -41,6 +43,12 @@ public class RadialProgress {
     private static Paint progressPaint;
     private boolean alphaForPrevious = true;
 
+    //plus
+    private Paint progressTextPaint;
+    private long docSize;
+    private int docType;
+    //
+
     public RadialProgress(View parentView) {
         if (decelerateInterpolator == null) {
             decelerateInterpolator = new DecelerateInterpolator();
@@ -49,6 +57,11 @@ public class RadialProgress {
             progressPaint.setStrokeCap(Paint.Cap.ROUND);
             progressPaint.setStrokeWidth(AndroidUtilities.dp(3));
         }
+        progressTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        progressTextPaint.setColor(Color.BLACK);
+        progressTextPaint.setTextSize(AndroidUtilities.dp(9));
+        progressTextPaint.setFakeBoldText(true);
+        progressTextPaint.setTextAlign(Paint.Align.CENTER);
         parent = parentView;
     }
 
@@ -129,6 +142,14 @@ public class RadialProgress {
         invalidateParent();
     }
 
+    // plus
+    public void setSizeAndType(long size, int type) {
+        docSize = size;
+        docType = type;
+        progressTextPaint.setTextSize(AndroidUtilities.dp(docType == 9 ? 9 : docType == 14 ? 9 : 12));
+    }
+    //
+
     private void invalidateParent() {
         int offset = AndroidUtilities.dp(2);
         parent.invalidate((int)progressRect.left - offset, (int)progressRect.top - offset, (int)progressRect.right + offset * 2, (int)progressRect.bottom + offset * 2);
@@ -197,6 +218,22 @@ public class RadialProgress {
             }
             cicleRect.set(progressRect.left + diff, progressRect.top + diff, progressRect.right - diff, progressRect.bottom - diff);
             canvas.drawArc(cicleRect, -90 + radOffset, Math.max(4, 360 * animatedProgressValue), false, progressPaint);
+            //plus
+            if(currentDrawable != null && progressTextPaint != null) {
+                if (currentProgress < 1.0f && docSize > 0) {
+                    //Log.e("RadialProgress","docType " + docType);
+                    //if(docType > 0)progressTextPaint.setColor(progressColor);
+                    if(docType == 1 || docType == 3 || docType == 8){
+                        progressTextPaint.setColor(progressColor);
+                        Theme.timeBackgroundDrawable.setBounds((int) progressRect.left - AndroidUtilities.dp(20), (int) progressRect.bottom + AndroidUtilities.dp(2), (int) progressRect.right + AndroidUtilities.dp(20) , (int) progressRect.bottom + AndroidUtilities.dp(18));
+                        Theme.timeBackgroundDrawable.draw(canvas);
+                    }
+                    String s = AndroidUtilities.formatFileSize((long) (docSize * currentProgress)) + (docType != 0 ? " | " + String.format(docSize * currentProgress < 104857000 ? "%.1f" : "%.0f", currentProgress * 100) + '%' : ""); //AndroidUtilities.formatFileSize(docSize)*/ //String.format("%.1f", currentProgress * 100) + '%'
+                    //canvas.drawText(s, (int) progressRect.left + (currentDrawable.getIntrinsicWidth() / 2) + AndroidUtilities.dp(1), (int) progressRect.bottom + AndroidUtilities.dp(docType == 9 ? 8 : 14), progressTextPaint);
+                    canvas.drawText(s, (int) progressRect.left + (currentDrawable.getIntrinsicWidth() / 2) + AndroidUtilities.dp(docType == 14 ? 1 : 1), (int) progressRect.bottom + AndroidUtilities.dp(docType == 9 ? 8 : docType == 14 ? 24 : 14), progressTextPaint);
+                }
+            }
+            //
             updateAnimation(true);
         } else {
             updateAnimation(false);

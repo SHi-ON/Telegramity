@@ -168,7 +168,7 @@ public class ChannelUsersActivity extends BaseFragment implements NotificationCe
                             fragment.setDelegate(new ContactsActivity.ContactsActivityDelegate() {
                                 @Override
                                 public void didSelectContact(TLRPC.User user, String param) {
-                                    MessagesController.getInstance().addUserToChat(chatId, user, null, param != null ? Utilities.parseInt(param) : 0, null, ChannelUsersActivity.this);
+                                    MessagesController.getInstance().addUserToChat(chatId, user, null, param != null ? Utilities.parseInt(param) : 0, null, ChannelUsersActivity.this, false);
                                 }
                             });
                             presentFragment(fragment);

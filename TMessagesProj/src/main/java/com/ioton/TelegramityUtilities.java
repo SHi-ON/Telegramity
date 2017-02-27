@@ -2,10 +2,10 @@ package com.ioton;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -31,14 +31,59 @@ public class TelegramityUtilities {
 
     private static TLRPC.Chat chrla = null;
 
-
     public static final String OFFICIAL_CHAN = "ioton_telegramity";
-//    public static final String TGYLNK = "BL6mIDvhlAL5kCBf8yOwRg";
     public static final String DEFAULT_FONT_PATH = "IRANSansMobile";
     public static final String DEBUGITY = "SHi_ON";
-    public static int ABBG_COLOR = 0xffef3f3e;
-    public static int DH_COLOR = 0xff2196f3;
-    public static int PBG_COLOR = 0xff9c27b0;
+    public static final String TGYPACKAGENAME = "org.telegram.engmariaamani.messenger";
+    public static final String PTGPACKAGENAME = "org.telegram.engmariaamani.parsi";
+
+    public static int colorABBG() {
+        try {
+            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+            if (pInfo.versionCode % 10 == 5) {
+                return 0xff3f51b5;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            FileLog.e("tmessages", e);
+        }
+        return 0xffef3f3e;
+    }
+
+    public static int colorTH() {
+        try {
+            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+            if (pInfo.versionCode % 10 == 5) {
+                return 0xff36469c;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            FileLog.e("tmessages", e);
+        }
+        return 0xff006edb;
+    }
+
+    public static int colorDH() {
+        try {
+            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+            if (pInfo.versionCode % 10 == 5) {
+                return 0xfff44336;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            FileLog.e("tmessages", e);
+        }
+        return 0xff2196f3;
+    }
+
+    public static int colorPBG() {
+        try {
+            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+            if (pInfo.versionCode % 10 == 5) {
+                return 0xff008fa1;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            FileLog.e("tmessages", e);
+        }
+        return 0xff9c27b0;
+    }
 
     public static void restartTelegramity() {
         Intent mRestartIntent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
@@ -49,29 +94,18 @@ public class TelegramityUtilities {
         System.exit(0);
     }
 
-    public static void emisioAbridrYUnise(String nombrDeUsuro, final BaseFragment fragment, final int type, final boolean abrr, final boolean unse) {
+    public static void emisioAbridrYUnise(String nombrDeUsuro, final BaseFragment fragment, final int tip, final boolean abrr, final boolean unse) {
         if (nombrDeUsuro == null || fragment == null) {
             return;
         }
-        final ProgressDialog progressDialog = new ProgressDialog(fragment.getParentActivity());
-        progressDialog.setMessage(LocaleController.getString("Loading", R.string.Loading));
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-
         TLRPC.TL_contacts_resolveUsername req = new TLRPC.TL_contacts_resolveUsername();
         req.username = nombrDeUsuro;
-        final int reqId = ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
+        ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
             @Override
             public void run(final TLObject response, final TLRPC.TL_error error) {
                 AndroidUtilities.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            progressDialog.dismiss();
-                        } catch (Exception e) {
-                            FileLog.e("tmessages", e);
-                        }
-                        fragment.setVisibleDialog(null);
                         if (error == null) {
                             TLRPC.TL_contacts_resolvedPeer res = (TLRPC.TL_contacts_resolvedPeer) response;
                             MessagesController.getInstance().putUsers(res.users, false);
@@ -84,12 +118,12 @@ public class TelegramityUtilities {
                                     args.putInt("chat_id", chrla.id);
                                     if (unse) {
                                         if (ChatObject.isNotInChat(chrla)) {
-                                            MessagesController.getInstance().addUserToChat(chrla.id, UserConfig.getCurrentUser(), null, 0, null, fragment);
+                                            MessagesController.getInstance().addUserToChat(chrla.id, UserConfig.getCurrentUser(), null, 0, null, fragment, unse);
                                         }
                                     }
                                 }
                                 if (abrr) {
-                                    if (type == 0) {
+                                    if (tip == 0) {
                                         fragment.presentFragment(new ProfileActivity(args));
                                     } else {
                                         fragment.presentFragment(new ChatActivity(args), false);
@@ -109,22 +143,6 @@ public class TelegramityUtilities {
                 });
             }
         });
-        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ConnectionsManager.getInstance().cancelRequest(reqId, true);
-                try {
-                    dialog.dismiss();
-                } catch (Exception e) {
-                    FileLog.e("tmessages", e);
-                }
-                if (fragment != null) {
-                    fragment.setVisibleDialog(null);
-                }
-            }
-        });
-        fragment.setVisibleDialog(progressDialog);
-        progressDialog.show();
     }
 
 }

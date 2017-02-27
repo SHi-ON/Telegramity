@@ -12,9 +12,12 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
@@ -765,6 +768,8 @@ public class FileLoader {
                 }
             }
             if (docExt.length() > 1) {
+                if (ApplicationLoader.KEEP_ORIGINAL_FILENAME && !docExt.contains("webp") && !docExt.contains(".mp4") && !docExt.contains(".gif") && !docExt.contains(".ogg"))
+                    return getDocName(document); //Plus
                 return document.dc_id + "_" + document.id + docExt;
             } else {
                 return document.dc_id + "_" + document.id;
@@ -783,6 +788,96 @@ public class FileLoader {
             return location.volume_id + "_" + location.local_id + "." + (ext != null ? ext : "jpg");
         }
         return "";
+    }
+
+    //Plus
+    public static boolean isGif(TLRPC.Document document) {
+        String s = getDocumentFileName(document);
+        if (s.contains(".mp4") || s.contains(".gif")) {
+            //if(s.contains("giphy.") || s.contains("animation.") || s.contains("gif.")){
+            return true;
+            //}
+        }
+        return false;
+    }
+
+    //Plus
+    public static String getAttachFileName(TLObject attach, String ext, boolean out) {
+        if (attach instanceof TLRPC.Document) {
+            TLRPC.Document document = (TLRPC.Document) attach;
+            String docExt = null;
+            if (docExt == null) {
+                docExt = getDocumentFileName(document);
+                int idx;
+                if (docExt == null || (idx = docExt.lastIndexOf(".")) == -1) {
+                    docExt = "";
+                } else {
+                    docExt = docExt.substring(idx);
+                }
+            }
+            if (docExt.length() <= 1) {
+                if (document.mime_type != null) {
+                    switch (document.mime_type) {
+                        case "video/mp4":
+                            docExt = ".mp4";
+                            break;
+                        case "audio/ogg":
+                            docExt = ".ogg";
+                            break;
+                        default:
+                            docExt = "";
+                            break;
+                    }
+                } else {
+                    docExt = "";
+                }
+            }
+            if (docExt.length() > 1) {
+                //Log.e("FileLoader","1 docExt " + docExt + " mime_type " + document.mime_type + " getDocumentFileName " + getDocumentFileName(document));
+                if (!out && ApplicationLoader.KEEP_ORIGINAL_FILENAME && !docExt.contains("webp") && !docExt.contains(".mp4") && !docExt.contains(".gif") && !docExt.contains(".ogg"))
+                    return getDocName(document);
+                return document.dc_id + "_" + document.id + docExt;
+            } else {
+                return document.dc_id + "_" + document.id;
+            }
+        } else if (attach instanceof TLRPC.PhotoSize) {
+            TLRPC.PhotoSize photo = (TLRPC.PhotoSize) attach;
+            if (photo.location == null || photo.location instanceof TLRPC.TL_fileLocationUnavailable) {
+                return "";
+            }
+            return photo.location.volume_id + "_" + photo.location.local_id + "." + (ext != null ? ext : "jpg");
+        } else if (attach instanceof TLRPC.FileLocation) {
+            if (attach instanceof TLRPC.TL_fileLocationUnavailable) {
+                return "";
+            }
+            TLRPC.FileLocation location = (TLRPC.FileLocation) attach;
+            return location.volume_id + "_" + location.local_id + "." + (ext != null ? ext : "jpg");
+        }
+        return "";
+    }
+
+    public static String getDocName(TLRPC.Document document) {
+        String name = getDocumentFileName(document);
+        //Log.e("FileLoader","name " + name);
+        //boolean org = false;
+        //if(org)return name;
+        String date = document.date + "";
+        String ext = name;
+        int idx = -1;
+        if (ext == null || (idx = ext.lastIndexOf(".")) == -1) {
+            ext = "";
+        } else {
+            ext = ext.substring(idx);
+        }
+        int pos = name.lastIndexOf(".");
+        SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyHHmmss", Locale.US);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(document.date * 1000L);
+        date = formatter.format(calendar.getTime());
+        if (pos > 0) {
+            name = name.substring(0, pos) + "_" + date + ext;
+        }
+        return name;
     }
 
     public void deleteFiles(final ArrayList<File> files, final int type) {

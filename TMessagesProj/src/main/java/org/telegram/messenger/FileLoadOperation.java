@@ -67,6 +67,8 @@ public class FileLoadOperation {
     private File tempPath;
     private boolean isForceRequest;
 
+    private static String orgName = null;
+
     public interface FileLoadOperationDelegate {
         void didFinishLoadingFile(FileLoadOperation operation, File finalFile);
         void didFailedLoadingFile(FileLoadOperation operation, int state);
@@ -93,6 +95,7 @@ public class FileLoadOperation {
         }
         totalBytesCount = size;
         ext = extension != null ? extension : "jpg";
+        orgName = null;
     }
 
     public FileLoadOperation(TLRPC.Document documentLocation) {
@@ -142,6 +145,10 @@ public class FileLoadOperation {
                 } else {
                     ext = "";
                 }
+            }
+
+            if(ext.length() > 1 && ApplicationLoader.KEEP_ORIGINAL_FILENAME && !ext.contains("webp") && !ext.contains(".mp4") && !ext.contains(".gif") && !ext.contains(".ogg")) {
+                orgName = FileLoader.getDocName(documentLocation);
             }
         } catch (Exception e) {
             FileLog.e("tmessages", e);
@@ -225,8 +232,19 @@ public class FileLoadOperation {
             }
         }
 
+        //plus
+        if(ApplicationLoader.KEEP_ORIGINAL_FILENAME && orgName != null){
+            fileNameFinal = orgName;
+        }
+        //
         cacheFileFinal = new File(storePath, fileNameFinal);
         boolean exist = cacheFileFinal.exists();
+        //plus
+        if(exist && orgName != null && ApplicationLoader.KEEP_ORIGINAL_FILENAME){
+            exist = false;
+            cacheFileFinal.delete();
+        }
+        //
         if (exist && totalBytesCount != 0 && totalBytesCount != cacheFileFinal.length()) {
             cacheFileFinal.delete();
         }

@@ -59,7 +59,7 @@ public class DrawerProfileCell extends FrameLayout {
         super(context);
 
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        int drawerHeaderColor = themePreferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
+        int drawerHeaderColor = themePreferences.getInt("drawerHeaderColor", TelegramityUtilities.colorDH());
         setBackgroundColor(drawerHeaderColor);
 
         shadowView = new ImageView(context);

@@ -19,6 +19,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,13 +31,15 @@ import android.util.Base64;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.ioton.TelegramityUtilities;
-import com.parse.Parse;
-import com.parse.ParseInstallation;
+import com.onesignal.OneSignal;
 
+import org.json.JSONObject;
+import org.telegram.SQLite.DatabaseHandler;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.ForegroundDetector;
+import org.telegram.ui.LaunchActivity;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -61,6 +64,9 @@ public class ApplicationLoader extends Application {
 
     public static volatile boolean isScreenOn = false;
     public static volatile boolean mainInterfacePaused = true;
+
+    public static DatabaseHandler databaseHandler;
+    public static boolean KEEP_ORIGINAL_FILENAME;
 
     public static boolean isCustomTheme() {
         return isCustomTheme;
@@ -208,13 +214,9 @@ public class ApplicationLoader extends Application {
     }
 
     public static void postInitApplication() {
-//        Log.d(TelegramityUtilities.DEBUGITY, "post first init = " + applicationInited);
         if (applicationInited) {
-//            Log.d(TelegramityUtilities.DEBUGITY, "post init return");
             return;
         }
-//        Log.d(TelegramityUtilities.DEBUGITY, "post after init = " + applicationInited);
-
 
         applicationInited = true;
         convertConfig();
@@ -313,16 +315,48 @@ public class ApplicationLoader extends Application {
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
-        // Enable Local Datastore.
-//        Parse.enableLocalDatastore(this);
-        // Add your initialization code here
-        Parse.initialize(this);
-        ParseInstallation.getCurrentInstallation().saveInBackground();
-//        ParseUser.enableAutomaticUser();
-//        ParseACL defaultACL = new ParseACL();
-//        ParseACL.setDefaultACL(defaultACL, true);
-        // Optionally enable public read access.
-        // defaultACL.setPublicReadAccess(true);
+        //plus
+        databaseHandler = new DatabaseHandler(applicationContext);
+        SharedPreferences advancedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        KEEP_ORIGINAL_FILENAME = advancedPreferences.getBoolean("keepOriginalFilename", false);
+        //
+
+        final SharedPreferences premPreferences = getSharedPreferences("PremiumState", MODE_PRIVATE);
+//        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.ERROR); //TODO remove this line before release!
+        OneSignal.startInit(this)
+                .setNotificationOpenedHandler(new ApplicationLoader.TGYNotificationOpenedHandler())
+                .setAutoPromptLocation(true)
+                .init();
+        OneSignal.enableNotificationsWhenActive(true);
+        OneSignal.enableInAppAlertNotification(false);
+//        OneSignal.sendTag("isTesting", "test"); //TODO remove this line before release!
+        try {
+            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+            int verCo = pInfo.versionCode % 10;
+            if (verCo == 5) {
+                if (pInfo.packageName == TelegramityUtilities.TGYPACKAGENAME) {
+                    OneSignal.sendTag("market", "avvalDemo");
+                } else if (pInfo.packageName == TelegramityUtilities.PTGPACKAGENAME) {
+                    OneSignal.sendTag("market", "avvalPro");
+                }
+            } else if (verCo == 4) {
+                if (premPreferences.getBoolean("isUserPremium", false)) {
+                    OneSignal.deleteTag("market");
+                    OneSignal.sendTag("market", "bazaarPaid");
+                } else {
+                    OneSignal.sendTag("market", "bazaarFree");
+                }
+            } else if (verCo == 6) {
+                if (premPreferences.getBoolean("isUserPremium", false)) {
+                    OneSignal.deleteTag("market");
+                    OneSignal.sendTag("market", "playPaid");
+                } else {
+                    OneSignal.sendTag("market", "playFree");
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            FileLog.e("tmessages", e);
+        }
 
         startPushService();
 
@@ -330,10 +364,49 @@ public class ApplicationLoader extends Application {
         if (customPath != "device") {
             String customAssetPath = String.format("fonts/%s.ttf", customPath);
             CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                            .setDefaultFontPath(customAssetPath)
-                            .setFontAttrId(R.attr.fontPath)
-                            .build()
+                    .setDefaultFontPath(customAssetPath)
+                    .setFontAttrId(R.attr.fontPath)
+                    .build()
             );
+        }
+    }
+
+    private class TGYNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
+
+        // {"channel","username"}
+        // {"appBazaar","packageName"}
+        // {"rateBazaar","packageName"}
+        // {"iab",""}
+        // {"dialog",""}
+
+        @Override
+        public void notificationOpened(String message, JSONObject additionalData, boolean isActive) {
+            try {
+                if (additionalData != null) {
+                    Intent intent = new Intent(applicationContext, LaunchActivity.class);
+                    intent.setAction("org.telegram.messenger.OPEN_NOTIFICATION");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    if (additionalData.has("channel") && additionalData.getString("channel") != null) {
+                        intent.putExtra("iChannel", additionalData.getString("channel"));
+                    }
+                    if (additionalData.has("appBazaar") && additionalData.getString("appBazaar") != null) {
+                        intent.putExtra("iAppBazaar", additionalData.getString("appBazaar"));
+                    }
+                    if (additionalData.has("rateBazaar") && additionalData.getString("rateBazaar") != null) {
+                        intent.putExtra("iRateBazaar", additionalData.getString("rateBazaar"));
+                    }
+                    if (additionalData.has("iab")) {
+                        intent.putExtra("iIAB", "iIAB");
+                    }
+                    if (additionalData.has("dialog")) {
+                        intent.putExtra("iDialogTitle", additionalData.getString("title"));
+                        intent.putExtra("iDialogMessage", message);
+                    }
+                    startActivity(intent);
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
     }
 
@@ -389,8 +462,8 @@ public class ApplicationLoader extends Application {
                     }
 
                     //if (UserConfig.pushString == null || UserConfig.pushString.length() == 0) {
-                        Intent intent = new Intent(applicationContext, GcmRegistrationIntentService.class);
-                        startService(intent);
+                    Intent intent = new Intent(applicationContext, GcmRegistrationIntentService.class);
+                    startService(intent);
                     //} else {
                     //    FileLog.d("tmessages", "GCM regId = " + UserConfig.pushString);
                     //}

@@ -10,13 +10,13 @@ package org.telegram.messenger;
 
 public class BuildVars {
     public static boolean DEBUG_VERSION = false;
-    public static int BUILD_VERSION = 6983;
-    public static String BUILD_VERSION_STRING = "3.95"; //increment after each upgradity!
+    public static int BUILD_VERSION = 6992;
+    public static String BUILD_VERSION_STRING = "3.97"; //increment after each upgradity!
     public static int APP_ID = 39835; //obtain your own APP_ID at https://core.telegram.org/api/obtaining_api_id
     public static String APP_HASH = "2535354cf42e12d2bfac6c00ba949d09"; //obtain your own APP_HASH at https://core.telegram.org/api/obtaining_api_id
     public static String HOCKEY_APP_HASH = "2535354cf42e12d2bfac6c00ba949d09";
     public static String HOCKEY_APP_HASH_DEBUG = "2535354cf42e12d2bfac6c00ba949d09";
-    public static String GCM_SENDER_ID = "1076345567071,760348033672";
+    public static String GCM_SENDER_ID = "760348033672";
     public static String SEND_LOGS_EMAIL = "7shayan7@gmail.com";
     public static String BING_SEARCH_KEY = ""; //obtain your own KEY at https://www.bing.com/dev/en-us/dev-center
     public static String FOURSQUARE_API_KEY = ""; //obtain your own KEY at https://developer.foursquare.com/

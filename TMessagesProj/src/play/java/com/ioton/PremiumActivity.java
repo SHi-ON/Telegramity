@@ -1,17 +1,11 @@
-/*
- * This is the source code of Telegram for Android v. 3.x.x.
- * It is licensed under GNU GPL v. 2 or later.
- * You should have received a copy of the license in this archive (see LICENSE).
- *
- * Copyright Nikolai Kudashov, 2013-2015.
- */
-
 package com.ioton;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.provider.Settings;
@@ -29,6 +23,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.util.IabBroadcastReceiver;
 import org.telegram.messenger.util.IabHelper;
 import org.telegram.messenger.util.IabResult;
 import org.telegram.messenger.util.Inventory;
@@ -45,20 +40,21 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import ir.adad.client.Adad;
 
-public class PremiumActivity extends BaseFragment {
+public class PremiumActivity extends BaseFragment implements IabBroadcastReceiver.IabBroadcastListener {
 
-    private Context ctx;
-    private int currentConnectionState;
-
-    public static final String RSA = "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDA0j/fvC0lJwJDM+fTGMWr660orGF+K+aMF8vOgEORwkeyfY/TWXLlL3qJYK7gh2HxKM7zHQVEQ0XKWFHYMvk5+Ql5N5rMMYuA3M7dAcqnRgnf6Ke+Fh2RhmuKy8uJDnpYf7p2w7phwN0ATusMNEnhfNsuBWBRlDtWLlxHBz4UOLDV/9yy7Vp1oITrUZvHQZNBLrqKjBpPDxXdJAui14PEz8M2nBFyc3N/fYL8oDkCAwEAAQ==";
+    public static final String RSA_PLAY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi6qXHvTIz6lCB7xKkjwylewXcGy/zvuzwC3aDG7OpqD17icE9KOtqWsOLzMmk+3FDyULZ6HHKoTaV1Oe22GgWiU3tBCsQ1RN1ufstt3SaUQm+5spMiXIdtu8M4suFs/mnGCH+lK6x7+3JXHFkn0u/yZeGR5SQedArrYGygHtzPBUeG+YBvE1lrtaWPuY8G8MriILATsfDgfAy+IBexlGhydKfRaBw3ncdbODChVEukioq4yKr0pozeBxdYRzdj99V42r2xQ6DleSW+AMs4QxLCXUdVDfxak6QbvnVZ9SWiDjdCYRYNdflAEHaWwAh5El7FIH3DlN5Lo7ObaCMiT1EQIDAQAB";
     public static final String TAG = "TELEGRAMITY";
-    static final String SKU_PREMIUM = "telegramity_full_ver";
+    static final String SKU_PREMIUM = "play_tgy_remove_ads";
     boolean mIsPremium = false;
     static final int RC_REQUEST = 77177; //specific number for Telegramity
     IabHelper mHelper;
     private String payload;
+    IabBroadcastReceiver mBroadcastReceiver;
 
+    private Context ctx;
+    private int currentConnectionState;
     private ListView listView;
+    private ProgressDialog progressDialog;
     private int openingSectionBottomRow;
     private int specialOffersSectionRow;
     private int removeAdsRow;
@@ -68,7 +64,6 @@ public class PremiumActivity extends BaseFragment {
 
     @Override
     public boolean onFragmentCreate() {
-
         currentConnectionState = ConnectionsManager.getInstance().getConnectionState();
 
         openingSectionBottomRow = rowCount++;
@@ -80,24 +75,15 @@ public class PremiumActivity extends BaseFragment {
         return super.onFragmentCreate();
     }
 
-
-    @Override
-    public void onFragmentDestroy() {
-        super.onFragmentDestroy();
-
-        // very important:
-        Log.d(TAG, "Destroying helper.");
-        if (mHelper != null) {
-            mHelper.dispose();
-            mHelper = null;
-        }
-    }
-
     @Override
     public View createView(final Context context) {
-
         ctx = context;
 
+        progressDialog = new ProgressDialog(ctx);
+        progressDialog.setMessage(LocaleController.getString("Loading", R.string.Loading));
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         final SharedPreferences premPreferences = ctx.getSharedPreferences("PremiumState", ctx.MODE_PRIVATE);
 
         TelephonyManager telephonyManager = (TelephonyManager) ctx.getSystemService(ctx.TELEPHONY_SERVICE);
@@ -108,31 +94,40 @@ public class PremiumActivity extends BaseFragment {
         mIsPremium = premPreferences.getBoolean("isUserPremium", false);
 
         Log.d(TAG, "Creating IAB helper.");
-        mHelper = new IabHelper(context, RSA);
+        mHelper = new IabHelper(ctx, RSA_PLAY);
 
         // TODO: enable debug logging (for a production application, you should set this to false).
         mHelper.enableDebugLogging(false);
 
         Log.d(TAG, "Starting setup.");
-        try {
-            mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                public void onIabSetupFinished(IabResult result) {
-                    Log.d(TAG, "Setup finished.");
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                Log.d(TAG, "Setup finished.");
 
-                    if (!result.isSuccess()) {
-                        complain("Problem setting up in-app billing: " + result);
-                        return;
-                    }
-
-                    if (mHelper == null) return;
-
-                    Log.d(TAG, "Setup successful. Querying inventory.");
-                    mHelper.queryInventoryAsync(mGotInventoryListener);
+                if (!result.isSuccess()) {
+                    complain("Problem setting up in-app billing: " + result);
+                    return;
                 }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+                if (mHelper == null) return;
+
+                mBroadcastReceiver = new IabBroadcastReceiver(new IabBroadcastReceiver.IabBroadcastListener() {
+                    @Override
+                    public void receivedBroadcast() {
+
+                    }
+                });
+                IntentFilter broadcastFilter = new IntentFilter(IabBroadcastReceiver.ACTION);
+                ctx.registerReceiver(mBroadcastReceiver, broadcastFilter);
+
+                Log.d(TAG, "Setup successful. Querying inventory.");
+                try {
+                    mHelper.queryInventoryAsync(mGotInventoryListener);
+                } catch (IabHelper.IabAsyncInProgressException e) {
+                    complain("Error querying inventory. Another async operation in progress.");
+                }
+            }
+        });
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
@@ -146,10 +141,10 @@ public class PremiumActivity extends BaseFragment {
             }
         });
 
-        fragmentView = new FrameLayout(context);
+        fragmentView = new FrameLayout(ctx);
         FrameLayout frameLayout = (FrameLayout) fragmentView;
 
-        listView = new ListView(context);
+        listView = new ListView(ctx);
         listView.setDivider(null);
         listView.setDividerHeight(0);
         listView.setVerticalScrollBarEnabled(false);
@@ -158,20 +153,20 @@ public class PremiumActivity extends BaseFragment {
         layoutParams.width = LayoutHelper.MATCH_PARENT;
         layoutParams.height = LayoutHelper.MATCH_PARENT;
         listView.setLayoutParams(layoutParams);
-        listView.setAdapter(new ListAdapter(context));
+        listView.setAdapter(new ListAdapter(ctx));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, final View view, final int i, long l) {
                 currentConnectionState = ConnectionsManager.getInstance().getConnectionState();
                 if (i == removeAdsRow) {
                     if (!(premPreferences.getBoolean("isUserPremium", false))) {
-                        if (isPackageInstalled("com.farsitel.bazaar")) {
+                        if (isPackageInstalled("com.android.vending")) {
                             if (currentConnectionState == ConnectionsManager.ConnectionStateConnected) {
                                 Log.d(TAG, "Upgrade button clicked; launching purchase flow for upgrade.");
                                 try {
                                     mHelper.launchPurchaseFlow(getParentActivity(), SKU_PREMIUM, RC_REQUEST,
                                             mPurchaseFinishedListener, payload);
-                                } catch (Exception e) {
+                                } catch (IabHelper.IabAsyncInProgressException e) {
                                     e.printStackTrace();
                                     complain(ctx.getString(R.string.PremiumPurchaseUnknownError));
                                 }
@@ -179,7 +174,7 @@ public class PremiumActivity extends BaseFragment {
                                 complain(ctx.getString(R.string.PremiumNoInternetAccess));
                             }
                         } else {
-                            complain(ctx.getString(R.string.PremiumBazaarNotInstalled));
+                            complain(ctx.getString(R.string.PremiumMarketAppNotInstalled));
                         }
                     } else {
                         alert(ctx.getString(R.string.PremiumPurchaseAlreadyPurchased));
@@ -199,6 +194,8 @@ public class PremiumActivity extends BaseFragment {
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
             Log.d(TAG, "Query inventory finished.");
+            progressDialog.dismiss();
+
             if (mHelper == null) return;
 
             if (result.isFailure()) {
@@ -209,24 +206,26 @@ public class PremiumActivity extends BaseFragment {
                     complain("Failed to query inventory: " + result);
                     return;
                 }
-            } else {
-                Log.d(TAG, "Query inventory was successful.");
-                mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
-                /*if (mIsPremium) {
+            }
+
+            Log.d(TAG, "Query inventory was successful.");
+            Purchase premiumPurchase = inventory.getPurchase(SKU_PREMIUM);
+            mIsPremium = (premiumPurchase != null);
+                            /*if (mIsPremium) {
                     MasrafSeke(inventory.getPurchase(SKU_PREMIUM));
                 }*/
-                if (mIsPremium) {
-                    SharedPreferences premPreferences = ctx.getSharedPreferences("PremiumState", ctx.MODE_PRIVATE);
-                    if (!premPreferences.getBoolean("isUserPremium", false)) {
-                        SharedPreferences.Editor editor = premPreferences.edit();
-                        editor.putBoolean("isUserPremium", true);
-                        editor.apply();
-                        alert(ctx.getString(R.string.PremiumPurchasedCongrats));
-                        afterPurchase();
-                    }
-                    Log.d(TAG, "User is " + (mIsPremium ? "PREMIUM" : "NOT PREMIUM"));
+            if (mIsPremium) {
+                SharedPreferences premPreferences = ctx.getSharedPreferences("PremiumState", ctx.MODE_PRIVATE);
+                if (!premPreferences.getBoolean("isUserPremium", false)) {
+                    SharedPreferences.Editor editor = premPreferences.edit();
+                    editor.putBoolean("isUserPremium", true);
+                    editor.apply();
+                    alert(ctx.getString(R.string.PremiumPurchasedCongrats));
+                    afterPurchase();
                 }
+                Log.d(TAG, "User is " + (mIsPremium ? "PREMIUM" : "NOT PREMIUM"));
             }
+
             Log.d(TAG, "Initial inventory query finished; enabling main UI.");
         }
     };
@@ -240,7 +239,6 @@ public class PremiumActivity extends BaseFragment {
             if (!result.isFailure()) {
                 if (purchase.getOrderId().equals(purchase.getToken())) {
                     if (purchase.getSku().equals(SKU_PREMIUM) && purchase.getDeveloperPayload().equals(payload)) {
-
                         SharedPreferences premPreferences = ctx.getSharedPreferences("PremiumState", ctx.MODE_PRIVATE);
                         SharedPreferences.Editor editor = premPreferences.edit();
                         editor.putBoolean("isUserPremium", true);
@@ -300,7 +298,6 @@ public class PremiumActivity extends BaseFragment {
 
     boolean verifyDeveloperPayload(Purchase p) {
         String payload = p.getDeveloperPayload();
-
         /*
          * TODO: verify that the developer payload of the purchase is correct. It will be
          * the same one that you sent when initiating the purchase.
@@ -323,7 +320,6 @@ public class PremiumActivity extends BaseFragment {
          * Using your own server to store and verify developer payloads across app
          * installations is recommended.
          */
-
         return true;
     }
 
@@ -333,6 +329,23 @@ public class PremiumActivity extends BaseFragment {
         }
         if (listView != null) {
             listView.invalidateViews();
+        }
+    }
+
+    @Override
+    public void onFragmentDestroy() {
+        super.onFragmentDestroy();
+
+        // very important:
+        if (mBroadcastReceiver != null) {
+            ctx.unregisterReceiver(mBroadcastReceiver);
+        }
+
+        // very important:
+        Log.d(TAG, "Destroying helper.");
+        if (mHelper != null) {
+            mHelper.disposeWhenFinished();
+            mHelper = null;
         }
     }
 
@@ -349,7 +362,7 @@ public class PremiumActivity extends BaseFragment {
         text_tv.setTypeface(AndroidUtilities.getTypeface());
 
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
         TextView titleTextView = new TextView(ctx);
         titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
         titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
@@ -362,6 +375,16 @@ public class PremiumActivity extends BaseFragment {
         bld.setView(text_tv);
         bld.setNeutralButton(LocaleController.getString("OK", R.string.OK), null);
         bld.create().show();
+    }
+
+    @Override
+    public void receivedBroadcast() {
+        Log.d(TAG, "Received broadcast notification. Querying inventory.");
+        try {
+            mHelper.queryInventoryAsync(mGotInventoryListener);
+        } catch (IabHelper.IabAsyncInProgressException e) {
+            complain("Error querying inventory. Another async operation in progress.");
+        }
     }
 
     private class ListAdapter extends BaseFragmentAdapter {
@@ -424,7 +447,7 @@ public class PremiumActivity extends BaseFragment {
                     } else {
                         userStatusStr = LocaleController.getString("PremiumStatusFree", R.string.PremiumStatusFree);
                     }
-                    textCell.setTextAndValue(LocaleController.getString("PremiumRemoveAds", R.string.PremiumRemoveAds),  userStatusStr, true);
+                    textCell.setTextAndValue(LocaleController.getString("PremiumRemoveAds", R.string.PremiumRemoveAds), userStatusStr, true);
                 }
             } else if (type == 3) {
                 if (view == null) {

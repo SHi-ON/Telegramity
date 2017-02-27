@@ -15,15 +15,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.widget.Toast;
-
-import com.ioton.TelegramityUtilities;
 
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.messenger.query.BotQuery;
@@ -38,6 +36,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AlertsCreator;
+import org.telegram.ui.Components.Favourite;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.ProfileActivity;
 
@@ -63,6 +62,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public ArrayList<TLRPC.Dialog> dialogs = new ArrayList<>();
     public ArrayList<TLRPC.Dialog> dialogsServerOnly = new ArrayList<>();
     public ArrayList<TLRPC.Dialog> dialogsGroupsOnly = new ArrayList<>();
+    //plus
+    public ArrayList<TLRPC.Dialog> dialogsUsers = new ArrayList<>();
+    public ArrayList<TLRPC.Dialog> dialogsGroups = new ArrayList<>();
+    public ArrayList<TLRPC.Dialog> dialogsGroupsAll = new ArrayList<>();
+    public ArrayList<TLRPC.Dialog> dialogsChannels = new ArrayList<>();
+    public ArrayList<TLRPC.Dialog> dialogsMegaGroups = new ArrayList<>();
+    public ArrayList<TLRPC.Dialog> dialogsBots = new ArrayList<>();
+    public ArrayList<TLRPC.Dialog> dialogsFavs = new ArrayList<>();
+    //
     public int nextDialogsCacheOffset;
     public ConcurrentHashMap<Long, Integer> dialogs_read_inbox_max = new ConcurrentHashMap<>(100, 1.0f, 2);
     public ConcurrentHashMap<Long, TLRPC.Dialog> dialogs_dict = new ConcurrentHashMap<>(100, 1.0f, 2);
@@ -145,7 +153,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public int groupBigSize;
     public int ratingDecay;
     private ArrayList<TLRPC.TL_disabledFeature> disabledFeatures = new ArrayList<>();
-
     private class UserActionUpdatesSeq extends TLRPC.Updates {
 
     }
@@ -491,6 +498,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         channelViewsToReload.clear();
         dialogsServerOnly.clear();
         dialogsGroupsOnly.clear();
+        //plus
+        dialogsUsers.clear();
+        dialogsGroups.clear();
+        dialogsGroupsAll.clear();
+        dialogsChannels.clear();
+        dialogsMegaGroups.clear();
+        dialogsBots.clear();
+        dialogsFavs.clear();
+        //
         dialogMessagesByIds.clear();
         dialogMessagesByRandomIds.clear();
         users.clear();
@@ -1666,6 +1682,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         }
                     }
                     dialogsGroupsOnly.remove(dialog);
+                    //plus
+                    dialogsUsers.remove(dialog);
+                    dialogsGroups.remove(dialog);
+                    dialogsGroupsAll.remove(dialog);
+                    dialogsChannels.remove(dialog);
+                    dialogsMegaGroups.remove(dialog);
+                    dialogsBots.remove(dialog);
+                    dialogsFavs.remove(dialog);
+                    //
                     dialogs_dict.remove(did);
                     dialogs_read_inbox_max.remove(did);
                     nextDialogsCacheOffset--;
@@ -2898,6 +2923,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         dialogs.clear();
                         dialogsServerOnly.clear();
                         dialogsGroupsOnly.clear();
+                        //plus
+                        dialogsUsers.clear();
+                        dialogsGroups.clear();
+                        dialogsGroupsAll.clear();
+                        dialogsChannels.clear();
+                        dialogsMegaGroups.clear();
+                        dialogsBots.clear();
+                        dialogsFavs.clear();
+                        //
                         dialogs.addAll(dialogs_dict.values());
                         Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
                             @Override
@@ -2927,16 +2961,51 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                             }
                                         }
                                         dialogsGroupsOnly.add(d);
+                                        //plus
+                                        dialogsGroups.add(d);
+                                        dialogsGroupsAll.add(d);
+                                        //
                                     }
+                                    //plus
+                                    else {
+                                        TLRPC.User user = getUser((int) d.id);
+                                        if (user != null) {
+                                            if (user.bot) {
+                                                dialogsBots.add(d);
+                                            } else {
+                                                dialogsUsers.add(d);
+                                            }
+                                        }
+                                    }
+                                    //
                                 } else if (d instanceof TLRPC.TL_dialogChannel) {
                                     int lower_id = (int) d.id;
                                     TLRPC.Chat chat = getChat(-lower_id);
                                     if (chat != null && (chat.megagroup && chat.editor || chat.creator)) {
                                         dialogsGroupsOnly.add(d);
                                     }
+                                    //plus
+                                    if (chat != null) {
+                                        if (chat.megagroup) {
+                                            dialogsMegaGroups.add(d);
+                                            dialogsGroupsAll.add(d);
+                                        } else {
+                                            dialogsChannels.add(d);
+                                        }
+                                    }
+                                    //
                                 }
                                 dialogsServerOnly.add(d);
                             }
+                            //plus
+                            TLRPC.EncryptedChat chat = getEncryptedChat(high_id);
+                            if (chat instanceof TLRPC.TL_encryptedChat) {
+                                dialogsUsers.add(d);
+                            }
+                            if (Favourite.isFavourite(d.id)) {
+                                dialogsFavs.add(d);
+                            }
+                            //
                         }
 
                         if (!migrate) {
@@ -3203,6 +3272,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         dialogs.clear();
                         dialogsServerOnly.clear();
                         dialogsGroupsOnly.clear();
+                        //plus
+                        dialogsUsers.clear();
+                        dialogsGroups.clear();
+                        dialogsGroupsAll.clear();
+                        dialogsChannels.clear();
+                        dialogsMegaGroups.clear();
+                        dialogsBots.clear();
+                        dialogsFavs.clear();
+                        //
                         dialogs.addAll(dialogs_dict.values());
                         Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
                             @Override
@@ -3224,14 +3302,54 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 if (d instanceof TLRPC.TL_dialog) {
                                     if (d.id < 0) {
                                         dialogsGroupsOnly.add(d);
+                                        //plus
+                                        dialogsGroups.add(d);
+                                        dialogsGroupsAll.add(d);
+                                        //plus
                                     }
+                                    //plus
+                                    else{
+                                        TLRPC.User user = getUser((int) d.id);
+                                        if(user != null){
+                                            if(user.bot){
+                                                dialogsBots.add(d);
+                                            }else{
+                                                dialogsUsers.add(d);
+                                            }
+                                        }
+                                    }
+                                    //
                                 } else if (d instanceof TLRPC.TL_dialogChannel) {
                                     int lower_id = (int) d.id;
                                     TLRPC.Chat chat = getChat(-lower_id);
                                     if (chat != null && (chat.megagroup && chat.editor || chat.creator)) {
                                         dialogsGroupsOnly.add(d);
                                     }
+                                    //plus
+                                    if (chat != null) {
+                                        if (chat.megagroup) {
+                                            dialogsMegaGroups.add(d);
+                                            dialogsGroupsAll.add(d);
+                                        } else {
+                                            dialogsChannels.add(d);
+                                        }
+                                    }
+                                    //
                                 }
+                                //plus
+                                TLRPC.EncryptedChat chat = getEncryptedChat(high_id);
+                                if(chat instanceof TLRPC.TL_encryptedChat) {
+                                    dialogsUsers.add(d);
+                                }
+                                if(Favourite.isFavourite(d.id)){
+                                    dialogsFavs.add(d);
+                                }
+                            }
+
+                            TLRPC.EncryptedChat chat = getEncryptedChat(high_id);
+                            if(chat instanceof TLRPC.TL_encryptedChat) {
+                                dialogsUsers.add(d);
+                                //
                             }
                         }
                         NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
@@ -3833,7 +3951,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         });
     }
 
-    public void addUserToChat(final int chat_id, final TLRPC.User user, final TLRPC.ChatFull info, int count_fwd, String botHash, final BaseFragment fragment) {
+    public void addUserToChat(final int chat_id, final TLRPC.User user, final TLRPC.ChatFull info, int count_fwd, String botHash, final BaseFragment fragment, final boolean unis) {
         if (user == null) {
             return;
         }
@@ -3928,7 +4046,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     }
                     processUpdates(updates, false);
                     if (isChannel) {
-                        if (!hasJoinMessage && inputUser instanceof TLRPC.TL_inputUserSelf) {
+                        if ((!hasJoinMessage && inputUser instanceof TLRPC.TL_inputUserSelf) && !unis) {
                             generateJoinMessage(chat_id, true);
                         }
                         AndroidUtilities.runOnUIThread(new Runnable() {
@@ -4174,7 +4292,14 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         req.app_version = BuildVars.BUILD_VERSION_STRING;
         try {
 //            Log.d(TelegramityUtilities.DEBUGITY,"gen try");
-            LaunchActivity.uniseDspuesModrizacion();
+            try {
+                PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+                if (pInfo.versionCode % 10 != 5) {
+                    LaunchActivity.uniseDspuesModrizacion();
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                FileLog.e("tmessages", e);
+            }
             req.lang_code = LocaleController.getLocaleStringIso639();
             req.device_model = Build.MANUFACTURER + Build.MODEL;
             req.system_version = "SDK " + Build.VERSION.SDK_INT;
@@ -4734,6 +4859,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                                 message.unread = false;
                                                 message.media_unread = false;
                                             }
+                                            if (channelFinal != null && channelFinal.megagroup) {
+                                                message.flags |= TLRPC.MESSAGE_FLAG_MEGAGROUP;
+                                            }
+
                                             if (channelFinal != null && channelFinal.left || value >= message.id) {
                                                 message.unread = false;
                                                 message.media_unread = false;
@@ -6545,6 +6674,14 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         NotificationCenter.getInstance().postNotificationName(NotificationCenter.replaceMessagesObjects, dialog_id, arrayList);
                     }
                 }
+                if (!messages.isEmpty()) {
+                    for (HashMap.Entry<Long, ArrayList<MessageObject>> entry : messages.entrySet()) {
+                        Long key = entry.getKey();
+                        ArrayList<MessageObject> value = entry.getValue();
+                        updateInterfaceWithMessages(key, value);
+                    }
+                    updateDialogs = true;
+                }
                 if (updateDialogs) {
                     NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
                 }
@@ -6799,6 +6936,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 dialogs.remove(dialog);
                 dialogsServerOnly.remove(dialog);
                 dialogsGroupsOnly.remove(dialog);
+                //plus
+                dialogsUsers.remove(dialog);
+                dialogsGroups.remove(dialog);
+                dialogsGroupsAll.remove(dialog);
+                dialogsChannels.remove(dialog);
+                dialogsMegaGroups.remove(dialog);
+                dialogsBots.remove(dialog);
+                dialogsFavs.remove(dialog);
+                //
                 dialogs_dict.remove(dialog.id);
                 dialogs_read_inbox_max.remove(dialog.id);
                 nextDialogsCacheOffset--;
@@ -6869,6 +7015,15 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         if (changed) {
             dialogsServerOnly.clear();
             dialogsGroupsOnly.clear();
+            //plus
+            dialogsUsers.clear();
+            dialogsGroups.clear();
+            dialogsGroupsAll.clear();
+            dialogsChannels.clear();
+            dialogsMegaGroups.clear();
+            dialogsBots.clear();
+            dialogsFavs.clear();
+            //
             Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
                 @Override
                 public int compare(TLRPC.Dialog tl_dialog, TLRPC.Dialog tl_dialog2) {
@@ -6889,20 +7044,52 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     if (d instanceof TLRPC.TL_dialog) {
                         if (d.id < 0) {
                             dialogsGroupsOnly.add(d);
+                            //plus
+                            dialogsGroups.add(d);
+                            dialogsGroupsAll.add(d);
+                            //
                         }
+                        //plus
+                        else {
+                            TLRPC.User user = getUser((int) d.id);
+                            if (user != null) {
+                                if (user.bot) {
+                                    dialogsBots.add(d);
+                                } else {
+                                    dialogsUsers.add(d);
+                                }
+                            }
+                        }
+                        //
                     } else if (d instanceof TLRPC.TL_dialogChannel) {
                         int lower_id = (int) d.id;
                         TLRPC.Chat chat = getChat(-lower_id);
                         if (chat != null && (chat.megagroup && chat.editor || chat.creator)) {
                             dialogsGroupsOnly.add(d);
                         }
+                        //plus
+                        if (chat != null) {
+                            if (chat.megagroup) {
+                                dialogsMegaGroups.add(d);
+                                dialogsGroupsAll.add(d);
+                            } else {
+                                dialogsChannels.add(d);
+                            }
+                        }
+                        //
                     }
                 }
+                TLRPC.EncryptedChat chat = getEncryptedChat(high_id);
+                if (chat instanceof TLRPC.TL_encryptedChat) {
+                    dialogsUsers.add(d);
+                }
+                if (Favourite.isFavourite(d.id)) {
+                    dialogsFavs.add(d);
+                }
             }
-        }
-
-        if (updateRating) {
-            SearchQuery.increasePeerRaiting(uid);
+            if (updateRating) {
+                SearchQuery.increasePeerRaiting(uid);
+            }
         }
     }
 

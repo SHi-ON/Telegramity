@@ -23,7 +23,6 @@ import com.ioton.TelegramityUtilities;
 import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
 
 public class BaseFragment {
@@ -128,7 +127,7 @@ public class BaseFragment {
 
     protected ActionBar createActionBar(Context context) {
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
         ActionBar actionBar = new ActionBar(context);
         actionBar.setBackgroundColor(aBBackgroundColor);
         actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_SELECTOR_COLOR);
