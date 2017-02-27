@@ -50,6 +50,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ioton.TelegramityUtilities;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -62,12 +63,6 @@ import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.browser.Browser;
-import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.tgnet.RequestDelegate;
-import org.telegram.tgnet.SerializedData;
-import org.telegram.tgnet.TLObject;
-import org.telegram.tgnet.TLRPC;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
@@ -78,6 +73,7 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.SerializedData;
@@ -88,6 +84,7 @@ import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
 import org.telegram.ui.Cells.CheckBoxCell;
 import org.telegram.ui.Cells.EmptyCell;
@@ -101,8 +98,6 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.AvatarUpdater;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.NumberPicker;
-import org.telegram.ui.ActionBar.Theme;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -238,11 +233,15 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         };
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
 
+        SharedPreferences advancedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+
         rowCount = 0;
         overscrollRow = rowCount++;
         emptyRow = rowCount++;
         numberSectionRow = rowCount++;
-        numberRow = rowCount++;
+        if (!advancedPreferences.getBoolean("noNumber", false)) {
+            numberRow = rowCount++;
+        }
         usernameRow = rowCount++;
         settingsSectionRow = rowCount++;
         settingsSectionRow2 = rowCount++;
@@ -303,7 +302,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
     @Override
     public View createView(Context context) {
-        actionBar.setBackgroundColor(AvatarDrawable.getProfileBackColorForId(5));
+        SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        int instanceOfProfileBackgroundColor = themePreferences.getInt("profileBackgroundColor", TelegramityUtilities.colorPBG());
+
+        actionBar.setBackgroundColor(instanceOfProfileBackgroundColor);
         actionBar.setItemsBackgroundColor(AvatarDrawable.getButtonColorForId(5));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAddToContainer(false);
@@ -377,7 +379,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         listView.setDivider(null);
         listView.setDividerHeight(0);
         listView.setVerticalScrollBarEnabled(false);
-        AndroidUtilities.setListViewEdgeEffectColor(listView, AvatarDrawable.getProfileBackColorForId(5));
+        AndroidUtilities.setListViewEdgeEffectColor(listView, instanceOfProfileBackgroundColor);
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT));
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -451,7 +453,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(MediaController.getInstance().canCustomTabs());
                     }
-                } else if(i == directShareRow) {
+                } else if (i == directShareRow) {
                     MediaController.getInstance().toggleDirectShare();
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(MediaController.getInstance().canDirectShare());
@@ -633,7 +635,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         extraHeightView = new View(context);
         ViewProxy.setPivotY(extraHeightView, 0);
-        extraHeightView.setBackgroundColor(AvatarDrawable.getProfileBackColorForId(5));
+        extraHeightView.setBackgroundColor(instanceOfProfileBackgroundColor);
         frameLayout.addView(extraHeightView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 88));
 
         shadowView = new View(context);
@@ -1051,7 +1053,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             ViewProxy.setTranslationX(nameTextView, -21 * AndroidUtilities.density * diff);
             ViewProxy.setTranslationY(nameTextView, (float) Math.floor(avatarY) - (float) Math.ceil(AndroidUtilities.density) + (float) Math.floor(7 * AndroidUtilities.density * diff));
             ViewProxy.setTranslationX(onlineTextView, -21 * AndroidUtilities.density * diff);
-            ViewProxy.setTranslationY(onlineTextView, (float) Math.floor(avatarY) + AndroidUtilities.dp(22) + (float )Math.floor(11 * AndroidUtilities.density) * diff);
+            ViewProxy.setTranslationY(onlineTextView, (float) Math.floor(avatarY) + AndroidUtilities.dp(22) + (float) Math.floor(11 * AndroidUtilities.density) * diff);
             ViewProxy.setScaleX(nameTextView, 1.0f + 0.12f * diff);
             ViewProxy.setScaleY(nameTextView, 1.0f + 0.12f * diff);
         }
@@ -1273,9 +1275,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 break;
                             case 2:
                                 abi = "x86";
-                                break;
-                            case 3:
-                                abi = " ";
                                 break;
                         }
                         ((TextInfoCell) view).setText(String.format(Locale.US, "Telegramity for Android v%s (%d) %s", pInfo.versionName, code, abi));

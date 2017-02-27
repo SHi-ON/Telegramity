@@ -1403,4 +1403,5 @@ public class AndroidUtilities {
         System.arraycopy(sha1, 0, key_hash, 0, 16);
         return key_hash;
     }
+
 }

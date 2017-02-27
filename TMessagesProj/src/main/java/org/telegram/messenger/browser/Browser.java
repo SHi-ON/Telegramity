@@ -163,7 +163,7 @@ public class Browser {
                 share.setAction(Intent.ACTION_SEND);
 
                 SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-                int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+                int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
 
                 CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(getSession());
                 builder.setToolbarColor(aBBackgroundColor);

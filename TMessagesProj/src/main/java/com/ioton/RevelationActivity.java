@@ -163,7 +163,7 @@ public class RevelationActivity extends BaseFragment {
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
         TextView titleTextView = new TextView(getParentActivity());
         titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
         titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);

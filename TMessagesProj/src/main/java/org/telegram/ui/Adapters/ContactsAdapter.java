@@ -215,7 +215,7 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             }
             TextCell actionCell = (TextCell) convertView;
             if (needPhonebook) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), mContext.getResources().getDrawable(R.drawable.menu_telegramity));
+                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), mContext.getResources().getDrawable(R.drawable.menu_telegram));
             } else if (isAdmin) {
                 actionCell.setTextAndIcon(LocaleController.getString("InviteToGroupByLink", R.string.InviteToGroupByLink), new IconicsDrawable(mContext, FontAwesome.Icon.faw_link).sizePx(48).color(0xff00a797));
             } else {

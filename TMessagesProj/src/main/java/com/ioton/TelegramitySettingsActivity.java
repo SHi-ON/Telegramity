@@ -53,6 +53,7 @@ import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
 import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
 import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -69,8 +70,6 @@ import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.ActionBarMenu;
-import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
@@ -79,10 +78,10 @@ import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextColorCell;
+import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextInfoCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
-import org.telegram.ui.ChangeNameActivity;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.AvatarUpdater;
 import org.telegram.ui.Components.BackupImageView;
@@ -94,7 +93,7 @@ import org.telegram.ui.PhotoViewer;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class AdvancedSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, PhotoViewer.PhotoViewerProvider {
+public class TelegramitySettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, PhotoViewer.PhotoViewerProvider {
 
     private ListView listView;
     private ListAdapter listAdapter;
@@ -112,34 +111,57 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
     private int overscrollRow;
     private int emptyRow;
-    /*private int shareAndForwardSectionRow;
-    private int quickShareRow;
-    private int forwardNoCaptionRow;
-    private int shareAndForwardSectionBottomRow;*/
+
     private int slySectionRow;
     private int specterModeRow;
     private int hiddenTypingRow;
     private int noNumberRow;
     private int slyDetailRow;
     private int slySectionBottomRow;
+
+    private int dialogsSectionRow;
+    private int dialogsHideTabsCheckRow;
+    private int dialogsTabsRow;
+    private int dialogsTabsHeightRow;
+    private int dialogsDisableTabsAnimationCheckRow;
+    private int dialogsInfiniteTabsSwipe;
+    private int dialogsHideTabsCounters;
+    private int dialogsTabsCountersCountChats;
+    private int dialogsTabsCountersCountNotMuted;
+    private int dialogsSectionBottomRow;
+
+    private int messagesSectionRow;
+    private int chatShowDirectShareBtn;
+    private int chatDirectShareToMenu;
+    private int chatDirectShareFavsFirst;
+    private int chatShowDateToastRow;
+    private int messagesSectionBottomRow;
+
     private int customizationsSectionRow;
     private int textFontRow;
     private int textSizeRow;
+    private int hideStatusIndicatorCheckRow;
     private int actionBarBackgroundColorRow;
+    private int tabsBackgroundColorRow;
     private int drawerHeaderColorRow;
     private int profileBackgroundColorRow;
     private int resetDefaultRow;
-    private int customizationsDetailRow;
+//    private int customizationsDetailRow;
     private int customizationsSectionBottomRow;
+
     private int premiumSecuritySectionRow;
     private int passcodeRow;
-    private int premiumSecurityDetailRow;
+//    private int premiumSecurityDetailRow;
     private int premiumSecuritySectionBottomRow;
+
+    private int mediaSectionRow;
+    private int profileSharedOptionsRow;
+    private int keepOriginalFilenameRow;
+    private int mediaDetailRow;
+    private int mediaSectionBottomRow;
+
     private int textDescriptionRow;
     private int rowCount;
-
-    private final static int edit_name = 1;
-    private final static int logout = 2;
 
     @Override
     public boolean onFragmentCreate() {
@@ -198,34 +220,60 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 });
             }
         };
-        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.refreshTabs);
 
         rowCount = 0;
         overscrollRow = rowCount++;
         emptyRow = rowCount++;
-        /*shareAndForwardSectionRow = rowCount++;
-        quickShareRow = rowCount++;
-        forwardNoCaptionRow = rowCount++;
-        shareAndForwardSectionBottomRow = rowCount++;*/
+
         slySectionRow = rowCount++;
         specterModeRow = rowCount++;
         hiddenTypingRow = rowCount++;
         noNumberRow = rowCount++;
         slyDetailRow = rowCount++;
         slySectionBottomRow = rowCount++;
+
+        dialogsSectionRow = rowCount++;
+        dialogsHideTabsCheckRow = rowCount++;
+        dialogsTabsRow = rowCount++;
+        dialogsTabsHeightRow = rowCount++;
+        dialogsDisableTabsAnimationCheckRow = rowCount++;
+        dialogsInfiniteTabsSwipe = rowCount++;
+        dialogsHideTabsCounters = rowCount++;
+        dialogsTabsCountersCountNotMuted = rowCount++;
+        dialogsTabsCountersCountChats = rowCount++;
+        dialogsSectionBottomRow = rowCount++;
+
+        messagesSectionRow = rowCount++;
+        chatDirectShareToMenu = rowCount++;
+        chatShowDirectShareBtn = rowCount++;
+        chatDirectShareFavsFirst = rowCount++;
+        chatShowDateToastRow = rowCount++;
+        messagesSectionBottomRow = rowCount++;
+
         customizationsSectionRow = rowCount++;
         textFontRow = rowCount++;
         textSizeRow = rowCount++;
+        hideStatusIndicatorCheckRow = rowCount++;
         actionBarBackgroundColorRow = rowCount++;
+        tabsBackgroundColorRow = rowCount++;
         drawerHeaderColorRow = rowCount++;
         profileBackgroundColorRow = rowCount++;
         resetDefaultRow = rowCount++;
-        customizationsDetailRow = rowCount++;
+//        customizationsDetailRow = rowCount++;
         customizationsSectionBottomRow = rowCount++;
+
         premiumSecuritySectionRow = rowCount++;
         passcodeRow = rowCount++;
-        premiumSecurityDetailRow = rowCount++;
+//        premiumSecurityDetailRow = rowCount++;
         premiumSecuritySectionBottomRow = rowCount++;
+
+        mediaSectionRow = rowCount++;
+        profileSharedOptionsRow = rowCount++;
+        keepOriginalFilenameRow = rowCount++;
+        mediaDetailRow = rowCount++;
+        mediaSectionBottomRow = rowCount++;
+
         textDescriptionRow = rowCount++;
 
         MessagesController.getInstance().loadFullUser(UserConfig.getCurrentUser(), classGuid, true);
@@ -236,12 +284,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        if (avatarImage != null) {
-            avatarImage.setImageDrawable(null);
-        }
-        MessagesController.getInstance().cancelLoadFullUser(UserConfig.getClientUserId());
-        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
-        avatarUpdater.clear();
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.refreshTabs);
 
         if (needRestart) {
             TelegramityUtilities.restartTelegramity();
@@ -251,12 +294,13 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
     @Override
     public View createView(final Context context) {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        final int instanceOfActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
-        final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
-        final int instanceOfDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
+        final int instanceOfActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
+        final int instanceOfTabsBackgroundColor = preferences.getInt("tabsBackgroundColor", TelegramityUtilities.colorTH());
+        final int instanceOfProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.colorPBG());
+        final int instanceOfDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.colorDH());
         needRestart = false;
         actionBar.setBackgroundColor(instanceOfProfileBackgroundColor);
-        actionBar.setItemsBackgroundColor(AvatarDrawable.getButtonColorForId(5));
+//        actionBar.setItemsBackgroundColor(AvatarDrawable.getButtonColorForId(5));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAddToContainer(false);
         extraHeight = 88;
@@ -268,37 +312,9 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
             public void onItemClick(int id) {
                 if (id == -1) {
                     finishFragment();
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.mainUserInfoChanged);
-                } else if (id == edit_name) {
-                    presentFragment(new ChangeNameActivity());
-                } else if (id == logout) {
-                    if (getParentActivity() == null) {
-                        return;
-                    }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                    builder.setMessage(LocaleController.getString("AreYouSureLogout", R.string.AreYouSureLogout));
-                    TextView titleTextView = new TextView(context);
-                    titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
-                    titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                    titleTextView.setTextColor(instanceOfActionBarBackgroundColor);
-                    titleTextView.setTypeface(AndroidUtilities.getTypeface());
-                    titleTextView.setPadding(24, 18, 24, 0);
-                    builder.setCustomTitle(titleTextView);
-                    builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            MessagesController.getInstance().performLogout(true);
-                        }
-                    });
-                    builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                    showDialog(builder.create());
                 }
             }
         });
-        ActionBarMenu menu = actionBar.createMenu();
-        ActionBarMenuItem item = menu.addItem(0, R.drawable.ic_ab_other);
-        item.addSubItem(edit_name, LocaleController.getString("EditName", R.string.EditName), 0);
-        item.addSubItem(logout, LocaleController.getString("LogOut", R.string.LogOut), 0);
 
         listAdapter = new ListAdapter(context);
 
@@ -373,7 +389,150 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(!number);
                     }
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                } else if (i == dialogsHideTabsCheckRow) {
+                    boolean hide = preferences.getBoolean("hideTabs", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("hideTabs", !hide);
+                    editor.apply();
 
+                    boolean hideUsers = preferences.getBoolean("hideUsers", false);
+                    boolean hideGroups = preferences.getBoolean("hideGroups", false);
+                    boolean hideSGroups = preferences.getBoolean("hideSGroups", false);
+                    boolean hideChannels = preferences.getBoolean("hideChannels", false);
+                    boolean hideBots = preferences.getBoolean("hideBots", false);
+                    boolean hideFavs = preferences.getBoolean("hideFavs", false);
+                    if (hideUsers && hideGroups && hideSGroups && hideChannels && hideBots && hideFavs) {
+                        //editor.putBoolean("hideUsers", false).apply();
+                        //editor.putBoolean("hideGroups", false).apply();
+                        if (listView != null) {
+                            listView.invalidateViews();
+                        }
+                    }
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, 10);
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!hide);
+                    }
+                } else if (i == dialogsTabsRow) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    createTabsDialog(builder);
+                    builder.setNegativeButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, 13);
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                    });
+                    showDialog(builder.create());
+                } else if (i == dialogsTabsHeightRow) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    builder.setTitle(LocaleController.getString("TabsHeight", R.string.TabsHeight));
+                    final NumberPicker numberPicker = new NumberPicker(getParentActivity());
+                    numberPicker.setMinValue(30);
+                    numberPicker.setMaxValue(48);
+                    numberPicker.setValue(preferences.getInt("tabsHeight", AndroidUtilities.isTablet() ? 46 : 44));
+                    builder.setView(numberPicker);
+                    builder.setNegativeButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putInt("tabsHeight", numberPicker.getValue());
+                            editor.apply();
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, 12);
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                    });
+                    showDialog(builder.create());
+                } else if (i == dialogsDisableTabsAnimationCheckRow) {
+                    boolean disable = preferences.getBoolean("disableTabsAnimation", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("disableTabsAnimation", !disable);
+                    editor.apply();
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, 11);
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                } else if (i == dialogsInfiniteTabsSwipe) {
+                    boolean disable = preferences.getBoolean("infiniteTabsSwipe", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("infiniteTabsSwipe", !disable);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                } else if (i == dialogsHideTabsCounters) {
+                    boolean disable = preferences.getBoolean("hideTabsCounters", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("hideTabsCounters", !disable);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                } else if (i == dialogsTabsCountersCountChats) {
+                    boolean disable = preferences.getBoolean("tabsCountersCountChats", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("tabsCountersCountChats", !disable);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                } else if (i == dialogsTabsCountersCountNotMuted) {
+                    boolean disable = preferences.getBoolean("tabsCountersCountNotMuted", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("tabsCountersCountNotMuted", !disable);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                } else if (i == chatShowDirectShareBtn) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    createDialog(builder, chatShowDirectShareBtn);
+                    builder.setNegativeButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                    });
+                    showDialog(builder.create());
+                } else if (i == chatDirectShareToMenu) {
+                    boolean send = preferences.getBoolean("directShareToMenu", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("directShareToMenu", !send);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!send);
+                    }
+                } else if (i == chatDirectShareFavsFirst) {
+                    boolean send = preferences.getBoolean("directShareFavsFirst", true);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("directShareFavsFirst", !send);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!send);
+                    }
+                } else if (i == chatShowDateToastRow) {
+                    boolean show = preferences.getBoolean("showDateToast", true);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("showDateToast", !show);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!show);
+                    }
                 } else if (i == textFontRow) {
                     presentFragment(new FontSelectActivity());
                 } else if (i == textSizeRow) {
@@ -417,7 +576,15 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                         }
                     });
                     showDialog(builder.create());
-                } else if (i == actionBarBackgroundColorRow || i == profileBackgroundColorRow || i == drawerHeaderColorRow) {
+                } else if (i == hideStatusIndicatorCheckRow) {
+                    boolean disable = preferences.getBoolean("chatsHideStatusIndicator", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("chatsHideStatusIndicator", !disable);
+                    editor.apply();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                } else if (i == actionBarBackgroundColorRow || i == tabsBackgroundColorRow || i == profileBackgroundColorRow || i == drawerHeaderColorRow) {
                     if (getParentActivity() == null) {
                         return;
                     }
@@ -443,6 +610,9 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     if (i == actionBarBackgroundColorRow) {
                         colorPicker.setOldCenterColor(instanceOfActionBarBackgroundColor);
 //                        cPDB.initialColor(initialActionBarBackgroundColor);
+                    } else if (i == tabsBackgroundColorRow) {
+                        colorPicker.setOldCenterColor(instanceOfTabsBackgroundColor);
+//                        cPDB.initialColor(instanceOfTabsBackgroundColor);
                     } else if (i == profileBackgroundColorRow) {
                         colorPicker.setOldCenterColor(instanceOfProfileBackgroundColor);
 //                        cPDB.initialColor(instanceOfProfileBackgroundColor);
@@ -468,6 +638,11 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                                     if (i == actionBarBackgroundColorRow) {
                                         editor.putInt("actionBarBackgroundColor", colorPicker.getColor());
                                         textCell.setTextAndColor(LocaleController.getString("itemActionBarBackgroundColor", R.string.itemActionBarBackgroundColor), colorPicker.getColor(), true);
+                                        needRestart = true;
+                                        toast(context, LocaleController.getString("ThemeChangeToastMessage", R.string.ThemeChangeToastMessage));
+                                    } else if (i == tabsBackgroundColorRow) {
+                                        editor.putInt("tabsBackgroundColor", colorPicker.getColor());
+                                        textCell.setTextAndColor(LocaleController.getString("itemTabsBackgroundColor", R.string.itemTabsBackgroundColor), colorPicker.getColor(), true);
                                         needRestart = true;
                                         toast(context, LocaleController.getString("ThemeChangeToastMessage", R.string.ThemeChangeToastMessage));
                                     } else if (i == drawerHeaderColorRow) {
@@ -504,6 +679,10 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                                         editor.putInt("actionBarBackgroundColor", selectedColor);
                                         textCell.setTextAndColor(LocaleController.getString("itemActionBarBackgroundColor", R.string.itemActionBarBackgroundColor), selectedColor, true);
                                         toast(context, LocaleController.getString("ThemeChangeToastMessage", R.string.ThemeChangeToastMessage));
+                                    } else if (i == tabsBackgroundColorRow) {
+                                        editor.putInt("tabsBackgroundColorRow", selectedColor);
+                                        textCell.setTextAndColor(LocaleController.getString("itemTabsBackgroundColor", R.string.itemTabsBackgroundColor), selectedColor, true);
+                                        toast(context, LocaleController.getString("ThemeChangeToastMessage", R.string.ThemeChangeToastMessage));
                                     } else if (i == drawerHeaderColorRow) {
                                         editor.putInt("drawerHeaderColor", selectedColor);
                                         textCell.setTextAndColor(LocaleController.getString("itemDrawerHeaderColor", R.string.itemDrawerHeaderColor), selectedColor, true);
@@ -537,9 +716,10 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.putInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
-                            editor.putInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
-                            editor.putInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
+                            editor.putInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
+                            editor.putInt("tabsBackgroundColor", TelegramityUtilities.colorTH());
+                            editor.putInt("drawerHeaderColor", TelegramityUtilities.colorDH());
+                            editor.putInt("profileBackgroundColor", TelegramityUtilities.colorPBG());
                             editor.apply();
                             needRestart = true;
                             toast(context, LocaleController.getString("ThemeChangeToastMessage", R.string.ThemeChangeToastMessage));
@@ -553,7 +733,33 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     } else {
                         presentFragment(new PasscodeActivity(0));
                     }
+                } else if (i == profileSharedOptionsRow) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    createSharedOptions(builder);
+                    builder.setNegativeButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, 13);
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                    });
+                    showDialog(builder.create());
+                } else if (i == keepOriginalFilenameRow) {
+                    boolean keep = preferences.getBoolean("keepOriginalFilename", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("keepOriginalFilename", !keep);
+                    editor.apply();
+                    ApplicationLoader.KEEP_ORIGINAL_FILENAME = !keep;
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!keep);
+                    }
                 }
+
             }
         });
 
@@ -579,7 +785,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 TLRPC.User user = MessagesController.getInstance().getUser(UserConfig.getClientUserId());
                 if (user != null && user.photo != null && user.photo.photo_big != null) {
                     PhotoViewer.getInstance().setParentActivity(getParentActivity());
-                    PhotoViewer.getInstance().openPhoto(user.photo.photo_big, AdvancedSettingsActivity.this);
+                    PhotoViewer.getInstance().openPhoto(user.photo.photo_big, TelegramitySettingsActivity.this);
                 }
             }
         });
@@ -696,6 +902,133 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
         });
 
         return fragmentView;
+    }
+
+    private AlertDialog.Builder createTabsDialog(AlertDialog.Builder builder) {
+        builder.setTitle(LocaleController.getString("HideShowTabs", R.string.HideShowTabs));
+
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        boolean hideUsers = preferences.getBoolean("hideUsers", false);
+        boolean hideGroups = preferences.getBoolean("hideGroups", false);
+        boolean hideSGroups = preferences.getBoolean("hideSGroups", false);
+        boolean hideChannels = preferences.getBoolean("hideChannels", false);
+        boolean hideBots = preferences.getBoolean("hideBots", false);
+        boolean hideFavs = preferences.getBoolean("hideFavs", false);
+
+        builder.setMultiChoiceItems(
+                new CharSequence[]{LocaleController.getString("Users", R.string.Users), LocaleController.getString("Groups", R.string.Groups), LocaleController.getString("SuperGroups", R.string.SuperGroups), LocaleController.getString("Channels", R.string.Channels), LocaleController.getString("Bots", R.string.Bots), LocaleController.getString("Favorites", R.string.Favorites)},
+                new boolean[]{!hideUsers, !hideGroups, !hideSGroups, !hideChannels, !hideBots, !hideFavs},
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+
+                        if (which == 0) {
+                            editor.putBoolean("hideUsers", !isChecked);
+                        } else if (which == 1) {
+                            editor.putBoolean("hideGroups", !isChecked);
+                        } else if (which == 2) {
+                            editor.putBoolean("hideSGroups", !isChecked);
+                        } else if (which == 3) {
+                            editor.putBoolean("hideChannels", !isChecked);
+                        } else if (which == 4) {
+                            editor.putBoolean("hideBots", !isChecked);
+                        } else if (which == 5) {
+                            editor.putBoolean("hideFavs", !isChecked);
+                        }
+                        editor.apply();
+
+                        boolean hideUsers = preferences.getBoolean("hideUsers", false);
+                        boolean hideGroups = preferences.getBoolean("hideGroups", false);
+                        boolean hideSGroups = preferences.getBoolean("hideSGroups", false);
+                        boolean hideChannels = preferences.getBoolean("hideChannels", false);
+                        boolean hideBots = preferences.getBoolean("hideBots", false);
+                        boolean hideFavs = preferences.getBoolean("hideFavs", false);
+                        if (hideUsers && hideGroups && hideSGroups && hideChannels && hideBots && hideFavs) {
+                            editor.putBoolean("hideTabs", true);
+                            editor.apply();
+                            if (listView != null) {
+                                listView.invalidateViews();
+                            }
+                        }
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, which);
+                    }
+                });
+        return builder;
+    }
+
+    private AlertDialog.Builder createDialog(AlertDialog.Builder builder, int i) {
+        if (i == chatShowDirectShareBtn) {
+            builder.setTitle(LocaleController.getString("ShowDirectShareButton", R.string.ShowDirectShareButton));
+
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+            //SharedPreferences mainPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            boolean showDSBtnUsers = preferences.getBoolean("showDSBtnUsers", true);
+            boolean showDSBtnGroups = preferences.getBoolean("showDSBtnGroups", true);
+            boolean showDSBtnSGroups = preferences.getBoolean("showDSBtnSGroups", true);
+            boolean showDSBtnChannels = preferences.getBoolean("showDSBtnChannels", true);
+            boolean showDSBtnBots = preferences.getBoolean("showDSBtnBots", true);
+
+            builder.setMultiChoiceItems(
+                    new CharSequence[]{LocaleController.getString("Users", R.string.Users), LocaleController.getString("Groups", R.string.Groups), LocaleController.getString("SuperGroups", R.string.SuperGroups), LocaleController.getString("Channels", R.string.Channels), LocaleController.getString("Bots", R.string.Bots)},
+                    new boolean[]{showDSBtnUsers, showDSBtnGroups, showDSBtnSGroups, showDSBtnChannels, showDSBtnBots},
+                    new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            //Log.e("createDialog","which " + which + " isChecked " + isChecked);
+                            if (which == 0) {
+                                editor.putBoolean("showDSBtnUsers", isChecked);
+                            } else if (which == 1) {
+                                editor.putBoolean("showDSBtnGroups", isChecked);
+                            } else if (which == 2) {
+                                editor.putBoolean("showDSBtnSGroups", isChecked);
+                            } else if (which == 3) {
+                                editor.putBoolean("showDSBtnChannels", isChecked);
+                            } else if (which == 4) {
+                                editor.putBoolean("showDSBtnBots", isChecked);
+                            }
+                            editor.apply();
+                        }
+                    });
+        }
+        return builder;
+    }
+
+    private AlertDialog.Builder createSharedOptions(AlertDialog.Builder builder) {
+        builder.setTitle(LocaleController.getString("SharedMedia", R.string.SharedMedia));
+
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        boolean hideMedia = preferences.getBoolean("hideSharedMedia", false);
+        boolean hideFiles = preferences.getBoolean("hideSharedFiles", false);
+        boolean hideMusic = preferences.getBoolean("hideSharedMusic", false);
+        boolean hideLinks = preferences.getBoolean("hideSharedLinks", false);
+        CharSequence[] cs = BuildVars.DEBUG_VERSION ? new CharSequence[]{LocaleController.getString("SharedMediaTitle", R.string.SharedMediaTitle), LocaleController.getString("DocumentsTitle", R.string.DocumentsTitle), LocaleController.getString("AudioTitle", R.string.AudioTitle), LocaleController.getString("LinksTitle", R.string.LinksTitle)} :
+                new CharSequence[]{LocaleController.getString("SharedMediaTitle", R.string.SharedMediaTitle), LocaleController.getString("DocumentsTitle", R.string.DocumentsTitle), LocaleController.getString("AudioTitle", R.string.AudioTitle)};
+        boolean[] b = BuildVars.DEBUG_VERSION ? new boolean[]{!hideMedia, !hideFiles, !hideMusic, !hideLinks} :
+                new boolean[]{!hideMedia, !hideFiles, !hideMusic};
+        builder.setMultiChoiceItems(cs, b,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+
+                        if (which == 0) {
+                            editor.putBoolean("hideSharedMedia", !isChecked);
+                        } else if (which == 1) {
+                            editor.putBoolean("hideSharedFiles", !isChecked);
+                        } else if (which == 2) {
+                            editor.putBoolean("hideSharedMusic", !isChecked);
+                        } else if (which == 3) {
+                            editor.putBoolean("hideSharedLinks", !isChecked);
+                        }
+                        editor.apply();
+                    }
+                });
+        return builder;
     }
 
     @Override
@@ -961,8 +1294,11 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
         @Override
         public boolean isEnabled(int i) {
-            return /*i == quickShareRow || i == forwardNoCaptionRow ||*/ i == specterModeRow || i == hiddenTypingRow || i == noNumberRow || i == textFontRow || i == textSizeRow || i == actionBarBackgroundColorRow || i == drawerHeaderColorRow
-                    || i == profileBackgroundColorRow || i == resetDefaultRow || i == passcodeRow;
+            return i == specterModeRow || i == hiddenTypingRow || i == noNumberRow || i == dialogsHideTabsCheckRow || i == dialogsTabsRow ||
+                    i == dialogsTabsHeightRow || i == dialogsDisableTabsAnimationCheckRow || i == dialogsInfiniteTabsSwipe || i == dialogsHideTabsCounters || i == dialogsTabsCountersCountChats ||
+                    i == dialogsTabsCountersCountNotMuted || i == chatShowDirectShareBtn || i == chatDirectShareToMenu || i == chatDirectShareFavsFirst || i == chatShowDateToastRow || i == textFontRow ||
+                    i == textSizeRow || i == hideStatusIndicatorCheckRow || i == actionBarBackgroundColorRow || i == tabsBackgroundColorRow || i == drawerHeaderColorRow || i == profileBackgroundColorRow || i == resetDefaultRow ||
+                    i == passcodeRow || i == profileSharedOptionsRow || i == keepOriginalFilenameRow;
         }
 
         @Override
@@ -1008,12 +1344,15 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 TextColorCell textCell = (TextColorCell) view;
 
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-                int initialActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
-                int initialDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.DH_COLOR);
-                final int initialProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.PBG_COLOR);
+                int initialActionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
+                int initialTabsBackgroundColor = preferences.getInt("tabsBackgroundColor", TelegramityUtilities.colorTH());
+                int initialDrawerHeaderColor = preferences.getInt("drawerHeaderColor", TelegramityUtilities.colorDH());
+                final int initialProfileBackgroundColor = preferences.getInt("profileBackgroundColor", TelegramityUtilities.colorPBG());
 
                 if (i == actionBarBackgroundColorRow) {
                     textCell.setTextAndColor(LocaleController.getString("itemActionBarBackgroundColor", R.string.itemActionBarBackgroundColor), initialActionBarBackgroundColor, true);
+                } else if (i == tabsBackgroundColorRow) {
+                    textCell.setTextAndColor(LocaleController.getString("itemTabsBackgroundColor", R.string.itemTabsBackgroundColor), initialTabsBackgroundColor, true);
                 } else if (i == drawerHeaderColorRow) {
                     textCell.setTextAndColor(LocaleController.getString("itemDrawerHeaderColor", R.string.itemDrawerHeaderColor), initialDrawerHeaderColor, true);
                 } else if (i == profileBackgroundColorRow) {
@@ -1026,26 +1365,32 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 if (i == slyDetailRow) {
                     ((TextInfoPrivacyCell) view).setText(LocaleController.getString("SlyHelp", R.string.SlyHelp));
                     view.setBackgroundResource(R.drawable.greydivider_bottom);
-                } else if (i == customizationsDetailRow) {
+                /*} else if (i == customizationsDetailRow) {
                     ((TextInfoPrivacyCell) view).setText(LocaleController.getString("CustomizationsHelp", R.string.CustomizationsHelp));
                     view.setBackgroundResource(R.drawable.greydivider_bottom);
                 } else if (i == premiumSecurityDetailRow) {
-                    ((TextInfoPrivacyCell) view).setText(LocaleController.getString("PremiumSecurityHelp", R.string.AdvancedSecurityHelp));
+                    ((TextInfoPrivacyCell) view).setText(LocaleController.getString("AdvancedSecurityHelp", R.string.AdvancedSecurityHelp));
+                    view.setBackgroundResource(R.drawable.greydivider_bottom);*/
+                } else if (i == mediaDetailRow) {
+                    ((TextInfoPrivacyCell) view).setText(LocaleController.getString("KeepOriginalFilenameHelp", R.string.KeepOriginalFilenameHelp));
                     view.setBackgroundResource(R.drawable.greydivider_bottom);
                 }
             } else if (type == 4) {             // Header type cell, categorie's header
                 if (view == null) {
                     view = new HeaderCell(mContext);
                 }
-                /*if (i == shareAndForwardSectionRow) {
-                    ((HeaderCell) view).setText(LocaleController.getString("ShareHeader", R.string.ShareHeader));
-                } else*/
                 if (i == slySectionRow) {
                     ((HeaderCell) view).setText(LocaleController.getString("SlyHeader", R.string.SlyHeader));
+                } else if (i == dialogsSectionRow) {
+                    ((HeaderCell) view).setText(LocaleController.getString("DialogsSettings", R.string.TabsHeader));
+                } else if (i == messagesSectionRow) {
+                    ((HeaderCell) view).setText(LocaleController.getString("MessagesSettings", R.string.MessagesSettings));
                 } else if (i == customizationsSectionRow) {
                     ((HeaderCell) view).setText(LocaleController.getString("CustomizationsHeader", R.string.CustomizationsHeader));
                 } else if (i == premiumSecuritySectionRow) {
                     ((HeaderCell) view).setText(LocaleController.getString("PremiumSecurityHeader", R.string.AdvancedSecurityHeader));
+                } else if (i == mediaSectionRow) {
+                    ((HeaderCell) view).setText(LocaleController.getString("FilesAndMediaHeader", R.string.FilesAndMediaHeader));
                 }
             } else if (type == 5) {             // Text information cell (e.g. ending version gray colored text)
                 if (view == null) {
@@ -1064,11 +1409,9 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                             case 2:
                                 abi = "x86";
                                 break;
-                            case 3:
-                                abi = " ";
-                                break;
                         }
-                        ((TextInfoCell) view).setText(String.format(Locale.US, "Telegramity for Android v%s (%d) %s", pInfo.versionName, code, abi));                    } catch (Exception e) {
+                        ((TextInfoCell) view).setText(String.format(Locale.US, "Telegramity for Android v%s (%d) %s", pInfo.versionName, code, abi));
+                    } catch (Exception e) {
                         FileLog.e("tmessages", e);
                     }
                 }
@@ -1077,7 +1420,11 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                     view = new TextSettingsCell(mContext);
                 }
                 TextSettingsCell textCell = (TextSettingsCell) view;
-                if (i == textFontRow) {
+                if (i == dialogsTabsHeightRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Context.MODE_PRIVATE);
+                    int size = preferences.getInt("tabsHeight", AndroidUtilities.isTablet() ? 46 : 44);
+                    textCell.setTextAndValue(LocaleController.getString("TabsHeight", R.string.TabsHeight), String.format("%d", size), true);
+                } else if (i == textFontRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Context.MODE_PRIVATE);
                     String[] fontNameArray = ApplicationLoader.applicationContext.getResources().getStringArray(R.array.FontNameArr);
                     String fontName = preferences.getString("customFontName", fontNameArray[2]);
@@ -1098,17 +1445,175 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
                 TextCheckCell textCheckCell = (TextCheckCell) view;
 
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-                /*if (i == quickShareRow) {
-                    textCheckCell.setTextAndCheck(LocaleController.getString("itemQuickShare", R.string.itemQuickShare), preferences.getBoolean("quickShare", true), true);
-                } else if (i == forwardNoCaptionRow) {
-                    textCheckCell.setTextAndCheck(LocaleController.getString("itemForwardNoCaption", R.string.itemForwardNoCaption), preferences.getBoolean("forwardNoCaption", false), true);
-                } else*/
                 if (i == specterModeRow) {
                     textCheckCell.setTextAndCheck(LocaleController.getString("itemSpecterMode", R.string.itemSpecterMode), preferences.getBoolean("specterMode", false), true);
                 } else if (i == hiddenTypingRow) {
                     textCheckCell.setTextAndCheck(LocaleController.getString("itemHiddenTyping", R.string.itemHiddenTyping), preferences.getBoolean("hiddenTyping", false), true);
                 } else if (i == noNumberRow) {
                     textCheckCell.setTextAndCheck(LocaleController.getString("itemNoNumber", R.string.itemNoNumber), preferences.getBoolean("noNumber", false), true);
+                } else if (i == dialogsHideTabsCheckRow) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("HideTabs", R.string.HideTabs), preferences.getBoolean("hideTabs", false), true);
+                } else if (i == dialogsDisableTabsAnimationCheckRow) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("DisableTabsAnimation", R.string.DisableTabsAnimation), preferences.getBoolean("disableTabsAnimation", false), true);
+                } else if (i == dialogsInfiniteTabsSwipe) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("InfiniteSwipe", R.string.InfiniteSwipe), preferences.getBoolean("infiniteTabsSwipe", false), true);
+                } else if (i == dialogsHideTabsCounters) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("HideTabsCounters", R.string.HideTabsCounters), preferences.getBoolean("hideTabsCounters", false), true);
+                } else if (i == dialogsTabsCountersCountChats) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountChats", R.string.HeaderTabCounterCountChats), preferences.getBoolean("tabsCountersCountChats", false), true);
+                } else if (i == dialogsTabsCountersCountNotMuted) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountNotMuted", R.string.HeaderTabCounterCountNotMuted), preferences.getBoolean("tabsCountersCountNotMuted", false), false);
+                } else if (i == chatDirectShareToMenu) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("DirectShareToMenu", R.string.DirectShareToMenu), preferences.getBoolean("directShareToMenu", true), true);
+                } else if (i == chatDirectShareFavsFirst) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("DirectShareShowFavsFirst", R.string.DirectShareShowFavsFirst), preferences.getBoolean("directShareFavsFirst", true), true);
+                } else if (i == chatShowDateToastRow) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("ShowDateToast", R.string.ShowDateToast), preferences.getBoolean("showDateToast", true), false);
+                } else if (i == hideStatusIndicatorCheckRow) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("HideStatusIndicator", R.string.HideStatusIndicator), preferences.getBoolean("chatsHideStatusIndicator", false), true);
+                } else if (i == keepOriginalFilenameRow) {
+                    textCheckCell.setTextAndCheck(LocaleController.getString("KeepOriginalFilename", R.string.KeepOriginalFilename), preferences.getBoolean("keepOriginalFilename", false), false);
+                }
+            } else if (type == 8) {
+                if (view == null) {
+                    view = new TextDetailSettingsCell(mContext);
+                }
+                TextDetailSettingsCell textCell = (TextDetailSettingsCell) view;
+
+                if (i == dialogsTabsRow) {
+                    String value;
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+
+                    boolean hideUsers = preferences.getBoolean("hideUsers", false);
+                    boolean hideGroups = preferences.getBoolean("hideGroups", false);
+                    boolean hideSGroups = preferences.getBoolean("hideSGroups", false);
+                    boolean hideChannels = preferences.getBoolean("hideChannels", false);
+                    boolean hideBots = preferences.getBoolean("hideBots", false);
+                    boolean hideFavs = preferences.getBoolean("hideFavs", false);
+
+                    value = LocaleController.getString("HideShowTabs", R.string.HideShowTabs);
+
+                    String text = "";
+                    if (!hideUsers) {
+                        text += LocaleController.getString("Users", R.string.Users);
+                    }
+                    if (!hideGroups) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Groups", R.string.Groups);
+                    }
+                    if (!hideSGroups) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("SuperGroups", R.string.SuperGroups);
+                    }
+                    if (!hideChannels) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Channels", R.string.Channels);
+                    }
+                    if (!hideBots) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Bots", R.string.Bots);
+                    }
+                    if (!hideFavs) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Favorites", R.string.Favorites);
+                    }
+                    if (text.length() == 0) {
+                        text = "";
+                    }
+                    textCell.setTextAndValue(value, text, true);
+                } else if (i == chatShowDirectShareBtn) {
+                    String value;
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+                    boolean showDSBtnUsers = preferences.getBoolean("showDSBtnUsers", true);
+                    boolean showDSBtnGroups = preferences.getBoolean("showDSBtnGroups", true);
+                    boolean showDSBtnSGroups = preferences.getBoolean("showDSBtnSGroups", true);
+                    boolean showDSBtnChannels = preferences.getBoolean("showDSBtnChannels", true);
+                    boolean showDSBtnBots = preferences.getBoolean("showDSBtnBots", true);
+
+                    value = LocaleController.getString("ShowDirectShareButton", R.string.ShowDirectShareButton);
+
+                    String text = "";
+                    if (showDSBtnUsers) {
+                        text += LocaleController.getString("Users", R.string.Users);
+                    }
+                    if (showDSBtnGroups) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Groups", R.string.Groups);
+                    }
+                    if (showDSBtnSGroups) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("SuperGroups", R.string.SuperGroups);
+                    }
+                    if (showDSBtnChannels) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Channels", R.string.Channels);
+                    }
+                    if (showDSBtnBots) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("Bots", R.string.Bots);
+                    }
+
+                    if (text.length() == 0) {
+                        text = LocaleController.getString("Channels", R.string.UsernameEmpty);
+                    }
+                    textCell.setTextAndValue(value, text, true);
+                } else if (i == profileSharedOptionsRow) {
+
+                    String value;
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+
+                    boolean hideMedia = preferences.getBoolean("hideSharedMedia", false);
+                    boolean hideFiles = preferences.getBoolean("hideSharedFiles", false);
+                    boolean hideMusic = preferences.getBoolean("hideSharedMusic", false);
+                    boolean hideLinks = preferences.getBoolean("hideSharedLinks", false);
+
+                    value = LocaleController.getString("SharedMedia", R.string.SharedMedia);
+
+                    String text = "";
+                    if (!hideMedia) {
+                        text += LocaleController.getString("Users", R.string.SharedMediaTitle);
+                    }
+                    if (!hideFiles) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("DocumentsTitle", R.string.DocumentsTitle);
+                    }
+                    if (!hideMusic) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("AudioTitle", R.string.AudioTitle);
+                    }
+                    if (!hideLinks && BuildVars.DEBUG_VERSION) {
+                        if (text.length() != 0) {
+                            text += ", ";
+                        }
+                        text += LocaleController.getString("LinksTitle", R.string.LinksTitle);
+                    }
+
+                    if (text.length() == 0) {
+                        text = "";
+                    }
+                    textCell.setTextAndValue(value, text, true);
                 }
             }
             return view;
@@ -1119,18 +1624,20 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
             if (i == emptyRow || i == overscrollRow) {
                 return 0;
             }
-            if (/*i == shareAndForwardSectionBottomRow ||*/ i == customizationsSectionBottomRow || i == premiumSecuritySectionBottomRow || i == slySectionBottomRow) {
+            if (i == slySectionBottomRow || i == dialogsSectionBottomRow || i == messagesSectionBottomRow || i == customizationsSectionBottomRow || i == premiumSecuritySectionBottomRow || i == mediaSectionBottomRow) {
                 return 1;
-            } else if (i == actionBarBackgroundColorRow || i == drawerHeaderColorRow || i == profileBackgroundColorRow) {
+            } else if (i == actionBarBackgroundColorRow || i == tabsBackgroundColorRow || i == drawerHeaderColorRow || i == profileBackgroundColorRow) {
                 return 2;
-            } else if (i == customizationsDetailRow || i == premiumSecurityDetailRow || i == slyDetailRow) {
+            } else if (i == slyDetailRow || /*i == customizationsDetailRow || i == premiumSecurityDetailRow ||*/ i == mediaDetailRow) {
                 return 3;
-            } else if (/*i == shareAndForwardSectionRow || */i == customizationsSectionRow || i == premiumSecuritySectionRow || i == slySectionRow) {
+            } else if (i == slySectionRow || i == dialogsSectionRow || i == messagesSectionRow || i == customizationsSectionRow || i == premiumSecuritySectionRow || i == mediaSectionRow) {
                 return 4;
             } else if (i == textDescriptionRow) {
                 return 5;
-            } else if (i == textFontRow || i == textSizeRow || i == resetDefaultRow || i == passcodeRow) {
+            } else if ( i == dialogsTabsHeightRow || i == textFontRow || i == textSizeRow || i == resetDefaultRow || i == passcodeRow) {
                 return 6;
+            } else if (i == dialogsTabsRow || i == chatShowDirectShareBtn || i == profileSharedOptionsRow) {
+                return 8;
             } else {
                 return 7;
             }
@@ -1138,7 +1645,7 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
 
         @Override
         public int getViewTypeCount() {
-            return 8;
+            return 9;
         }
 
         @Override
@@ -1146,4 +1653,5 @@ public class AdvancedSettingsActivity extends BaseFragment implements Notificati
             return false;
         }
     }
+
 }

@@ -131,7 +131,7 @@ public class FontSelectActivity extends BaseFragment {
                 TextView titleTextView = new TextView(getParentActivity());
                 titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
                 titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                titleTextView.setTextColor(preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR));
+                titleTextView.setTextColor(preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG()));
                 titleTextView.setTypeface(AndroidUtilities.getTypeface());
                 titleTextView.setPadding(24, 18, 24, 0);
                 builder.setCustomTitle(titleTextView);

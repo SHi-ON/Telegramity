@@ -8,18 +8,25 @@
 
 package org.telegram.ui.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.support.widget.RecyclerView;
+import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Cells.LoadingCell;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DialogsAdapter extends RecyclerView.Adapter {
 
@@ -50,16 +57,180 @@ public class DialogsAdapter extends RecyclerView.Adapter {
     }
 
     private ArrayList<TLRPC.Dialog> getDialogsArray() {
+        SharedPreferences tgyPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
         if (dialogsType == 0) {
+            boolean hideTabs = tgyPreferences.getBoolean("hideTabs", false);
+            int sort = tgyPreferences.getInt("sortAll", 0);
+            if(sort == 0 || hideTabs){
+                sortDefault(MessagesController.getInstance().dialogs);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogs);
+            }
             return MessagesController.getInstance().dialogs;
         } else if (dialogsType == 1) {
             return MessagesController.getInstance().dialogsServerOnly;
         } else if (dialogsType == 2) {
             return MessagesController.getInstance().dialogsGroupsOnly;
         }
+        //plus
+        else if (dialogsType == 3) {
+            int sort = tgyPreferences.getInt("sortUsers", 0);
+            if(sort == 0){
+                sortUsersDefault();
+            }else{
+                sortUsersByStatus();
+            }
+            return MessagesController.getInstance().dialogsUsers;
+        } else if (dialogsType == 4) {
+            int sort = tgyPreferences.getInt("sortGroups", 0);
+            if(sort == 0){
+                sortDefault(MessagesController.getInstance().dialogsGroups);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogsGroups);
+            }
+            return MessagesController.getInstance().dialogsGroups;
+        } else if (dialogsType == 5) {
+            int sort = tgyPreferences.getInt("sortChannels", 0);
+            if(sort == 0){
+                sortDefault(MessagesController.getInstance().dialogsChannels);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogsChannels);
+            }
+            return MessagesController.getInstance().dialogsChannels;
+        } else if (dialogsType == 6) {
+            int sort = tgyPreferences.getInt("sortBots", 0);
+            if(sort == 0){
+                sortDefault(MessagesController.getInstance().dialogsBots);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogsBots);
+            }
+            return MessagesController.getInstance().dialogsBots;
+        } else if (dialogsType == 7) {
+            int sort = tgyPreferences.getInt("sortSGroups", 0);
+            if(sort == 0){
+                sortDefault(MessagesController.getInstance().dialogsMegaGroups);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogsMegaGroups);
+            }
+            return MessagesController.getInstance().dialogsMegaGroups;
+        } else if (dialogsType == 8) {
+            int sort = tgyPreferences.getInt("sortFavs", 0);
+            if(sort == 0){
+                sortDefault(MessagesController.getInstance().dialogsFavs);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogsFavs);
+            }
+            return MessagesController.getInstance().dialogsFavs;
+        } else if (dialogsType == 9) {
+            int sort = tgyPreferences.getInt("sortGroups", 0);
+            if(sort == 0){
+                sortDefault(MessagesController.getInstance().dialogsGroupsAll);
+            }else{
+                sortUnread(MessagesController.getInstance().dialogsGroupsAll);
+            }
+            return MessagesController.getInstance().dialogsGroupsAll;
+        }
+        //
         return null;
     }
+    //plus
+    public void sort(){
+        getDialogsArray();
+        notifyDataSetChanged();
+    }
 
+    private void sortUsersByStatus(){
+        Collections.sort(MessagesController.getInstance().dialogsUsers, new Comparator<TLRPC.Dialog>() {
+            @Override
+            public int compare(TLRPC.Dialog tl_dialog, TLRPC.Dialog tl_dialog2) {
+                TLRPC.User user1 = MessagesController.getInstance().getUser((int) tl_dialog2.id);
+                TLRPC.User user2 = MessagesController.getInstance().getUser((int) tl_dialog.id);
+                int status1 = 0;
+                int status2 = 0;
+                if (user1 != null && user1.status != null) {
+                    if (user1.id == UserConfig.getClientUserId()) {
+                        status1 = ConnectionsManager.getInstance().getCurrentTime() + 50000;
+                    } else {
+                        status1 = user1.status.expires;
+                    }
+                }
+                if (user2 != null && user2.status != null) {
+                    if (user2.id == UserConfig.getClientUserId()) {
+                        status2 = ConnectionsManager.getInstance().getCurrentTime() + 50000;
+                    } else {
+                        status2 = user2.status.expires;
+                    }
+                }
+                if (status1 > 0 && status2 > 0) {
+                    if (status1 > status2) {
+                        return 1;
+                    } else if (status1 < status2) {
+                        return -1;
+                    }
+                    return 0;
+                } else if (status1 < 0 && status2 < 0) {
+                    if (status1 > status2) {
+                        return 1;
+                    } else if (status1 < status2) {
+                        return -1;
+                    }
+                    return 0;
+                } else if (status1 < 0 && status2 > 0 || status1 == 0 && status2 != 0) {
+                    return -1;
+                } else if (status2 < 0 && status1 > 0 || status2 == 0 && status1 != 0) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+    }
+
+    private void sortDefault(ArrayList<TLRPC.Dialog> dialogs){
+        Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
+            @Override
+            public int compare(TLRPC.Dialog dialog, TLRPC.Dialog dialog2) {
+                if (dialog.last_message_date == dialog2.last_message_date) {
+                    return 0;
+                } else if (dialog.last_message_date < dialog2.last_message_date) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
+    }
+
+    private void sortUnread(ArrayList<TLRPC.Dialog> dialogs){
+        Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
+            @Override
+            public int compare(TLRPC.Dialog dialog, TLRPC.Dialog dialog2) {
+                if (dialog.unread_count == dialog2.unread_count) {
+                    return 0;
+                } else if (dialog.unread_count < dialog2.unread_count) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
+    }
+
+    private void sortUsersDefault(){
+        Collections.sort(MessagesController.getInstance().dialogsUsers, new Comparator<TLRPC.Dialog>() {
+            @Override
+            public int compare(TLRPC.Dialog dialog, TLRPC.Dialog dialog2) {
+                if (dialog.last_message_date == dialog2.last_message_date) {
+                    return 0;
+                } else if (dialog.last_message_date < dialog2.last_message_date) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
+    }
+
+    //
     @Override
     public int getItemCount() {
         int count = getDialogsArray().size();
@@ -102,6 +273,7 @@ public class DialogsAdapter extends RecyclerView.Adapter {
             view = new LoadingCell(mContext);
         }
         view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+        if(dialogsType > 2 && viewType == 1)view.setVisibility(View.GONE);
         return new Holder(view);
     }
 

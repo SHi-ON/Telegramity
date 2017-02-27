@@ -840,6 +840,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
         TextView textView = new TextView(context);
         textView.setText(LocaleController.getString("SlideToCancel", R.string.SlideToCancel));
         textView.setTextColor(0xff999999);
+        textView.setTypeface(AndroidUtilities.getTypeface());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         slideText.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 6, 0, 0, 0));
 

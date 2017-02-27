@@ -350,7 +350,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
         popupContainer.addView(messageContainer, 0);
 
         SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", MODE_PRIVATE);
-        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
 
         actionBar = new ActionBar(this);
         actionBar.setOccupyStatusBar(false);

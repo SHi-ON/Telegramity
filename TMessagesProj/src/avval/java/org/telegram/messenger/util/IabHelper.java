@@ -160,8 +160,8 @@ public class IabHelper {
      *     public key in your application's page on Google Play Developer Console. Note that this
      *     is NOT your "developer public key".
      */
-    public IabHelper(Context ctx, String base64PublicKey) {
-        mContext = ctx.getApplicationContext();
+    public IabHelper(Context context, String base64PublicKey) {
+        mContext = context;
         mSignatureBase64 = base64PublicKey;
         logDebug("IAB helper created.");
     }

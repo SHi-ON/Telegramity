@@ -112,7 +112,7 @@ public final class CustomTabsIntent {
 
         public CustomTabsIntent.Builder setToolbarColor(@ColorInt int color) {
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-            int actionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.ABBG_COLOR);
+            int actionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
             this.mIntent.putExtra("android.support.customtabs.extra.TOOLBAR_COLOR", actionBarBackgroundColor);
             return this;
         }

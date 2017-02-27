@@ -9,8 +9,10 @@
 package org.telegram.ui.Components;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.*;
+import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
@@ -23,9 +25,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,8 +88,13 @@ public class ShareAlert extends BottomSheet {
     private int scrollOffsetY;
     private int topBeforeSwitch;
 
+    private Switch quoteSwitch;
+    private boolean favsFirst;
+
     public ShareAlert(final Context context, final MessageObject messageObject, boolean publicChannel) {
         super(context, true);
+        final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        favsFirst = preferences.getBoolean("directShareFavsFirst", true);
 
         shadowDrawable = context.getResources().getDrawable(R.drawable.sheet_shadow);
 
@@ -227,7 +234,14 @@ public class ShareAlert extends BottomSheet {
                                 asAdmin = false;
                             }
                         }
+                    //SendMessagesHelper.getInstance().sendMessage(arrayList, entry.getKey(), asAdmin);
+                    if (quoteSwitch.isChecked()) {
                         SendMessagesHelper.getInstance().sendMessage(arrayList, entry.getKey(), asAdmin);
+                    } else {
+                        for (MessageObject object : arrayList) {
+                            SendMessagesHelper.getInstance().processForwardFromMyName(object, entry.getKey(), asAdmin);
+                        }
+                    }
                     }
                     dismiss();
                 }
@@ -251,11 +265,38 @@ public class ShareAlert extends BottomSheet {
         doneButtonTextView.setTypeface(AndroidUtilities.getTypeface());
         doneButton.addView(doneButtonTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
 
-        ImageView imageView = new ImageView(context);
-        imageView.setImageResource(R.drawable.search_share);
-        imageView.setScaleType(ImageView.ScaleType.CENTER);
-        imageView.setPadding(0, AndroidUtilities.dp(2), 0, 0);
-        frameLayout.addView(imageView, LayoutHelper.createFrame(48, 48, Gravity.LEFT | Gravity.CENTER_VERTICAL));
+        //ImageView imageView = new ImageView(context);
+        //imageView.setImageResource(R.drawable.search_share);
+        //imageView.setScaleType(ImageView.ScaleType.CENTER);
+        //imageView.setPadding(0, AndroidUtilities.dp(2), 0, 0);
+        //frameLayout.addView(imageView, LayoutHelper.createFrame(48, 48, Gravity.LEFT | Gravity.CENTER_VERTICAL));
+        //switch
+        quoteSwitch = new Switch(context);
+        quoteSwitch.setTag("chat");
+        quoteSwitch.setDuplicateParentStateEnabled(false);
+        quoteSwitch.setFocusable(false);
+        quoteSwitch.setFocusableInTouchMode(false);
+        quoteSwitch.setClickable(true);
+        setCheck(preferences.getBoolean("directShareQuote", true));
+        quoteSwitch.setColor();
+        frameLayout.addView(quoteSwitch, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.CENTER_VERTICAL, 0, 2, 0, 0));
+        quoteSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("directShareQuote", isChecked).apply();
+                quoteSwitch.setColor();
+            }
+        });
+        TextView quoteTextView = new TextView(context);
+        quoteTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 9);
+        //quoteTextView.setTextColor(0xff979797);
+        quoteTextView.setTextColor(0xff757575);
+        quoteTextView.setGravity(Gravity.CENTER);
+        quoteTextView.setCompoundDrawablePadding(AndroidUtilities.dp(8));
+        quoteTextView.setText(LocaleController.getString("Quote", R.string.Quote));
+        quoteTextView.setTypeface(AndroidUtilities.getTypeface());
+        frameLayout.addView(quoteTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP , 12, 2, 0, 0));
 
         nameTextView = new EditText(context);
         nameTextView.setHint(LocaleController.getString("ShareSendTo", R.string.ShareSendTo));
@@ -263,6 +304,7 @@ public class ShareAlert extends BottomSheet {
         nameTextView.setSingleLine(true);
         nameTextView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        nameTextView.setTypeface(AndroidUtilities.getTypeface());
         nameTextView.setBackgroundDrawable(null);
         nameTextView.setHintTextColor(Theme.SHARE_SHEET_EDIT_PLACEHOLDER_TEXT_COLOR);
         nameTextView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -435,6 +477,15 @@ public class ShareAlert extends BottomSheet {
         }
     }
 
+    public void setCheck(boolean checked) {
+        if (Build.VERSION.SDK_INT < 11) {
+            quoteSwitch.resetLayout();
+            quoteSwitch.requestLayout();
+        }
+        quoteSwitch.setChecked(checked);
+        quoteSwitch.setColor();
+    }
+
     public void updateSelectedCount() {
         if (selectedDialogs.isEmpty()) {
             doneButtonBadgeTextView.setVisibility(View.GONE);
@@ -472,8 +523,31 @@ public class ShareAlert extends BottomSheet {
 
         public ShareDialogsAdapter(Context context) {
             this.context = context;
+            //plus
+            if(favsFirst) {
+                for (int a = 0; a < MessagesController.getInstance().dialogsFavs.size(); a++) {
+                    TLRPC.Dialog dialog = MessagesController.getInstance().dialogsFavs.get(a);
+                    int lower_id = (int) dialog.id;
+                    int high_id = (int) (dialog.id >> 32);
+                    if (lower_id != 0 && high_id != 1) {
+                        if (lower_id > 0) {
+                            dialogs.add(dialog);
+                        } else {
+                            TLRPC.Chat chat = MessagesController.getInstance().getChat(-lower_id);
+                            if (!(chat == null || ChatObject.isNotInChat(chat) || ChatObject.isChannel(chat) && !chat.creator && !chat.editor && !chat.megagroup)) {
+                                dialogs.add(dialog);
+                            }
+                        }
+                    }
+                }
+            }
             for (int a = 0; a < MessagesController.getInstance().dialogsServerOnly.size(); a++) {
                 TLRPC.Dialog dialog = MessagesController.getInstance().dialogsServerOnly.get(a);
+                //plus
+                if(favsFirst && Favourite.isFavourite(dialog.id)){
+                    continue;
+                }
+                //
                 int lower_id = (int) dialog.id;
                 int high_id = (int) (dialog.id >> 32);
                 if (lower_id != 0 && high_id != 1) {

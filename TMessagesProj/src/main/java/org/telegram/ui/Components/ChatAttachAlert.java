@@ -599,6 +599,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         hintTextView.setBackgroundResource(R.drawable.tooltip);
         hintTextView.setTextColor(Theme.CHAT_GIF_HINT_TEXT_COLOR);
         hintTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        hintTextView.setTypeface(AndroidUtilities.getTypeface());
         hintTextView.setPadding(AndroidUtilities.dp(10), 0, AndroidUtilities.dp(10), 0);
         hintTextView.setText(LocaleController.getString("AttachBotsHelp", R.string.AttachBotsHelp));
         hintTextView.setGravity(Gravity.CENTER_VERTICAL);

@@ -9,6 +9,8 @@
 package org.telegram.ui.Adapters;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,6 +21,8 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
@@ -43,6 +47,18 @@ public class DrawerLayoutAdapter extends BaseAdapter {
 
     @Override
     public boolean isEnabled(int i) {
+        if (i == 6 || i == 13 || i == 14) {
+            try {
+                PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+                if (pInfo.versionCode % 10 == 5) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                FileLog.e("tmessages", e);
+            }
+        }
         return !(i == 0 || i == 1 || i == 5 || i == 12);
     }
 
@@ -78,6 +94,10 @@ public class DrawerLayoutAdapter extends BaseAdapter {
             if (view == null) {
                 view = new EmptyCell(mContext, AndroidUtilities.dp(8));
             }
+            EmptyCell emptyCell = (EmptyCell) view;
+            if (i == 6 || i == 13 || i == 14) {
+                emptyCell.setHeight(AndroidUtilities.dp(1));
+            }
         } else if (type == 2) {
             if (view == null) {
                 view = new DividerCell(mContext);
@@ -94,17 +114,17 @@ public class DrawerLayoutAdapter extends BaseAdapter {
             } else if (i == 4) {
                 actionCell.setTextAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), new IconicsDrawable(mContext, FontAwesome.Icon.faw_bullhorn).sizePx(48).color(0xff832194));
             } else if (i == 6) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerPremium", R.string.DrawerPremium),new IconicsDrawable(mContext, FontAwesome.Icon.faw_star).sizePx(48).color(0xffffa01f));
+                actionCell.setTextAndIcon(LocaleController.getString("DrawerPremium", R.string.DrawerPremium), new IconicsDrawable(mContext, FontAwesome.Icon.faw_star).sizePx(48).color(0xffffa01f));
             } else if (i == 7) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerIDRevealer", R.string.DrawerIDRevealer),new IconicsDrawable(mContext, FontAwesome.Icon.faw_crosshairs).sizePx(48).color(0xff673ab7));
+                actionCell.setTextAndIcon(LocaleController.getString("DrawerIDRevealer", R.string.DrawerIDRevealer), new IconicsDrawable(mContext, FontAwesome.Icon.faw_crosshairs).sizePx(48).color(0xff673ab7));
             } else if (i == 8) {
-                actionCell.setTextAndIcon(LocaleController.getString("Contacts", R.string.Contacts),new IconicsDrawable(mContext, FontAwesome.Icon.faw_user).sizePx(48).color(0xffe0165b));
+                actionCell.setTextAndIcon(LocaleController.getString("Contacts", R.string.Contacts), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user).sizePx(48).color(0xffe0165b));
             } else if (i == 9) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), mContext.getResources().getDrawable(R.drawable.menu_telegramity));
+                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), mContext.getResources().getDrawable(R.drawable.menu_telegram));
             } else if (i == 10) {
                 actionCell.setTextAndIcon(LocaleController.getString("Settings", R.string.Settings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_cog).sizePx(48).color(0xff845c4e));
             } else if (i == 11) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerAdvancedSettings", R.string.DrawerAdvancedSettings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_wrench).sizePx(48).color(0xff3f51b5));
+                actionCell.setTextAndIcon(LocaleController.getString("DrawerAdvancedSettings", R.string.TelegramitySettings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_wrench).sizePx(48).color(0xff3f51b5));
             } else if (i == 13) {
                 actionCell.setTextAndIcon(LocaleController.getString("DrawerOfficialChannel", R.string.DrawerOfficialChannel), new IconicsDrawable(mContext, MaterialDesignIconic.Icon.gmi_tv_list).sizePx(48).color(0xffff6433));
             } else if (i == 14) {
@@ -125,6 +145,17 @@ public class DrawerLayoutAdapter extends BaseAdapter {
             return 1;
         } else if (i == 5 || i == 12) {
             return 2;
+        } else if (i == 6 || i == 13 || i == 14) {
+            try {
+                PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+                if (pInfo.versionCode % 10 == 5) {
+                    return 1;
+                } else {
+                    return 3;
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                FileLog.e("tmessages", e);
+            }
         }
         return 3;
     }
