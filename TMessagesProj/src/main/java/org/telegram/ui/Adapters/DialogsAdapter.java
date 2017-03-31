@@ -56,7 +56,7 @@ public class DialogsAdapter extends RecyclerView.Adapter {
         return current != getItemCount() || current == 1;
     }
 
-    private ArrayList<TLRPC.Dialog> getDialogsArray() {
+    private ArrayList<TLRPC.TL_dialog> getDialogsArray() {
         SharedPreferences tgyPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
         if (dialogsType == 0) {
             boolean hideTabs = tgyPreferences.getBoolean("hideTabs", false);
@@ -140,9 +140,9 @@ public class DialogsAdapter extends RecyclerView.Adapter {
     }
 
     private void sortUsersByStatus(){
-        Collections.sort(MessagesController.getInstance().dialogsUsers, new Comparator<TLRPC.Dialog>() {
+        Collections.sort(MessagesController.getInstance().dialogsUsers, new Comparator<TLRPC.TL_dialog>() {
             @Override
-            public int compare(TLRPC.Dialog tl_dialog, TLRPC.Dialog tl_dialog2) {
+            public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
                 TLRPC.User user1 = MessagesController.getInstance().getUser((int) tl_dialog2.id);
                 TLRPC.User user2 = MessagesController.getInstance().getUser((int) tl_dialog.id);
                 int status1 = 0;
@@ -185,10 +185,10 @@ public class DialogsAdapter extends RecyclerView.Adapter {
         });
     }
 
-    private void sortDefault(ArrayList<TLRPC.Dialog> dialogs){
-        Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
+    private void sortDefault(ArrayList<TLRPC.TL_dialog> dialogs){
+        Collections.sort(dialogs, new Comparator<TLRPC.TL_dialog>() {
             @Override
-            public int compare(TLRPC.Dialog dialog, TLRPC.Dialog dialog2) {
+            public int compare(TLRPC.TL_dialog dialog, TLRPC.TL_dialog dialog2) {
                 if (dialog.last_message_date == dialog2.last_message_date) {
                     return 0;
                 } else if (dialog.last_message_date < dialog2.last_message_date) {
@@ -200,10 +200,10 @@ public class DialogsAdapter extends RecyclerView.Adapter {
         });
     }
 
-    private void sortUnread(ArrayList<TLRPC.Dialog> dialogs){
-        Collections.sort(dialogs, new Comparator<TLRPC.Dialog>() {
+    private void sortUnread(ArrayList<TLRPC.TL_dialog> dialogs){
+        Collections.sort(dialogs, new Comparator<TLRPC.TL_dialog>() {
             @Override
-            public int compare(TLRPC.Dialog dialog, TLRPC.Dialog dialog2) {
+            public int compare(TLRPC.TL_dialog dialog, TLRPC.TL_dialog dialog2) {
                 if (dialog.unread_count == dialog2.unread_count) {
                     return 0;
                 } else if (dialog.unread_count < dialog2.unread_count) {
@@ -216,9 +216,9 @@ public class DialogsAdapter extends RecyclerView.Adapter {
     }
 
     private void sortUsersDefault(){
-        Collections.sort(MessagesController.getInstance().dialogsUsers, new Comparator<TLRPC.Dialog>() {
+        Collections.sort(MessagesController.getInstance().dialogsUsers, new Comparator<TLRPC.TL_dialog>() {
             @Override
-            public int compare(TLRPC.Dialog dialog, TLRPC.Dialog dialog2) {
+            public int compare(TLRPC.TL_dialog dialog, TLRPC.TL_dialog dialog2) {
                 if (dialog.last_message_date == dialog2.last_message_date) {
                     return 0;
                 } else if (dialog.last_message_date < dialog2.last_message_date) {
@@ -244,8 +244,8 @@ public class DialogsAdapter extends RecyclerView.Adapter {
         return count;
     }
 
-    public TLRPC.Dialog getItem(int i) {
-        ArrayList<TLRPC.Dialog> arrayList = getDialogsArray();
+    public TLRPC.TL_dialog getItem(int i) {
+        ArrayList<TLRPC.TL_dialog> arrayList = getDialogsArray();
         if (i < 0 || i >= arrayList.size()) {
             return null;
         }
@@ -282,7 +282,7 @@ public class DialogsAdapter extends RecyclerView.Adapter {
         if (viewHolder.getItemViewType() == 0) {
             DialogCell cell = (DialogCell) viewHolder.itemView;
             cell.useSeparator = (i != getItemCount() - 1);
-            TLRPC.Dialog dialog = getItem(i);
+            TLRPC.TL_dialog dialog = getItem(i);
             if (dialogsType == 0) {
                 if (AndroidUtilities.isTablet()) {
                     cell.setDialogSelected(dialog.id == openedDialogId);

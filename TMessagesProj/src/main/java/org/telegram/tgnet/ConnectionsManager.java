@@ -183,7 +183,7 @@ public class ConnectionsManager {
         native_cancelRequest(token, notifyServer);
     }
 
-    public void cleanUp() {
+    public void cleanup() {
         native_cleanUp();
     }
 

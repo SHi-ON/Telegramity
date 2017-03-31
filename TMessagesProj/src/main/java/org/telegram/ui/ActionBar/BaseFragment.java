@@ -8,6 +8,7 @@
 
 package org.telegram.ui.ActionBar;
 
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -20,7 +21,6 @@ import android.view.ViewGroup;
 
 import com.ioton.TelegramityUtilities;
 
-import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.tgnet.ConnectionsManager;
@@ -106,15 +106,18 @@ public class BaseFragment {
                 }
             }
             if (actionBar != null) {
-                ViewGroup parent = (ViewGroup) actionBar.getParent();
-                if (parent != null) {
-                    try {
-                        parent.removeView(actionBar);
-                    } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                boolean differentParent = parentLayout != null && parentLayout.getContext() != actionBar.getContext();
+                if (actionBar.getAddToContainer() || differentParent) {
+                    ViewGroup parent = (ViewGroup) actionBar.getParent();
+                    if (parent != null) {
+                        try {
+                            parent.removeView(actionBar);
+                        } catch (Exception e) {
+                            FileLog.e("tmessages", e);
+                        }
                     }
                 }
-                if (parentLayout != null && parentLayout.getContext() != actionBar.getContext()) {
+                if (differentParent) {
                     actionBar = null;
                 }
             }
@@ -235,6 +238,18 @@ public class BaseFragment {
         }
     }
 
+    public void dismissCurrentDialig() {
+        if (visibleDialog == null) {
+            return;
+        }
+        try {
+            visibleDialog.dismiss();
+            visibleDialog = null;
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
+        }
+    }
+
     public boolean dismissDialogOnPause(Dialog dialog) {
         return true;
     }
@@ -265,7 +280,7 @@ public class BaseFragment {
 
     }
 
-    protected AnimatorSetProxy onCustomTransitionAnimation(boolean isOpen, final Runnable callback) {
+    protected AnimatorSet onCustomTransitionAnimation(boolean isOpen, final Runnable callback) {
         return null;
     }
 

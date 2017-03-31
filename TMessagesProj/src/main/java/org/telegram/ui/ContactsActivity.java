@@ -15,7 +15,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -85,6 +84,9 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
     private HashMap<Integer, TLRPC.User> ignoreUsers;
     private boolean allowUsernameSearch = true;
     private ContactsActivityDelegate delegate;
+
+    private final static int search_button = 0;
+    private final static int add_button = 1;
 
     public interface ContactsActivityDelegate {
         void didSelectContact(TLRPC.User user, String param);
@@ -158,12 +160,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             public void onItemClick(int id) {
                 if (id == -1) {
                     finishFragment();
+                } else if (id == add_button) {
+                    presentFragment(new NewContactActivity());
                 }
             }
         });
 
         ActionBarMenu menu = actionBar.createMenu();
-        ActionBarMenuItem item = menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
+        ActionBarMenuItem item = menu.addItem(search_button, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
             @Override
             public void onSearchExpand() {
                 searching = true;
@@ -176,9 +180,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 searchWas = false;
                 listView.setAdapter(listViewAdapter);
                 listViewAdapter.notifyDataSetChanged();
-                if (android.os.Build.VERSION.SDK_INT >= 11) {
-                    listView.setFastScrollAlwaysVisible(true);
-                }
+                listView.setFastScrollAlwaysVisible(true);
                 listView.setFastScrollEnabled(true);
                 listView.setVerticalScrollBarEnabled(false);
                 emptyTextView.setText(LocaleController.getString("NoContacts", R.string.NoContacts));
@@ -195,9 +197,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                     if (listView != null) {
                         listView.setAdapter(searchListViewAdapter);
                         searchListViewAdapter.notifyDataSetChanged();
-                        if (android.os.Build.VERSION.SDK_INT >= 11) {
-                            listView.setFastScrollAlwaysVisible(false);
-                        }
+                        listView.setFastScrollAlwaysVisible(false);
                         listView.setFastScrollEnabled(false);
                         listView.setVerticalScrollBarEnabled(true);
                     }
@@ -209,6 +209,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             }
         });
         item.getSearchField().setHint(LocaleController.getString("Search", R.string.Search));
+        menu.addItem(add_button, R.drawable.add);
 
         searchListViewAdapter = new SearchAdapter(context, ignoreUsers, allowUsernameSearch, false, false, allowBots);
         listViewAdapter = new ContactsAdapter(context, onlyUsers ? 1 : 0, needPhonebook, ignoreUsers, chat_id != 0);
@@ -260,10 +261,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         listView.setFastScrollEnabled(true);
         listView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         listView.setAdapter(listViewAdapter);
-        if (Build.VERSION.SDK_INT >= 11) {
-            listView.setFastScrollAlwaysVisible(true);
-            listView.setVerticalScrollbarPosition(LocaleController.isRTL ? ListView.SCROLLBAR_POSITION_LEFT : ListView.SCROLLBAR_POSITION_RIGHT);
-        }
+        listView.setFastScrollAlwaysVisible(true);
+        listView.setVerticalScrollbarPosition(LocaleController.isRTL ? ListView.SCROLLBAR_POSITION_LEFT : ListView.SCROLLBAR_POSITION_RIGHT);
         ((FrameLayout) fragmentView).addView(listView);
         layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
         layoutParams.width = LayoutHelper.MATCH_PARENT;
@@ -448,9 +447,6 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             if (!user.bot && needForwardCount) {
                 message = String.format("%s\n\n%s", message, LocaleController.getString("AddToTheGroupForwardCount", R.string.AddToTheGroupForwardCount));
                 editText = new EditText(getParentActivity());
-                if (android.os.Build.VERSION.SDK_INT < 11) {
-                    editText.setBackgroundResource(android.R.drawable.editbox_background_normal);
-                }
                 editText.setTextSize(18);
                 editText.setText("50");
                 editText.setGravity(Gravity.CENTER);

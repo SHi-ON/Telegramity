@@ -24,6 +24,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,10 +51,37 @@ public class DrawerProfileCell extends FrameLayout {
     private TextView onlineTextView;
     private TextView phoneTextView;
     private ImageView shadowView;
+    private CloudView cloudView;
     private Rect srcRect = new Rect();
     private Rect destRect = new Rect();
     private Paint paint = new Paint();
     private int currentColor;
+
+    private class CloudView extends View {
+
+        private Drawable cloudDrawable;
+        private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        public CloudView(Context context) {
+            super(context);
+
+            cloudDrawable = getResources().getDrawable(R.drawable.cloud);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if (ApplicationLoader.isCustomTheme() && ApplicationLoader.getCachedWallpaper() != null) {
+                paint.setColor(ApplicationLoader.getServiceMessageColor());
+            } else {
+                paint.setColor(0xff427ba9);
+            }
+            canvas.drawCircle(getMeasuredWidth() / 2.0f, getMeasuredHeight() / 2.0f, AndroidUtilities.dp(34) / 2.0f, paint);
+            int l = (getMeasuredWidth() - AndroidUtilities.dp(33)) / 2;
+            int t = (getMeasuredHeight() - AndroidUtilities.dp(33)) / 2;
+            cloudDrawable.setBounds(l, t, l + AndroidUtilities.dp(33), t + AndroidUtilities.dp(33));
+            cloudDrawable.draw(canvas);
+        }
+    }
 
     public DrawerProfileCell(Context context) {
         super(context);
@@ -81,7 +109,7 @@ public class DrawerProfileCell extends FrameLayout {
         nameTextView.setSingleLine(true);
         nameTextView.setGravity(Gravity.LEFT);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
-        addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 48)); // def=28
+        addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 76, 48)); // def=28
 
         onlineTextView = new TextView(context);
         onlineTextView.setTextColor(0xffc2e5ff);
@@ -101,7 +129,10 @@ public class DrawerProfileCell extends FrameLayout {
         phoneTextView.setMaxLines(1);
         phoneTextView.setSingleLine(true);
         phoneTextView.setGravity(Gravity.LEFT);
-        addView(phoneTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 9)); // def=9
+        addView(phoneTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 76, 9)); //def=9
+
+        cloudView = new CloudView(context);
+        addView(cloudView, LayoutHelper.createFrame(61, 61, Gravity.RIGHT | Gravity.BOTTOM));
     }
 
     @Override
@@ -112,6 +143,7 @@ public class DrawerProfileCell extends FrameLayout {
             try {
                 super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(168), MeasureSpec.EXACTLY));  // def=148
             } catch (Exception e) {
+                setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), AndroidUtilities.dp(148));
                 FileLog.e("tmessages", e);
             }
         }
@@ -180,5 +212,11 @@ public class DrawerProfileCell extends FrameLayout {
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(Theme.ACTION_BAR_MAIN_AVATAR_COLOR);
         avatarImageView.setImage(photo, "50_50", avatarDrawable);
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        cloudView.invalidate();
     }
 }

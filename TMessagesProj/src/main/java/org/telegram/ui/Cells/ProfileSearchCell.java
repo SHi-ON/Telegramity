@@ -98,22 +98,18 @@ public class ProfileSearchCell extends BaseCell {
 
         if (namePaint == null) {
             namePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            namePaint.setTextSize(AndroidUtilities.dp(17));
             namePaint.setColor(0xff212121);
             namePaint.setTypeface(AndroidUtilities.getTypeface());
 
             nameEncryptedPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            nameEncryptedPaint.setTextSize(AndroidUtilities.dp(17));
             nameEncryptedPaint.setColor(0xff00a60e);
             nameEncryptedPaint.setTypeface(AndroidUtilities.getTypeface());
 
             onlinePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            onlinePaint.setTextSize(AndroidUtilities.dp(16));
+            onlinePaint.setColor(0xff212121);
             onlinePaint.setTypeface(AndroidUtilities.getTypeface());
-            onlinePaint.setColor(Theme.MSG_LINK_TEXT_COLOR);
 
             offlinePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            offlinePaint.setTextSize(AndroidUtilities.dp(16));
             offlinePaint.setColor(0xff999999);
             offlinePaint.setTypeface(AndroidUtilities.getTypeface());
 
@@ -122,7 +118,6 @@ public class ProfileSearchCell extends BaseCell {
             linePaint.setTypeface(AndroidUtilities.getTypeface());
 
             countPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            countPaint.setTextSize(AndroidUtilities.dp(13));
             countPaint.setColor(0xffffffff);
             countPaint.setTypeface(AndroidUtilities.getTypeface());
 
@@ -134,6 +129,12 @@ public class ProfileSearchCell extends BaseCell {
             checkDrawable = getResources().getDrawable(R.drawable.check_list);
             botDrawable = new IconicsDrawable(context, FontAwesome.Icon.faw_github_alt).sizePx(30).color(0xff526b77); //Blue Grey -2
         }
+
+        namePaint.setTextSize(AndroidUtilities.dp(17));
+        nameEncryptedPaint.setTextSize(AndroidUtilities.dp(17));
+        onlinePaint.setTextSize(AndroidUtilities.dp(16));
+        offlinePaint.setTextSize(AndroidUtilities.dp(16));
+        countPaint.setTextSize(AndroidUtilities.dp(13));
 
         avatarImage = new ImageReceiver(this);
         avatarImage.setRoundRadius(AndroidUtilities.dp(26));
@@ -310,7 +311,7 @@ public class ProfileSearchCell extends BaseCell {
         }
 
         if (drawCount) {
-            TLRPC.Dialog dialog = MessagesController.getInstance().dialogs_dict.get(dialog_id);
+            TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogs_dict.get(dialog_id);
             if (dialog != null && dialog.unread_count != 0) {
                 lastUnreadCount = dialog.unread_count;
                 String countString = String.format("%d", dialog.unread_count);
@@ -467,7 +468,7 @@ public class ProfileSearchCell extends BaseCell {
                 }
             }
             if (!continueUpdate && drawCount && (mask & MessagesController.UPDATE_MASK_READ_DIALOG_MESSAGE) != 0) {
-                TLRPC.Dialog dialog = MessagesController.getInstance().dialogs_dict.get(dialog_id);
+                TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogs_dict.get(dialog_id);
                 if (dialog != null && dialog.unread_count != lastUnreadCount) {
                     continueUpdate = true;
                 }

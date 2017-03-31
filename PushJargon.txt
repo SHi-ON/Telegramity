@@ -1,0 +1,11 @@
+	Spanish:
+uniseDspuesModrizacion ~ Unirse Despues Modernizacion = Join After Upgrade
+mensjUns ~ Mensaj Unirse = Message Join
+emisioAbridrYUnise ~ Emision Abridor y Unirse = Channel(Emission) Openerpener and Join
+abrr ~ Abrir = Open
+unse(uns) ~ Unirse = Join
+nombrDeUsuro ~ Nombre de Usuario = Number(ID) from User ~ UserID
+________________
+	German:
+btn ~ Beitreten = Join
+

@@ -39,7 +39,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
     private long lastFrameTime;
     private int lastTimeStamp;
     private int invalidateAfter = 50;
-    private final int[] metaData = new int[3];
+    private final int[] metaData = new int[4];
     private Runnable loadFrameTask;
     private Bitmap renderingBitmap;
     private Bitmap nextRenderingBitmap;
@@ -47,6 +47,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
     private boolean destroyWhenDone;
     private boolean decoderCreated;
     private File path;
+    private boolean recycleWithSecond;
 
     private BitmapShader renderingShader;
     private BitmapShader nextRenderingShader;
@@ -68,11 +69,14 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
     private static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2, new ThreadPoolExecutor.DiscardPolicy());
 
     private View parentView = null;
+    private View secondParentView = null;
 
     protected final Runnable mInvalidateTask = new Runnable() {
         @Override
         public void run() {
-            if (parentView != null) {
+            if (secondParentView != null) {
+                secondParentView.invalidate();
+            } else if (parentView != null) {
                 parentView.invalidate();
             }
         }
@@ -95,14 +99,16 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
             loadFrameTask = null;
             nextRenderingBitmap = backgroundBitmap;
             nextRenderingShader = backgroundShader;
-            if (metaData[2] < lastTimeStamp) {
+            if (metaData[3] < lastTimeStamp) {
                 lastTimeStamp = 0;
             }
-            if (metaData[2] - lastTimeStamp != 0) {
-                invalidateAfter = metaData[2] - lastTimeStamp;
+            if (metaData[3] - lastTimeStamp != 0) {
+                invalidateAfter = metaData[3] - lastTimeStamp;
             }
-            lastTimeStamp = metaData[2];
-            if (parentView != null) {
+            lastTimeStamp = metaData[3];
+            if (secondParentView != null) {
+                secondParentView.invalidate();
+            } else if (parentView != null) {
                 parentView.invalidate();
             }
         }
@@ -141,7 +147,9 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
     private final Runnable mStartTask = new Runnable() {
         @Override
         public void run() {
-            if (parentView != null) {
+            if (secondParentView != null) {
+                secondParentView.invalidate();
+            } else if (parentView != null) {
                 parentView.invalidate();
             }
         }
@@ -163,7 +171,18 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
         parentView = view;
     }
 
+    public void setSecondParentView(View view) {
+        secondParentView = view;
+        if (view == null && recycleWithSecond) {
+            recycle();
+        }
+    }
+
     public void recycle() {
+        if (secondParentView != null) {
+            recycleWithSecond = true;
+            return;
+        }
         isRunning = false;
         isRecycled = true;
         if (loadFrameTask == null) {
@@ -237,12 +256,12 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
 
     @Override
     public int getIntrinsicHeight() {
-        return decoderCreated ? metaData[1] : AndroidUtilities.dp(100);
+        return decoderCreated ? (metaData[2] == 90 || metaData[2] == 270 ? metaData[0] : metaData[1]) : AndroidUtilities.dp(100);
     }
 
     @Override
     public int getIntrinsicWidth() {
-        return decoderCreated ? metaData[0] : AndroidUtilities.dp(100);
+        return decoderCreated ? (metaData[2] == 90 || metaData[2] == 270 ? metaData[1] : metaData[0]) : AndroidUtilities.dp(100);
     }
 
     @Override
@@ -273,14 +292,19 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
 
         if (renderingBitmap != null) {
             if (applyTransformation) {
+                int bitmapW = renderingBitmap.getWidth();
+                int bitmapH = renderingBitmap.getHeight();
+                if (metaData[2] == 90 || metaData[2] == 270) {
+                    int temp = bitmapW;
+                    bitmapW = bitmapH;
+                    bitmapH = temp;
+                }
                 dstRect.set(getBounds());
-                scaleX = (float) dstRect.width() / renderingBitmap.getWidth();
-                scaleY = (float) dstRect.height() / renderingBitmap.getHeight();
+                scaleX = (float) dstRect.width() / bitmapW;
+                scaleY = (float) dstRect.height() / bitmapH;
                 applyTransformation = false;
             }
             if (roundRadius != 0) {
-                int bitmapW = renderingBitmap.getWidth();
-                int bitmapH = renderingBitmap.getHeight();
                 float scale = Math.max(scaleX, scaleY);
 
                 if (renderingShader == null) {
@@ -290,18 +314,36 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
                 roundRect.set(dstRect);
                 shaderMatrix.reset();
                 if (Math.abs(scaleX - scaleY) > 0.00001f) {
-                    int w = (int) Math.floor(dstRect.width() / scale);
-                    int h = (int) Math.floor(dstRect.height() / scale);
-                    bitmapRect.set((bitmapW - w) / 2, (bitmapH - h) / 2, w, h);
-                    shaderMatrix.setRectToRect(bitmapRect, roundRect, Matrix.ScaleToFit.START);
+                    int w;
+                    int h;
+                    if (metaData[2] == 90 || metaData[2] == 270) {
+                        w = (int) Math.floor(dstRect.height() / scale);
+                        h = (int) Math.floor(dstRect.width() / scale);
+                    } else {
+                        w = (int) Math.floor(dstRect.width() / scale);
+                        h = (int) Math.floor(dstRect.height() / scale);
+                    }
+                    bitmapRect.set((renderingBitmap.getWidth() - w) / 2, (renderingBitmap.getHeight() - h) / 2, w, h);
+                    AndroidUtilities.setRectToRect(shaderMatrix, bitmapRect, roundRect, metaData[2], Matrix.ScaleToFit.START);
                 } else {
                     bitmapRect.set(0, 0, renderingBitmap.getWidth(), renderingBitmap.getHeight());
-                    shaderMatrix.setRectToRect(bitmapRect, roundRect, Matrix.ScaleToFit.FILL);
+                    AndroidUtilities.setRectToRect(shaderMatrix, bitmapRect, roundRect, metaData[2], Matrix.ScaleToFit.FILL);
                 }
                 renderingShader.setLocalMatrix(shaderMatrix);
+
                 canvas.drawRoundRect(roundRect, roundRadius, roundRadius, getPaint());
             } else {
                 canvas.translate(dstRect.left, dstRect.top);
+                if (metaData[2] == 90) {
+                    canvas.rotate(90);
+                    canvas.translate(0, -dstRect.width());
+                } else if (metaData[2] == 180) {
+                    canvas.rotate(180);
+                    canvas.translate(-dstRect.width(), -dstRect.height());
+                } else if (metaData[2] == 270) {
+                    canvas.rotate(270);
+                    canvas.translate(-dstRect.height(), 0);
+                }
                 canvas.scale(scaleX, scaleY);
                 canvas.drawBitmap(renderingBitmap, 0, 0, getPaint());
             }
@@ -313,12 +355,12 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
 
     @Override
     public int getMinimumHeight() {
-        return decoderCreated ? metaData[1] : AndroidUtilities.dp(100);
+        return decoderCreated ? (metaData[2] == 90 || metaData[2] == 270 ? metaData[0] : metaData[1]) : AndroidUtilities.dp(100);
     }
 
     @Override
     public int getMinimumWidth() {
-        return decoderCreated ? metaData[0] : AndroidUtilities.dp(100);
+        return decoderCreated ? (metaData[2] == 90 || metaData[2] == 270 ? metaData[1] : metaData[0]) : AndroidUtilities.dp(100);
     }
 
     public Bitmap getAnimatedBitmap() {
@@ -337,6 +379,10 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
 
     public boolean hasBitmap() {
         return nativePtr != 0 && (renderingBitmap != null || nextRenderingBitmap != null);
+    }
+
+    public int getOrientation() {
+        return metaData[2];
     }
 
     public AnimatedFileDrawable makeCopy() {

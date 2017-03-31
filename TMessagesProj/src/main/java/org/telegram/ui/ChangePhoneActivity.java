@@ -9,7 +9,9 @@
 package org.telegram.ui;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -61,10 +63,7 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.messenger.AnimationCompat.AnimatorListenerAdapterProxy;
-import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
-import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
+import org.telegram.messenger.AnimatorListenerAdapterProxy;
 import org.telegram.ui.Components.HintEditText;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SlideView;
@@ -241,44 +240,34 @@ public class ChangePhoneActivity extends BaseFragment {
             }
             doneButton.setVisibility(View.VISIBLE);
         }
-        if(android.os.Build.VERSION.SDK_INT > 10) {
-            final SlideView outView = views[currentViewNum];
-            final SlideView newView = views[page];
-            currentViewNum = page;
+        final SlideView outView = views[currentViewNum];
+        final SlideView newView = views[page];
+        currentViewNum = page;
 
-            newView.setParams(params);
-            actionBar.setTitle(newView.getHeaderName());
-            newView.onShow();
-            ViewProxy.setX(newView, back ? -AndroidUtilities.displaySize.x : AndroidUtilities.displaySize.x);
+        newView.setParams(params);
+        actionBar.setTitle(newView.getHeaderName());
+        newView.onShow();
+        newView.setX(back ? -AndroidUtilities.displaySize.x : AndroidUtilities.displaySize.x);
 
-            AnimatorSetProxy animatorSet = new AnimatorSetProxy();
-            animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-            animatorSet.setDuration(300);
-            animatorSet.playTogether(
-                    ObjectAnimatorProxy.ofFloat(outView, "translationX", back ? AndroidUtilities.displaySize.x : -AndroidUtilities.displaySize.x),
-                    ObjectAnimatorProxy.ofFloat(newView, "translationX", 0));
-            animatorSet.addListener(new AnimatorListenerAdapterProxy() {
-                @Override
-                public void onAnimationStart(Object animation) {
-                    newView.setVisibility(View.VISIBLE);
-                }
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        animatorSet.setDuration(300);
+        animatorSet.playTogether(
+                ObjectAnimator.ofFloat(outView, "translationX", back ? AndroidUtilities.displaySize.x : -AndroidUtilities.displaySize.x),
+                ObjectAnimator.ofFloat(newView, "translationX", 0));
+        animatorSet.addListener(new AnimatorListenerAdapterProxy() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                newView.setVisibility(View.VISIBLE);
+            }
 
-                @SuppressLint("NewApi")
-                @Override
-                public void onAnimationEnd(Object animation) {
-                    outView.setVisibility(View.GONE);
-                    outView.setX(0);
-                }
-            });
-            animatorSet.start();
-        } else {
-            views[currentViewNum].setVisibility(View.GONE);
-            currentViewNum = page;
-            views[page].setParams(params);
-            views[page].setVisibility(View.VISIBLE);
-            actionBar.setTitle(views[page].getHeaderName());
-            views[page].onShow();
-        }
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                outView.setVisibility(View.GONE);
+                outView.setX(0);
+            }
+        });
+        animatorSet.start();
     }
 
     private void fillNextCodeParams(Bundle params, TLRPC.TL_auth_sentCode res) {
@@ -745,8 +734,13 @@ public class ChangePhoneActivity extends BaseFragment {
             req.phone_number = phone;
             req.allow_flashcall = simcardAvailable && allowCall;
             if (req.allow_flashcall) {
-                String number = tm.getLine1Number();
-                req.current_number = number != null && number.length() != 0 && (phone.contains(number) || number.contains(phone));
+                try {
+                    String number = tm.getLine1Number();
+                    req.current_number = number != null && number.length() != 0 && (phone.contains(number) || number.contains(phone));
+                } catch (Exception e) {
+                    req.allow_flashcall = false;
+                    FileLog.e("tmessages", e);
+                }
             }
 
             final Bundle params = new Bundle();
@@ -1331,6 +1325,7 @@ public class ChangePhoneActivity extends BaseFragment {
                                 MessagesStorage.getInstance().putUsersAndChats(users, null, true, true);
                                 MessagesController.getInstance().putUser(user, false);
                                 finishFragment();
+                                NotificationCenter.getInstance().postNotificationName(NotificationCenter.mainUserInfoChanged);
                             } else {
                                 lastError = error.text;
                                 if (currentType == 3 && (nextType == 4 || nextType == 2) || currentType == 2 && (nextType == 4 || nextType == 3)) {

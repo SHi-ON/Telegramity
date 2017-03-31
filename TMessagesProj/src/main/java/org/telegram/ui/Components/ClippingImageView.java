@@ -18,8 +18,8 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.view.View;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
 
 public class ClippingImageView extends View {
 
@@ -67,10 +67,10 @@ public class ClippingImageView extends View {
     public void setAnimationProgress(float progress) {
         animationProgress = progress;
 
-        ViewProxy.setScaleX(this, animationValues[0][0] + (animationValues[1][0] - animationValues[0][0]) * animationProgress);
-        ViewProxy.setScaleY(this, animationValues[0][1] + (animationValues[1][1] - animationValues[0][1]) * animationProgress);
-        ViewProxy.setTranslationX(this, animationValues[0][2] + (animationValues[1][2] - animationValues[0][2]) * animationProgress);
-        ViewProxy.setTranslationY(this, animationValues[0][3] + (animationValues[1][3] - animationValues[0][3]) * animationProgress);
+        setScaleX(animationValues[0][0] + (animationValues[1][0] - animationValues[0][0]) * animationProgress);
+        setScaleY(animationValues[0][1] + (animationValues[1][1] - animationValues[0][1]) * animationProgress);
+        setTranslationX(animationValues[0][2] + (animationValues[1][2] - animationValues[0][2]) * animationProgress);
+        setTranslationY(animationValues[0][3] + (animationValues[1][3] - animationValues[0][3]) * animationProgress);
         setClipHorizontal((int) (animationValues[0][4] + (animationValues[1][4] - animationValues[0][4]) * animationProgress));
         setClipTop((int) (animationValues[0][5] + (animationValues[1][5] - animationValues[0][5]) * animationProgress));
         setClipBottom((int) (animationValues[0][6] + (animationValues[1][6] - animationValues[0][6]) * animationProgress));
@@ -108,7 +108,7 @@ public class ClippingImageView extends View {
             return;
         }
         if (bmp != null) {
-            float scaleY = ViewProxy.getScaleY(this);
+            float scaleY = getScaleY();
             canvas.save();
 
             if (needRadius) {
@@ -124,17 +124,17 @@ public class ClippingImageView extends View {
                     bitmapW = bmp.getWidth();
                     bitmapH = bmp.getHeight();
                 }
-                float scaleW = getWidth() != 0 ? bitmapW / getWidth() : 1.0f;
-                float scaleH = getHeight() != 0 ? bitmapH / getHeight() : 1.0f;
+                float scaleW = getWidth() != 0 ? (float) bitmapW / getWidth() : 1.0f;
+                float scaleH = getHeight() != 0 ? (float) bitmapH / getHeight() : 1.0f;
                 float scale = Math.min(scaleW, scaleH);
                 if (Math.abs(scaleW - scaleH) > 0.00001f) {
                     int w = (int) Math.floor(getWidth() * scale);
                     int h = (int) Math.floor(getHeight() * scale);
                     bitmapRect.set((bitmapW - w) / 2, (bitmapH - h) / 2, w, h);
-                    shaderMatrix.setRectToRect(bitmapRect, roundRect, Matrix.ScaleToFit.START);
+                    AndroidUtilities.setRectToRect(shaderMatrix, bitmapRect, roundRect, orientation, Matrix.ScaleToFit.START);
                 } else {
                     bitmapRect.set(0, 0, bmp.getWidth(), bmp.getHeight());
-                    shaderMatrix.setRectToRect(bitmapRect, roundRect, Matrix.ScaleToFit.FILL);
+                    AndroidUtilities.setRectToRect(shaderMatrix, bitmapRect, roundRect, orientation, Matrix.ScaleToFit.FILL);
                 }
                 bitmapShader.setLocalMatrix(shaderMatrix);
                 canvas.clipRect(clipLeft / scaleY, clipTop / scaleY, getWidth() - clipRight / scaleY, getHeight() - clipBottom / scaleY);

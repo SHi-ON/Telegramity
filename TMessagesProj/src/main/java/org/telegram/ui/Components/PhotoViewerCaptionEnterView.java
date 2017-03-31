@@ -8,6 +8,8 @@
 
 package org.telegram.ui.Components;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Build;
 import android.text.Editable;
@@ -35,13 +37,11 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.messenger.AnimationCompat.AnimatorSetProxy;
-import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayoutPhoto.SizeNotifierFrameLayoutPhotoDelegate {
+public class PhotoViewerCaptionEnterView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayoutPhoto.SizeNotifierFrameLayoutPhotoDelegate {
 
     public interface PhotoViewerCaptionEnterViewDelegate {
         void onCaptionEnter();
@@ -56,9 +56,9 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
 
     private ActionMode currentActionMode;
 
-    private AnimatorSetProxy runningAnimation;
-    private AnimatorSetProxy runningAnimation2;
-    private ObjectAnimatorProxy runningAnimationAudio;
+    private AnimatorSet runningAnimation;
+    private AnimatorSet runningAnimation2;
+    private ObjectAnimator runningAnimationAudio;
     private int runningAnimationType;
     private int audioInterfaceState;
 
@@ -71,6 +71,8 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
     private int emojiPadding;
 
     private boolean innerTextChange;
+
+    private final int captionMaxLength = 200;
 
     private PhotoViewerCaptionEnterViewDelegate delegate;
 
@@ -89,7 +91,7 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
         textFieldContainer.setOrientation(LinearLayout.HORIZONTAL);
         addView(textFieldContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 2, 0, 0, 0));
 
-        FrameLayoutFixed frameLayout = new FrameLayoutFixed(context);
+        FrameLayout frameLayout = new FrameLayout(context);
         textFieldContainer.addView(frameLayout, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1.0f));
 
         emojiButton = new ImageView(context);
@@ -108,8 +110,18 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
             }
         });
 
-        messageEditText = new EditText(context);
-        if (Build.VERSION.SDK_INT >= 23) {
+        messageEditText = new EditText(context) {
+            @Override
+            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                try {
+                    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+                } catch (Exception e) {
+                    setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), AndroidUtilities.dp(51));
+                    FileLog.e("tmessages", e);
+                }
+            }
+        };
+        if (Build.VERSION.SDK_INT >= 23 && windowView != null) {
             messageEditText.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -179,14 +191,14 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
         messageEditText.setTextColor(0xffffffff);
         messageEditText.setHintTextColor(0xb2ffffff);
         InputFilter[] inputFilters = new InputFilter[1];
-        inputFilters[0] = new InputFilter.LengthFilter(200);
+        inputFilters[0] = new InputFilter.LengthFilter(captionMaxLength);
         messageEditText.setFilters(inputFilters);
         frameLayout.addView(messageEditText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 52, 0, 6, 0));
         messageEditText.setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if (i == KeyEvent.KEYCODE_BACK) {
-                    if (hideActionMode()) {
+                    if (windowView != null && hideActionMode()) {
                         return true;
                     } else if (!keyboardVisible && isPopupShowing()) {
                         if (keyEvent.getAction() == 1) {
@@ -206,20 +218,6 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
                 }
             }
         });
-        /*messageEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT) {
-                    delegate.onCaptionEnter();
-                    return true;
-                } else
-                if (keyEvent != null && i == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    delegate.onCaptionEnter();
-                    return true;
-                }
-                return false;
-            }
-        });*/
         messageEditText.addTextChangedListener(new TextWatcher() {
             boolean processChange = false;
 
@@ -262,7 +260,11 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
 
     public boolean hideActionMode() {
         if (Build.VERSION.SDK_INT >= 23 && currentActionMode != null) {
-            currentActionMode.finish();
+            try {
+                currentActionMode.finish();
+            } catch (Exception e) {
+                FileLog.e("tmessages", e);
+            }
             currentActionMode = null;
             return true;
         }
@@ -417,13 +419,16 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
                     }
 
                     public void onEmojiSelected(String symbol) {
+                        if (messageEditText.length() + symbol.length() > captionMaxLength) {
+                            return;
+                        }
                         int i = messageEditText.getSelectionEnd();
                         if (i < 0) {
                             i = 0;
                         }
                         try {
                             innerTextChange = true;
-                            CharSequence localCharSequence = Emoji.replaceEmoji(symbol/* + "\uFE0F"*/, messageEditText.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
+                            CharSequence localCharSequence = Emoji.replaceEmoji(symbol, messageEditText.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
                             messageEditText.setText(messageEditText.getText().insert(i, localCharSequence));
                             int j = i + localCharSequence.length();
                             messageEditText.setSelection(j, j);
@@ -462,6 +467,21 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
                     public void onClearEmojiRecent() {
 
                     }
+
+                    @Override
+                    public void onShowStickerSet(TLRPC.StickerSetCovered stickerSet) {
+
+                    }
+
+                    @Override
+                    public void onStickerSetAdd(TLRPC.StickerSetCovered stickerSet) {
+
+                    }
+
+                    @Override
+                    public void onStickerSetRemove(TLRPC.StickerSetCovered stickerSet) {
+
+                    }
                 });
                 sizeNotifierLayout.addView(emojiView);
             }
@@ -480,7 +500,9 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
             layoutParams.width = AndroidUtilities.displaySize.x;
             layoutParams.height = currentHeight;
             emojiView.setLayoutParams(layoutParams);
-            AndroidUtilities.hideKeyboard(messageEditText);
+            if (!AndroidUtilities.isInMultiwindow) {
+                AndroidUtilities.hideKeyboard(messageEditText);
+            }
             if (sizeNotifierLayout != null) {
                 emojiPadding = currentHeight;
                 sizeNotifierLayout.requestLayout();
@@ -534,7 +556,7 @@ public class PhotoViewerCaptionEnterView extends FrameLayoutFixed implements Not
 
     @Override
     public void onSizeChanged(int height, boolean isWidthGreater) {
-        if (height > AndroidUtilities.dp(50) && keyboardVisible) {
+        if (height > AndroidUtilities.dp(50) && keyboardVisible && !AndroidUtilities.isInMultiwindow) {
             if (isWidthGreater) {
                 keyboardHeightLand = height;
                 ApplicationLoader.applicationContext.getSharedPreferences("emoji", 0).edit().putInt("kbd_height_land3", keyboardHeightLand).commit();

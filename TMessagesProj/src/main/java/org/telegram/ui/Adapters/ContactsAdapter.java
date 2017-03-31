@@ -9,7 +9,6 @@
 package org.telegram.ui.Adapters;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,7 +16,6 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
@@ -232,12 +230,13 @@ public class ContactsAdapter extends BaseSectionsAdapter {
                 convertView = new TextCell(mContext);
             }
             ContactsController.Contact contact = ContactsController.getInstance().phoneBookContacts.get(position);
+            TextCell textCell = (TextCell) convertView;
             if (contact.first_name != null && contact.last_name != null) {
-                ((TextCell) convertView).setText(contact.first_name + " " + contact.last_name);
+                textCell.setText(contact.first_name + " " + contact.last_name);
             } else if (contact.first_name != null && contact.last_name == null) {
-                ((TextCell) convertView).setText(contact.first_name);
+                textCell.setText(contact.first_name);
             } else {
-                ((TextCell) convertView).setText(contact.last_name);
+                textCell.setText(contact.last_name);
             }
         } else if (type == 0) {
             if (convertView == null) {
@@ -252,13 +251,13 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             TLRPC.User user = MessagesController.getInstance().getUser(arr.get(position).user_id);
             ((UserCell) convertView).setData(user, null, null, 0);
             if (checkedMap != null) {
-                ((UserCell) convertView).setChecked(checkedMap.containsKey(user.id), !scrolling && Build.VERSION.SDK_INT > 10);
+                ((UserCell) convertView).setChecked(checkedMap.containsKey(user.id), !scrolling);
             }
             if (ignoreUsers != null) {
                 if (ignoreUsers.containsKey(user.id)) {
-                    ViewProxy.setAlpha(convertView, 0.5f);
+                    convertView.setAlpha(0.5f);
                 } else {
-                    ViewProxy.setAlpha(convertView, 1.0f);
+                    convertView.setAlpha(1.0f);
                 }
             }
         }

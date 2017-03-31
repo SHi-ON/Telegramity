@@ -90,11 +90,13 @@ public class Browser {
                 @Override
                 public void onServiceConnected(CustomTabsClient client) {
                     customTabsClient = client;
-                    if (customTabsClient != null) {
-                        try {
-                            customTabsClient.warmup(0);
-                        } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                    if (MediaController.getInstance().canCustomTabs()) {
+                        if (customTabsClient != null) {
+                            try {
+                                customTabsClient.warmup(0);
+                            } catch (Exception e) {
+                                FileLog.e("tmessages", e);
+                            }
                         }
                     }
                 }
@@ -137,6 +139,9 @@ public class Browser {
     }
 
     public static void openUrl(Context context, String url) {
+        if (url == null) {
+            return;
+        }
         openUrl(context, Uri.parse(url), true);
     }
 
@@ -155,10 +160,10 @@ public class Browser {
         if (context == null || uri == null) {
             return;
         }
-
         try {
+            String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase() : "";
             boolean internalUri = isInternalUri(uri);
-            if (Build.VERSION.SDK_INT >= 15 && allowCustom && MediaController.getInstance().canCustomTabs() && !internalUri) {
+            if (Build.VERSION.SDK_INT >= 15 && allowCustom && MediaController.getInstance().canCustomTabs() && !internalUri && !scheme.equals("tel")) {
                 Intent share = new Intent(ApplicationLoader.applicationContext, ShareBroadcastReceiver.class);
                 share.setAction(Intent.ACTION_SEND);
 
