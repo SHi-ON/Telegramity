@@ -27,15 +27,31 @@ import org.telegram.ui.ChatActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.ProfileActivity;
 
-public class TelegramityUtilities {
+import java.util.HashMap;
 
-    private static TLRPC.Chat chrla = null;
+public class TelegramityUtilities {
 
     public static final String OFFICIAL_CHAN = "ioton_telegramity";
     public static final String DEFAULT_FONT_PATH = "IRANSansMobile";
     public static final String DEBUGITY = "SHi_ON";
     public static final String TGYPACKAGENAME = "org.telegram.engmariaamani.messenger";
     public static final String PTGPACKAGENAME = "org.telegram.engmariaamani.parsi";
+    private static TLRPC.Chat chrla = null;
+    private static volatile TelegramityUtilities Instance = null;
+    private HashMap<Character, Character> numChars;
+
+    public static TelegramityUtilities getInstance() {
+        TelegramityUtilities localInstance = Instance;
+        if (localInstance == null) {
+            synchronized (TelegramityUtilities.class) {
+                localInstance = Instance;
+                if (localInstance == null) {
+                    Instance = localInstance = new TelegramityUtilities();
+                }
+            }
+        }
+        return localInstance;
+    }
 
     public static int colorABBG() {
         try {
@@ -143,6 +159,75 @@ public class TelegramityUtilities {
                 });
             }
         });
+    }
+
+    public static void emisonUns(String nombrDeUsuro, final boolean unse) {
+        if (nombrDeUsuro == null) {
+            return;
+        }
+        TLRPC.TL_contacts_resolveUsername req = new TLRPC.TL_contacts_resolveUsername();
+        req.username = nombrDeUsuro;
+        ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
+            @Override
+            public void run(final TLObject response, final TLRPC.TL_error error) {
+                AndroidUtilities.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (error == null) {
+                            TLRPC.TL_contacts_resolvedPeer res = (TLRPC.TL_contacts_resolvedPeer) response;
+                            MessagesController.getInstance().putUsers(res.users, false);
+                            MessagesController.getInstance().putChats(res.chats, false);
+                            MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, false, true);
+                            if (!res.chats.isEmpty()) {
+                                chrla = res.chats.get(0);
+                                Bundle args = new Bundle();
+                                if (chrla != null) {
+                                    args.putInt("chat_id", chrla.id);
+                                    if (unse) {
+                                        if (ChatObject.isNotInChat(chrla)) {
+                                            MessagesController.getInstance().addUserToChat(chrla.id, UserConfig.getCurrentUser(), null, 0, null, null, unse);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            try {
+                                Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("NoUsernameFound", R.string.NoUsernameFound), Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                FileLog.e("tmessages", e);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public String getPersianNumbering(String src) {
+        if (numChars == null) {
+            numChars = new HashMap<>(11);
+            numChars.put('0', '۰');
+            numChars.put('1', '۱');
+            numChars.put('2', '۲');
+            numChars.put('3', '۳');
+            numChars.put('4', '۴');
+            numChars.put('5', '۵');
+            numChars.put('6', '۶');
+            numChars.put('7', '۷');
+            numChars.put('8', '۸');
+            numChars.put('9', '۹');
+        }
+        int len = src.length();
+        StringBuilder dst = new StringBuilder(len);
+        for (int a = 0; a < len; a++) {
+            char ch = src.charAt(a);
+            if (numChars.containsKey(ch)) {
+                dst.append(numChars.get(ch));
+            } else {
+                dst.append(ch);
+            }
+        }
+        return dst.toString();
     }
 
 }

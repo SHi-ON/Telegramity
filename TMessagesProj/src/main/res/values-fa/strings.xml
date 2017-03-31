@@ -122,8 +122,8 @@
     <string name="AttachMusic">موسیقی</string>
     <string name="AttachPhoto">عکس</string>
     <string name="AttachSticker">استیکر</string>
-    <string name="AttachVideo">ویدئو</string>
-    <string name="AudioTitle">صداهای به اشتراک گذاشته شده</string>
+    <string name="AttachVideo">ویدیو</string>
+    <string name="AudioTitle">موسیقی به اشتراک گذاشته شده</string>
     <string name="AudioUnknownArtist">هنرمند ناشناخته</string>
     <string name="AudioUnknownTitle">عنوان نامشخص</string>
     <string name="AutoLock">قفل خودکار</string>
@@ -191,7 +191,6 @@
     <string name="ChannelCantOpenNa">متاسفانه این گفتگو دیگر در دسترسی نیست.</string>
     <string name="ChannelCantOpenPrivate">ببخشید،این کانال دیگر در دسترس نیست.</string>
     <string name="ChannelCantSendMessage">ببخشید،شما نمی توانید به این کانال پیام ارسال کنید</string>
-    <string name="ChannelComment">نظر</string>
     <string name="ChannelCreator">سازنده</string>
     <string name="ChannelDelete">حذف کانال</string>
     <string name="ChannelDeleteAlert">صبر کنید!حذف این کانال باعث حذف تمام اعضا و پیام ها خواهد شد.کانال به هر حال حذف شود؟</string>
@@ -234,8 +233,8 @@
     <string name="ChannelMessageVideo">%1$s ویدئویی ارسال کرد</string>
     <string name="ChannelModerator">مدیر</string>
     <string name="ChannelMute">بی صدا</string>
-    <string name="ChannelNotifyMembersInfoOn">هنگامی که مطلب می فرستید کاربران مطلع می شوند</string>
     <string name="ChannelNotifyMembersInfoOff">هنگامی که مطلب می فرستید کاربران مطلع نمی شوند</string>
+    <string name="ChannelNotifyMembersInfoOn">هنگامی که مطلب می فرستید کاربران مطلع می شوند</string>
     <string name="ChannelPhotoEditNotification">عکس کانال %1$s به روز شد</string>
     <string name="ChannelPrivate">کانال خصوصی</string>
     <string name="ChannelPrivateInfo">عضویت در کانال های خصوصی فقط با لینک های دعوت امکان پذیر است</string>
@@ -245,7 +244,6 @@
 
  اگر تمایلی ندارید ،ما پیشنهاد میکنیم به جای آن یک کانال خصوصی ایجاد کنید."</string>
     <string name="ChannelPublicInfo">کانال های عمومی در جستجو قابل رویت هستند و هرکسی می تواند عضو آن شود</string>
-    <string name="ChannelPublicLimitReached">ببخشید،شما تعداد زیادی کانال عمومی ایجاد کرده اید.شما می توانید یک کانال خصوصی ایجاد کنید یا یکی از کانال های عمومی فعلی خود را حذف کنید.</string>
     <string name="ChannelRemoveUser">حذف از کانال</string>
     <string name="ChannelRemoveUserAdmin">پاک کردن</string>
     <string name="ChannelSettings">تنظیمات</string>
@@ -288,10 +286,7 @@
     <string name="Close">بستن</string>
     <string name="Code">کد</string>
     <string name="CodeExpired">کد منقضی شده دوباره وارد بشید</string>
-    <string name="Comments">نظرات</string>
-    <string name="CommentsInfo">اگر شما نظرات را فعال کنید،افراد قادر خواهند بود در کانال در مورد پست های شما بحث کنند.</string>
     <string name="CompatibilityChat">%1$s از یک نسخه قدیمی تلگرام استفاده می کنه، برای همین تصاویر سرّی در حالت سازگار نمایش داده میشه . زمانی که %2$s تلگرام  را به روز کنه ، عکس هایی با تایمر 1 دقیقه یا کمتر در حالت \"ضربه بزن و نگه دار تا ببینی\" شروع به کار می کنن، و هر موقع طرف مقابل از صفحه عکس بگیره شما مطلع میشید.</string>
-    <string name="CompressVideo">ویدئو  را فشرده کنید</string>
     <string name="Connecting">در حال اتصال...</string>
     <string name="ContactJoined">مخاطب وارد تلگرام شد</string>
     <string name="Contacts">مخاطبان</string>
@@ -332,7 +327,12 @@
     <string name="CustomHelp">شما قادر به مشاهده آخرین زمان و تاریخ افرادی که جزء دوستانتان نیستند ، نخواهید بود و ما زمان تقریبی آنها را در اختیارتان قرار می دهیم ، مانند مثال (به تازگی، در عرض یک هفته ظرف یک ماه)</string>
     <string name="CustomShareInfo">صرف نظر از تنظیمات بالا، این کاربران می توانند یا نمی توانند شما را به گروه و کانال اضافه کنند.</string>
     <string name="CustomShareSettingsHelp">این تنظیمات جایگزین مقادیر بالا میشن .</string>
-
+    <string name="DaysBold_few">&lt;b>%1$d&lt;/b> روز</string>
+    <string name="DaysBold_many">&lt;b>%1$d&lt;/b> روز</string>
+    <string name="DaysBold_one">&lt;b>%1$d&lt;/b> روز</string>
+    <string name="DaysBold_other">&lt;b>%1$d&lt;/b> روز</string>
+    <string name="DaysBold_two">&lt;b>%1$d&lt;/b> روز</string>
+    <string name="DaysBold_zero">&lt;b>%1$d&lt;/b> روز</string>
     <string name="Days_few">%1$d روز</string>
     <string name="Days_many">%1$d روز</string>
     <string name="Days_one">%1$d روز</string>
@@ -378,7 +378,6 @@
     <string name="EditName">ویرایش نام</string>
     <string name="EditVideo">ویرایش ویدئو</string>
     <string name="EditedMessage">ویرایش شده</string>
-    <string name="EditedVideo">ویدئو ویرایش شده</string>
     <string name="EmailPasswordConfirmText">"لطفا برای تنظیم تایید دو مرحله ای مراحل زیر  را انجام بدین:
 
 1. ایمیلتون  را چک کنید(پوشه هرزنامه  را یادتون نره)
@@ -515,6 +514,13 @@
     <string name="Hashtags">هشتگ</string>
     <string name="HiddenName">کاربری پاک شده</string>
     <string name="Highlights">برجسته‌ها</string>
+    <string name="HistoryCleared">تاریخچه پاک شد</string>
+    <string name="HoursBold_few">&lt;b>%1$d&lt;/b> ساعت</string>
+    <string name="HoursBold_many">&lt;b>%1$d&lt;/b> ساعت</string>
+    <string name="HoursBold_one">&lt;b>%1$d&lt;/b> ساعت</string>
+    <string name="HoursBold_other">&lt;b>%1$d&lt;/b> ساعت</string>
+    <string name="HoursBold_two">&lt;b>%1$d&lt;/b> ساعت</string>
+    <string name="HoursBold_zero">&lt;b>%1$d&lt;/b> ساعت</string>
     <string name="Hours_few">%1$d ساعت</string>
     <string name="Hours_many">%1$d ساعت</string>
     <string name="Hours_one">%1$d ساعت</string>
@@ -531,7 +537,7 @@
     <string name="IncorrectLocalization">فایل زبان خرابه</string>
     <string name="Info">اطلاعات</string>
     <string name="InternalStorage">حافظه داخلی</string>
-    <string name="InvalidCode">کد نامعتبره</string>
+    <string name="InvalidCode">کد نامعتبر است!</string>
     <string name="InvalidFirstName">نام نامعتبره</string>
     <string name="InvalidLastName">نام خانوادگی نامعتبره</string>
     <string name="InvalidPasscode">گذرواژه معتبر نیستش</string>
@@ -572,6 +578,12 @@
     <string name="LastSeenEverybody">همه</string>
     <string name="LastSeenEverybodyMinus">همه (-%1$d)</string>
     <string name="LastSeenHelp">کسانی که می توانند زمان آخرین بازدید شما را ببینند را تغییر دهید.</string>
+    <string name="MinutesBold_few">&lt;b>%1$d&lt;/b> دقیقه</string>
+    <string name="MinutesBold_many">&lt;b>%1$d&lt;/b> دقیقه</string>
+    <string name="MinutesBold_one">&lt;b>%1$d&lt;/b> دقیقه</string>
+    <string name="MinutesBold_other">&lt;b>%1$d&lt;/b> دقیقه</string>
+    <string name="MinutesBold_two">&lt;b>%1$d&lt;/b> دقیقه</string>
+    <string name="MinutesBold_zero">&lt;b>%1$d&lt;/b> دقیقه</string>
     <string name="LastSeenMinutes_zero">آخرین بازدید %1$d دقیقه پیش</string>
     <string name="LastSeenMinutes_one">آخرین بازدید %1$d دقیقه پیش</string>
     <string name="LastSeenMinutes_two">آخرین بازدید %1$d دقیقه پیش</string>
@@ -832,10 +844,8 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="OnlyWhenScreenOff">فقط وقتی صفحه خاموش است</string>
     <string name="OnlyWhenScreenOn">فقط وقتی صفحه روشن است</string>
     <string name="Open">بازش کنید</string>
-    <string name="OpenChannelProfile">اطلاعات کانال</string>
     <string name="OpenInBrowser">باز کردن در...</string>
     <string name="OpenUrlAlert">لینک %1$s باز شود؟</string>
-    <string name="OriginalVideo">ویدئو اصلی</string>
     <string name="OtherSessions">نشست های فعال</string>
     <string name="Page1Message">سریع ترین برنامه پیام رسان جهان.<![CDATA[<br/>]]>امن و رایگان همچنین با امکانات جذاب.</string>
     <string name="Page1Title">تلگرامیتی</string>
@@ -899,6 +909,12 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="PleaseEnterFirstPassword">یه گذرواژه وارد کنید</string>
     <string name="PleaseEnterPassword">لطفا گذرواژه‌ی جدید خود  را وارد کنید</string>
     <string name="PleaseReEnterPassword">لطفا گذرواژه‌ی خود  را دوباره وارد کنید</string>
+    <string name="Points_few">%1$d</string>
+    <string name="Points_many">%1$d</string>
+    <string name="Points_one">%1$d</string>
+    <string name="Points_other">%1$d</string>
+    <string name="Points_two">%1$d</string>
+    <string name="Points_zero">%1$d</string>
     <string name="PopupNotification">اعلان های پاپ آپ</string>
     <string name="PrivacyFloodControlError">متاسفیم ، درخواست های بسیاری داریم ، به همین دلیل نمی تونیم تنظیمات حریم خصوصی  را تغییر بدیم ، لطفا صبر کنید.</string>
     <string name="PrivacyLastSeen">آخرین بازدید</string>
@@ -971,6 +987,12 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="SearchImagesInfo">جستجوی وب</string>
     <string name="SearchImagesTitle">جستجوی وب</string>
     <string name="SearchMessages">پیام ها</string>
+    <string name="SecondsBold_few">&lt;b>%1$d&lt;/b> ثانیه</string>
+    <string name="SecondsBold_many">&lt;b>%1$d&lt;/b> ثانیه</string>
+    <string name="SecondsBold_one">&lt;b>%1$d&lt;/b> ثانیه</string>
+    <string name="SecondsBold_other">&lt;b>%1$d&lt;/b> ثانیه</string>
+    <string name="SecondsBold_two">&lt;b>%1$d&lt;/b> ثانیه</string>
+    <string name="SecondsBold_zero">&lt;b>%1$d&lt;/b> ثانیه</string>
     <string name="Seconds_few">%1$d ثانیه</string>
     <string name="Seconds_many">%1$d ثانیه</string>
     <string name="Seconds_one">%1$d ثانیه</string>
@@ -1043,7 +1065,6 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="ShortcutAdded">میانبر به صفحه اصلی افزوده شد</string>
     <string name="ShortMessageLifetimeForever">خاموش</string>
     <string name="ShowAllMedia">نمایش همه رسانه ها</string>
-    <string name="ShowDiscussion">نظرات را نشان بده</string>
     <string name="SlideToCancel">بکشید تا کنسل شود</string>
     <string name="SmartNotifications">اعلان های هوشمند</string>
     <string name="SmartNotificationsDisabled">غیرفعال</string>
@@ -1065,13 +1086,9 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="Stickers">استیکرها</string>
     <string name="StickersCopy">کپی کردن لینک</string>
     <string name="StickersHide">پنهان کردن</string>
-    <string name="StickersInfo">"هنرمندان می توانند بسته های استیکر خود را با استفاده از ربات ما @stickers اضافه کنند.
-
- کاربران می توانند با ضربه به استیکر ها و انتخاب \"اضافه به استیکرها\" آنها را اضافه کنند."</string>
     <string name="StickersRemove">پاک کردن</string>
     <string name="StickersRemoved">استیکرها پاک شدن</string>
     <string name="StickersShare">اشتراک گذاری</string>
-    <string name="StickersShow">نمایش دادن</string>
     <string name="Stickers_few">%1$d استیکرها</string>
     <string name="Stickers_many">%1$d استیکرها</string>
     <string name="Stickers_one">%1$d استیکرها</string>
@@ -1100,7 +1117,6 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="TintHighlights">هایلایت ها</string>
     <string name="TintShadows">سایه ها</string>
     <string name="TodayAt">در</string>
-    <string name="TooMuchStickersets">متاسفانه تعداد بسته استیکرهای شما به حداکثر رسیده است.</string>
     <string name="TurnPasswordOff">خاموش کردن گذرواژه</string>
     <string name="TurnPasswordOffQuestion">از خاموش کردن گذرواژه مطمئنید؟</string>
     <string name="TwoStepVerification">تایید دو مرحله ای</string>
@@ -1192,12 +1208,6 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="YourPhone">شماره موبایل شما</string>
     <string name="chatDate">MMMM d</string>
     <string name="chatFullDate">MMMM d, yyyy</string>
-    <string name="comments_few">%1$d نظر</string>
-    <string name="comments_many">%1$d نظر</string>
-    <string name="comments_one">%1$d نظر</string>
-    <string name="comments_other">%1$d نظر</string>
-    <string name="comments_two">%1$d نظر</string>
-    <string name="comments_zero">%1$d نظر</string>
     <string name="formatDateAtTime">%1$s در %2$s</string>
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatterDay24H">HH:mm</string>
@@ -1291,6 +1301,7 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="AddToFavorites">افزودن به برگزیده ها</string>
     <string name="DeleteFromFavorites">حذف از برگزیده ها</string>
     <string name="NoFavoritesHelp">لیست خالی برگزیده ها\n\nبرای افزودن هر گفتگو به این لیست تنها کافی است روی آن ضربه بزنید و نگه دارید و سپس \'افزودن به برگزیده ها\' را انتخاب نمایید.</string>
+    <string name="TabsWillHide">نوار زبانه ها پنهان خواهد شد!</string>
 
     <!--Messages-->
     <string name="ShowDirectShareButton">نمایش دکمه اشتراک گذاری مستقیم</string>
@@ -1335,8 +1346,86 @@ If اگر این شما نیستید، میتوانید با رفتن به تن�
     <string name="KeepOriginalFilenameHelp">به جای عدد، فایل ها با قالب نام_تاریخ ذخیره می شوند.</string>
 
     <string name="ForwardNoQuote">فوروارد بدون نقل قول</string>
+    <string name="Copied">%s در حافظه کپی شد</string>
     <string name="Quote">نقل قول</string>
     <string name="PushOpen">بازدید</string>
-    <string name="Copied">%s در حافظه کپی شد</string>
+    <string name="LeaveWithoutDelete">ترک کردن با قابلیت بازگشت</string>
+    <string name="LeaveWithoutDeleteMsg">آیا میخواهید گروه را با امکان بازگشت دوباره ترک کنید؟</string>
+    <string name="ReturnToThisGroup">بازگشت به گروه</string>
+    <string name="ReturnToThisGroupMsg">اگر به گروه برگردید برای مدتی نمیتوانید آنجارا ترک کنید، آیا مطمئن هستید؟</string>
+    <string name="MessageSaved">پیام در فضای ابری ذخیره شد</string>
+    <string name="MessagesSaved">%s پیام در فضای ابری ذخیره شد</string>
+    <string name="SaveToCloud">در فضای ابری ذخیره کن</string>
+    <string name="SaveToCloudQuote">نقل قول برای ذخیره در فضای ابری</string>
+
+    <string name="ActionPinnedGame">un1 %1$s را سنجاق کرد</string>
+    <string name="ActionUserScored">un1 %1$s امتیاز کسب کرد</string>
+    <string name="ActionUserScoredInGame">un1 %1$s امتیاز در un2 کسب کرد</string>
+    <string name="ActionYouScored">شما %1$s امتیاز کسب کردید</string>
+    <string name="ActionYouScoredInGame">شما %1$s امتیاز در un2 کسب کردید</string>
+    <string name="AddMasks">افزودن ماسک ها</string>
+    <string name="AddMasksInstalled">ماسک های جدید اضافه شدند</string>
+    <string name="AddToMasks">افزودن به ماسک ها</string>
+    <string name="ArchivedMasks">ماسک های بایگانی شده</string>
+    <string name="ArchivedMasksAlertInfo">تعدادی از مجموعه ماسک های قدیمی شما بایگانی شدند. شما می توانید از صفحه تنظیمات ماسک ها، آنها را مجددا فعال کنید.</string>
+    <string name="ArchivedMasksAlertTitle">ماسک های بایگانی شده</string>
+    <string name="ArchivedMasksEmpty">هیچ ماسک بایگانی شده ای وجود ندارد</string>
+    <string name="ArchivedMasksInfo">شما می توانید حداکثر 200 مجموعه ماسک نصب کنید. ماسک های استفاده نشده در زمان نصب مجموعه جدید، بایگانی می شوند.</string>
+    <string name="ArchivedStickers">استیکرهای بایگانی شده</string>
+    <string name="ArchivedStickersAlertInfo">تعدادی از مجموعه استیکرهای قدیمی شما بایگانی شدند. شما می توانید از صفحه تنظیمات استیکرها، آنها را مجددا فعال کنید.</string>
+    <string name="ArchivedStickersAlertTitle">استیکرهای بایگانی شده</string>
+    <string name="ArchivedStickersEmpty">هیچ استیکر بایگانی شده ای وجود ندارد</string>
+    <string name="ArchivedStickersInfo">شما می توانید حداکثر 200 مجموعه استیکر نصب کنید. استیکرهای استفاده نشده در زمان نصب مجموعه جدید، بایگانی می شوند.</string>
+    <string name="AttachGame">بازی</string>
+    <string name="BannedPhoneNumber">شماره تلفن ممنوع</string>
+    <string name="BotPermissionGameAlert">آیا به %1$s اجازه می دهید نام تلگرامی شما و شناسه (به جز شماره تلفن) را به صفحه هایی که با این ربات باز می کنید ارسال کند؟</string>
+    <string name="CancelAccountReset">لغو تنظیم مجدد حساب کاربری</string>
+    <string name="CancelAccountResetInfo">\"شخصی با دسترسی به شماره تلفن شما &lt;b>%1$s&lt;/b> درخواست حذف حساب کاربری شما و تنظیم مجدد گذرواژه تایید دو مرحله ای را داده است.  اگر این شخص شما نیستید، لطفا کدی که از طریق پیامک برای شما ارسال کردیم را وارد کنید.\"</string>
+    <string name="CancelLinkExpired">لینک غیر معتبر یا منقضی شده است.</string>
+    <string name="CancelLinkSuccess">عملیات حذف برای حساب کاربری شما %1$ لغو شده استs. شما اکنون میتوانید این پنجره را ببندید.</string>
+    <string name="ChatYourSelf">گفتگو با خود</string>
+    <string name="ChatYourSelfDescription1">برای ذخیره پیامها، آنها را به اینجا فروارد کنید</string>
+    <string name="ChatYourSelfDescription2">رسانه و فایل ها را ارسال کنید تا ذخیره شوند</string>
+    <string name="ChatYourSelfDescription3">دسترسی به این گفتگو از هر دستگاهی</string>
+    <string name="ChatYourSelfDescription4">برای یافتن سریع از جستجو استفاده کنید</string>
+    <string name="ChatYourSelfName">شما</string>
+    <string name="ChatYourSelfTitle">فضای ذخیره ابری شما</string>
+    <string name="ContactNotRegistered">%1$s هنوز در تلگرام نیست, آیا تمایل به دعوت آنها برای عضویت دارید؟</string>
+    <string name="Draft">پیش نویس</string>
+    <string name="Emoji">شکلک</string>
+    <string name="EmojiBigSize">رسم شکلک بزرگ تکی</string>
+    <string name="EmojiUseDefault">استفاده از شکلک های پیش فرض سیستم</string>
+    <string name="FeaturedStickers">استیکر های محبوب</string>
+    <string name="FeaturedStickersInfo">در حال حاضر این استیکرها در تلگرام محبوب هستند. شما می توانید از طریق ربات @stickers استیکرهای سفارشی اضافه کنید.</string>
+    <string name="Invite">دعوت</string>
+    <string name="JoinGroup">عضویت در گروه</string>
+    <string name="Masks">ماسک ها</string>
+    <string name="MasksInfo">شما می توانید به تصاویری که ارسال می کنید، ماسک اضافه کنید. برای انجام اینکار، قبل از ارسال یک تصویر، ویرایشگر تصویر را باز کنید.</string>
+    <string name="MasksRemoved">ماسک ها حذف شدند</string>
+    <string name="NoMasks">هنوز هیچ ماسکی وجود ندارد</string>
+    <string name="NotificationActionPinnedGame">%1$s یک بازی را در گروه %2$s سنجاق کرد</string>
+    <string name="NotificationActionPinnedGameChannel">%1$s یک بازی را سنجاق کرد</string>
+    <string name="NotificationMessageGame">%1$s شما را به بازی %2$s دعوت کرد</string>
+    <string name="NotificationMessageGroupGame">%1$s گروه %2$s را به بازی %3$s دعوت کرد</string>
+    <string name="OpenInExternalApp">بازکردن در...</string>
+    <string name="PaintDelete">حذف</string>
+    <string name="PaintDraw">طراحی</string>
+    <string name="PaintDuplicate">تکثیر کردن</string>
+    <string name="PaintEdit">ویرایش</string>
+    <string name="PaintOutlined">لبه بیرونی</string>
+    <string name="PaintRegular">منظم</string>
+    <string name="PaintStickers">استیکرها</string>
+    <string name="PaintText">متن</string>
+    <string name="PermissionNoCamera">برای اینکه بتوانید عکس و فیلم بگیرید، باید دسترسی به دوربین را به تلگرام بدهید.</string>
+    <string name="ResetAccount">تنظیم مجدد حساب کاربری</string>
+    <string name="ResetAccountButton">تنظیم مجدد (Reset)</string>
+    <string name="ResetAccountCancelledAlert">تلاش های اخیر شما برای تنظیم مجدد حساب کاربری توسط کاربر فعال آن لغو شد. لطفا 7 روز دیگر مجددا تلاش کنید.</string>
+    <string name="ResetAccountInfo">\"از آنجایی که حساب کاربری &lt;b>%1$s&lt;/b> فعال است و با گذرواژه محافظت می شود، ما به دلیل امنیتی آن را در یک هفته حذف می کنیم.  شما می توانید هر زمان که خواستید آن را لغو کنید.\"</string>
+    <string name="ResetAccountStatus">شما می توانید حساب کاربری خود را تنظیم مجدد کنید در :</string>
+    <string name="RevokeLinkAlert">\"آیا از باطل کردن لینک &lt;b>%1$s&lt;/b> اطمینان دارید؟  گروه \\\"&lt;b>%2$s&lt;/b>\\\" خصوصی خواهد شد.\"</string>
+    <string name="RevokeLinkAlertChannel">\"آیا از باطل کردن لینک &lt;b>%1$s&lt;/b> اطمینان دارید؟  کانال \\\"&lt;b>%2$s&lt;/b>\\\" خصوصی خواهد شد.\"</string>
+    <string name="SendGameTo">اشتراک گذاری بازی با %1$s?</string>
+    <string name="SendGameToGroup">اشتراک گذاری بازی با %1$s?</string>
+    <string name="SendingGif">ارسال گیف...</string>
 
 </resources>

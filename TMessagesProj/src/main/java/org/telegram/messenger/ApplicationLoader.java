@@ -31,6 +31,9 @@ import android.util.Base64;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.ioton.TelegramityUtilities;
+import com.onesignal.OSNotification;
+import com.onesignal.OSNotificationOpenResult;
+import com.onesignal.OSNotificationPayload;
 import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
@@ -141,6 +144,12 @@ public class ApplicationLoader extends Application {
                     if (serviceMessageColor == 0) {
                         calcBackgroundColor();
                     }
+                    AndroidUtilities.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.didSetNewWallpapper);
+                        }
+                    });
                 }
             }
         });
@@ -300,22 +309,14 @@ public class ApplicationLoader extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (Build.VERSION.SDK_INT < 11) {
-            java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
-            java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
-        }
-
         applicationContext = getApplicationContext();
         NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
         ConnectionsManager.native_setJava(Build.VERSION.SDK_INT == 14 || Build.VERSION.SDK_INT == 15);
-
-        if (Build.VERSION.SDK_INT >= 14) {
-            new ForegroundDetector(this);
-        }
+        new ForegroundDetector(this);
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
-        //plus
+        //tgy
         databaseHandler = new DatabaseHandler(applicationContext);
         SharedPreferences advancedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
         KEEP_ORIGINAL_FILENAME = advancedPreferences.getBoolean("keepOriginalFilename", false);
@@ -325,10 +326,9 @@ public class ApplicationLoader extends Application {
 //        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.ERROR); //TODO remove this line before release!
         OneSignal.startInit(this)
                 .setNotificationOpenedHandler(new ApplicationLoader.TGYNotificationOpenedHandler())
-                .setAutoPromptLocation(true)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .autoPromptLocation(true)
                 .init();
-        OneSignal.enableNotificationsWhenActive(true);
-        OneSignal.enableInAppAlertNotification(false);
 //        OneSignal.sendTag("isTesting", "test"); //TODO remove this line before release!
         try {
             PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
@@ -372,20 +372,21 @@ public class ApplicationLoader extends Application {
     }
 
     private class TGYNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
-
         // {"channel","username"}
         // {"appBazaar","packageName"}
         // {"rateBazaar","packageName"}
         // {"iab",""}
         // {"dialog",""}
-
         @Override
-        public void notificationOpened(String message, JSONObject additionalData, boolean isActive) {
+        public void notificationOpened(OSNotificationOpenResult openResult) {
+            OSNotification notification = openResult.notification;
+            OSNotificationPayload payload = notification.payload;
+            JSONObject additionalData = payload.additionalData;
             try {
                 if (additionalData != null) {
                     Intent intent = new Intent(applicationContext, LaunchActivity.class);
                     intent.setAction("org.telegram.messenger.OPEN_NOTIFICATION");
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     if (additionalData.has("channel") && additionalData.getString("channel") != null) {
                         intent.putExtra("iChannel", additionalData.getString("channel"));
                     }
@@ -399,8 +400,8 @@ public class ApplicationLoader extends Application {
                         intent.putExtra("iIAB", "iIAB");
                     }
                     if (additionalData.has("dialog")) {
-                        intent.putExtra("iDialogTitle", additionalData.getString("title"));
-                        intent.putExtra("iDialogMessage", message);
+                        intent.putExtra("iDialogTitle", payload.title);
+                        intent.putExtra("iDialogMessage", payload.body);
                     }
                     startActivity(intent);
                 }
@@ -410,22 +411,30 @@ public class ApplicationLoader extends Application {
         }
     }
 
+    /*public static void sendRegIdToBackend(final String token) {
+        Utilities.stageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                UserConfig.pushString = token;
+                UserConfig.registeredForPush = false;
+                UserConfig.saveConfig(false);
+                if (UserConfig.getClientUserId() != 0) {
+                    AndroidUtilities.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessagesController.getInstance().registerForPush(token);
+                        }
+                    });
+                }
+            }
+        });
+    }*/
+
     public static void startPushService() {
         SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
 
         if (preferences.getBoolean("pushService", true)) {
             applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
-
-            if (android.os.Build.VERSION.SDK_INT >= 19) {
-//                Calendar cal = Calendar.getInstance();
-//                PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
-//                AlarmManager alarm = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
-//                alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30000, pintent);
-
-                PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
-                AlarmManager alarm = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
-                alarm.cancel(pintent);
-            }
         } else {
             stopPushService();
         }
@@ -444,7 +453,7 @@ public class ApplicationLoader extends Application {
         super.onConfigurationChanged(newConfig);
         try {
             LocaleController.getInstance().onDeviceConfigurationChange(newConfig);
-            AndroidUtilities.checkDisplaySize();
+            AndroidUtilities.checkDisplaySize(applicationContext, newConfig);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -473,6 +482,33 @@ public class ApplicationLoader extends Application {
             }
         }, 1000);
     }
+
+    /*private void initPlayServices() {
+        AndroidUtilities.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (checkPlayServices()) {
+                    if (UserConfig.pushString != null && UserConfig.pushString.length() != 0) {
+                        FileLog.d("tmessages", "GCM regId = " + UserConfig.pushString);
+                    } else {
+                        FileLog.d("tmessages", "GCM Registration not found.");
+                    }
+                    try {
+                        if (!FirebaseApp.getApps(ApplicationLoader.applicationContext).isEmpty()) {
+                            String token = FirebaseInstanceId.getInstance().getToken();
+                            if (token != null) {
+                                sendRegIdToBackend(token);
+                            }
+                        }
+                    } catch (Throwable e) {
+                        FileLog.e("tmessages", e);
+                    }
+                } else {
+                    FileLog.d("tmessages", "No valid Google Play Services APK found.");
+                }
+            }
+        }, 2000);
+    }*/
 
     private boolean checkPlayServices() {
         try {

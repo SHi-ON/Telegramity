@@ -34,7 +34,6 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
@@ -104,6 +103,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
     private int nextGiphySearchOffset;
     private int giphyReqId;
     private int lastSearchToken;
+    private boolean allowCaption = true;
 
     private MediaController.AlbumEntry selectedAlbum;
 
@@ -120,7 +120,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
 
     private PhotoPickerActivityDelegate delegate;
 
-    public PhotoPickerActivity(int type, MediaController.AlbumEntry selectedAlbum, HashMap<Integer, MediaController.PhotoEntry> selectedPhotos, HashMap<String, MediaController.SearchImage> selectedWebPhotos, ArrayList<MediaController.SearchImage> recentImages, boolean onlyOnePhoto, ChatActivity chatActivity) {
+    public PhotoPickerActivity(int type, MediaController.AlbumEntry selectedAlbum, HashMap<Integer, MediaController.PhotoEntry> selectedPhotos, HashMap<String, MediaController.SearchImage> selectedWebPhotos, ArrayList<MediaController.SearchImage> recentImages, boolean onlyOnePhoto, boolean allowCaption, ChatActivity chatActivity) {
         super();
         this.selectedAlbum = selectedAlbum;
         this.selectedPhotos = selectedPhotos;
@@ -129,6 +129,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
         this.recentImages = recentImages;
         this.singlePhoto = onlyOnePhoto;
         this.chatActivity = chatActivity;
+        this.allowCaption = allowCaption;
         if (selectedAlbum != null && selectedAlbum.isVideo) {
             singlePhoto = true;
         }
@@ -176,11 +177,6 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
-                    if (Build.VERSION.SDK_INT < 11) {
-                        listView.setAdapter(null);
-                        listView = null;
-                        listAdapter = null;
-                    }
                     finishFragment();
                 }
             }
@@ -506,6 +502,11 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
     }
 
     @Override
+    public boolean scaleToFill() {
+        return false;
+    }
+
+    @Override
     public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index) {
         PhotoPickerPhotoCell cell = getCellForIndex(index);
         if (cell != null) {
@@ -513,19 +514,11 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
             cell.photoImage.getLocationInWindow(coords);
             PhotoViewer.PlaceProviderObject object = new PhotoViewer.PlaceProviderObject();
             object.viewX = coords[0];
-            object.viewY = coords[1] - AndroidUtilities.statusBarHeight;
-            if (Build.VERSION.SDK_INT < 11) {
-                float scale = ViewProxy.getScaleX(cell.photoImage);
-                if (scale != 1) {
-                    int width = cell.photoImage.getMeasuredWidth();
-                    object.viewX += (width - width * scale) / 2;
-                    object.viewY += (width - width * scale) / 2;
-                }
-            }
+            object.viewY = coords[1] - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight);
             object.parentView = listView;
             object.imageReceiver = cell.photoImage.getImageReceiver();
             object.thumb = object.imageReceiver.getBitmap();
-            object.scale = ViewProxy.getScaleX(cell.photoImage);
+            object.scale = cell.photoImage.getScaleX();
             cell.checkBox.setVisibility(View.GONE);
             return object;
         }
@@ -570,6 +563,11 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
                 }
             }
         }
+    }
+
+    @Override
+    public boolean allowCaption() {
+        return allowCaption;
     }
 
     @Override
@@ -1107,6 +1105,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
                                     selectedPhotos.remove(photoEntry.imageId);
                                     photoEntry.imagePath = null;
                                     photoEntry.thumbPath = null;
+                                    photoEntry.stickers.clear();
                                     updatePhotoAtIndex(index);
                                 } else {
                                     selectedPhotos.put(photoEntry.imageId, photoEntry);

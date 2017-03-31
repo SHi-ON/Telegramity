@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
 
@@ -113,7 +114,7 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
             HintDialogCell cell = (HintDialogCell) holder.itemView;
 
             TLRPC.TL_topPeer peer = SearchQuery.hints.get(position);
-            TLRPC.Dialog dialog = new TLRPC.Dialog();
+            TLRPC.TL_dialog dialog = new TLRPC.TL_dialog();
             TLRPC.Chat chat = null;
             TLRPC.User user = null;
             int did = 0;
@@ -134,7 +135,7 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
             } else if (chat != null) {
                 name = chat.title;
             }
-            cell.setDialog(did, false, name);
+            cell.setDialog(did, true, name);
         }
 
         @Override
@@ -227,8 +228,17 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                                 if (req.offset_id == 0) {
                                     searchResultMessages.clear();
                                 }
-                                for (TLRPC.Message message : res.messages) {
+                                for (int a = 0; a < res.messages.size(); a++) {
+                                    TLRPC.Message message = res.messages.get(a);
                                     searchResultMessages.add(new MessageObject(message, null, false));
+                                    long dialog_id = MessageObject.getDialogId(message);
+                                    ConcurrentHashMap<Long, Integer> read_max = message.out ? MessagesController.getInstance().dialogs_read_outbox_max : MessagesController.getInstance().dialogs_read_inbox_max;
+                                    Integer value = read_max.get(dialog_id);
+                                    if (value == null) {
+                                        value = MessagesStorage.getInstance().getDialogReadMax(message.out, dialog_id);
+                                        read_max.put(dialog_id, value);
+                                    }
+                                    message.unread = value < message.id;
                                 }
                                 messagesSearchEndReached = res.messages.size() != 20;
                                 notifyDataSetChanged();
@@ -583,7 +593,7 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                     }
 
                     if (!encryptedToLoad.isEmpty()) {
-                        cursor = MessagesStorage.getInstance().getDatabase().queryFinalized(String.format(Locale.US, "SELECT q.data, u.name, q.user, q.g, q.authkey, q.ttl, u.data, u.status, q.layer, q.seq_in, q.seq_out, q.use_count, q.exchange_id, q.key_date, q.fprint, q.fauthkey, q.khash FROM enc_chats as q INNER JOIN users as u ON q.user = u.uid WHERE q.uid IN(%s)", TextUtils.join(",", encryptedToLoad)));
+                        cursor = MessagesStorage.getInstance().getDatabase().queryFinalized(String.format(Locale.US, "SELECT q.data, u.name, q.user, q.g, q.authkey, q.ttl, u.data, u.status, q.layer, q.seq_in, q.seq_out, q.use_count, q.exchange_id, q.key_date, q.fprint, q.fauthkey, q.khash, q.in_seq_no FROM enc_chats as q INNER JOIN users as u ON q.user = u.uid WHERE q.uid IN(%s)", TextUtils.join(",", encryptedToLoad)));
                         while (cursor.next()) {
                             String name = cursor.stringValue(1);
                             String tName = LocaleController.getInstance().getTranslitString(name);
@@ -635,6 +645,7 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                                         chat.future_key_fingerprint = cursor.longValue(14);
                                         chat.future_auth_key = cursor.byteArrayValue(15);
                                         chat.key_hash = cursor.byteArrayValue(16);
+                                        chat.in_seq_no = cursor.intValue(17);
 
                                         if (user.status != null) {
                                             user.status.expires = cursor.intValue(7);
@@ -779,8 +790,8 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
     @Override
     protected void setHashtags(ArrayList<HashtagObject> arrayList, HashMap<String, HashtagObject> hashMap) {
         super.setHashtags(arrayList, hashMap);
-        for (HashtagObject hashtagObject : arrayList) {
-            searchResultHashtags.add(hashtagObject.hashtag);
+        for (int a = 0; a < arrayList.size(); a++) {
+            searchResultHashtags.add(arrayList.get(a).hashtag);
         }
         if (delegate != null) {
             delegate.searchStateChanged(false);
@@ -824,8 +835,9 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                 }
                 searchResultMessages.clear();
                 searchResultHashtags.clear();
-                for (HashtagObject hashtagObject : hashtags) {
-                    searchResultHashtags.add(hashtagObject.hashtag);
+
+                for (int a = 0; a < hashtags.size(); a++) {
+                    searchResultHashtags.add(hashtags.get(a).hashtag);
                 }
                 if (delegate != null) {
                     delegate.searchStateChanged(false);
@@ -834,6 +846,7 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                 return;
             } else {
                 searchResultHashtags.clear();
+                notifyDataSetChanged();
             }
             final int searchId = ++lastSearchId;
             searchTimer = new Timer();
@@ -958,6 +971,7 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                         return super.onInterceptTouchEvent(e);
                     }
                 };
+                horizontalListView.setTag(9);
                 horizontalListView.setItemAnimator(null);
                 horizontalListView.setLayoutAnimation(null);
                 LinearLayoutManager layoutManager = new LinearLayoutManager(mContext) {

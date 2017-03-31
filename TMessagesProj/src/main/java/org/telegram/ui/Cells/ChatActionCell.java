@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.StaticLayout;
@@ -40,11 +39,12 @@ public class ChatActionCell extends BaseCell {
         void didClickedImage(ChatActionCell cell);
         void didLongPressed(ChatActionCell cell);
         void needOpenUserProfile(int uid);
+        void didPressedBotButton(MessageObject messageObject, TLRPC.KeyboardButton button);
+        void didPressedReplyMessage(ChatActionCell cell, int id);
     }
 
     private static TextPaint textPaint;
     private static Paint backPaint;
-    private static RectF rect;
 
     private URLSpan pressedLink;
 
@@ -75,7 +75,6 @@ public class ChatActionCell extends BaseCell {
             textPaint.setTypeface(AndroidUtilities.getTypeface());
 
             backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            rect = new RectF();
         }
         backPaint.setColor(ApplicationLoader.getServiceMessageColor());
 
@@ -199,7 +198,32 @@ public class ChatActionCell extends BaseCell {
                             } else {
                                 if (link[0] == pressedLink) {
                                     if (delegate != null) {
-                                        delegate.needOpenUserProfile(Integer.parseInt(link[0].getURL()));
+                                        String url = link[0].getURL();
+                                        if (url.startsWith("game")) {
+                                            delegate.didPressedReplyMessage(this, currentMessageObject.messageOwner.reply_to_msg_id);
+                                            /*TLRPC.KeyboardButton gameButton = null;
+                                            MessageObject messageObject = currentMessageObject.replyMessageObject;
+                                            if (messageObject != null && messageObject.messageOwner.reply_markup != null) {
+                                                for (int a = 0; a < messageObject.messageOwner.reply_markup.rows.size(); a++) {
+                                                    TLRPC.TL_keyboardButtonRow row = messageObject.messageOwner.reply_markup.rows.get(a);
+                                                    for (int b = 0; b < row.buttons.size(); b++) {
+                                                        TLRPC.KeyboardButton button = row.buttons.get(b);
+                                                        if (button instanceof TLRPC.TL_keyboardButtonGame && button.game_id == currentMessageObject.messageOwner.action.game_id) {
+                                                            gameButton = button;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (gameButton != null) {
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if (gameButton != null) {
+                                                delegate.didPressedBotButton(messageObject, gameButton);
+                                            }*/
+                                        } else {
+                                            delegate.needOpenUserProfile(Integer.parseInt(url));
+                                        }
                                     }
                                     result = true;
                                 }

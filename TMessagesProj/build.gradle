@@ -4,17 +4,23 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    compile.exclude module: 'support-v4'
+}
+
 dependencies {
-    compile 'com.android.support:support-v4:23.3.0'
-    compile "com.google.android.gms:play-services-gcm:8.4.0"
-    compile "com.google.android.gms:play-services-maps:8.4.0"
-    compile 'net.hockeyapp.android:HockeySDK:4.0.+'
-    compile 'com.googlecode.mp4parser:isoparser:1.0.+'
-    compile 'com.onesignal:OneSignal:2.+@aar'
-    compile 'com.google.android.gms:play-services-analytics:8.4.0'
-    compile "com.google.android.gms:play-services-location:8.4.0"
+    compile 'com.google.android.gms:play-services-gcm:10.2.0'
+    compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.google.android.gms:play-services-vision:10.2.0'
+    compile 'com.android.support:support-core-ui:25.1.1'
+    compile 'com.android.support:support-compat:25.1.1'
+    compile 'com.android.support:support-core-utils:25.1.1'
+    compile 'net.hockeyapp.android:HockeySDK:4.0.1'
+    compile 'com.googlecode.mp4parser:isoparser:1.0.6'
+    compile 'com.onesignal:OneSignal:3.+@aar'
+    compile "com.google.android.gms:play-services-location:10.2.0"
     compile files('libs/adad-client-3.1.jar')
-    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.larswerkman:HoloColorPicker:1.5'
     compile 'com.mikepenz:iconics-core:2.8.2@aar'
     compile 'com.mikepenz:community-material-typeface:1.7.22.1@aar'
@@ -29,11 +35,19 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     useLibrary 'org.apache.http.legacy'
     defaultConfig.applicationId = "org.telegram.engmariaamani.messenger"
+
+    sourceSets.main.jniLibs.srcDirs = ['./jni/']
+
+    externalNativeBuild {
+        ndkBuild {
+            path "jni/Android.mk"
+        }
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -46,6 +60,7 @@ android {
             storePassword RELEASE_STORE_PASSWORD
             keyAlias RELEASE_KEY_ALIAS
             keyPassword RELEASE_KEY_PASSWORD
+            v2SigningEnabled false
         }
 
         release {
@@ -53,6 +68,7 @@ android {
             storePassword RELEASE_STORE_PASSWORD
             keyAlias RELEASE_KEY_ALIAS
             keyPassword RELEASE_KEY_PASSWORD
+            v2SigningEnabled false
         }
     }
 
@@ -79,12 +95,7 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 6994
-
-    sourceSets.main {
-        jniLibs.srcDir 'libs'
-        jni.srcDirs = [] //disable automatic ndk-build call
-    }
+    defaultConfig.versionCode = 7073 //2 GREATER than BuildVars.BUILD_VERSION
 
     sourceSets.debug {
         manifest.srcFile 'config/debug/AndroidManifest.xml'
@@ -104,12 +115,6 @@ android {
                 abiFilter "x86"
             }
             versionCode = 2
-        }
-        arm {
-            ndk {
-                abiFilter "armeabi"
-            }
-            versionCode = 0
         }
         armv7 {
             ndk {
@@ -141,11 +146,18 @@ android {
     defaultConfig {
         manifestPlaceholders = [manifestApplicationId          : "${applicationId}",
                                 onesignal_app_id               : "28a3e90b-11f2-40ce-b3b3-2103fd3f5bd7",
-                                onesignal_google_project_number: "780056599264"]
+                                onesignal_google_project_number: "REMOTE"]
         minSdkVersion 14
-        targetSdkVersion 23
-        versionName "3.9.7 - TGY-Build 997"
+        targetSdkVersion 25
+        versionName "3.13.15 - TGY-Build 1144"
         multiDexEnabled true
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments "NDK_APPLICATION_MK:=jni/Application.mk", "APP_PLATFORM:=android-14"
+                abiFilters "armeabi-v7a", "x86"
+            }
+        }
     }
 
     dexOptions {

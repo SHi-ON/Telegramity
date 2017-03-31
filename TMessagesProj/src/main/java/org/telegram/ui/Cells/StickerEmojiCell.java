@@ -10,7 +10,6 @@ package org.telegram.ui.Cells;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -108,6 +107,12 @@ public class StickerEmojiCell extends FrameLayout {
     }
 
     @Override
+    public void invalidate() {
+        emojiTextView.invalidate();
+        super.invalidate();
+    }
+
+    @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         boolean result = super.drawChild(canvas, child, drawingTime);
         if (child == imageView && (changingAlpha || scaled && scale != 0.8f || !scaled && scale != 1.0f)) {
@@ -136,10 +141,8 @@ public class StickerEmojiCell extends FrameLayout {
                     scale = 1.0f;
                 }
             }
-            if (Build.VERSION.SDK_INT >= 11) {
-                imageView.setScaleX(scale);
-                imageView.setScaleY(scale);
-            }
+            imageView.setScaleX(scale);
+            imageView.setScaleY(scale);
             imageView.invalidate();
             invalidate();
         }

@@ -9,6 +9,8 @@
 package org.telegram.ui;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
 import android.annotation.SuppressLint;
@@ -62,13 +64,11 @@ import com.mikepenz.octicons_typeface_library.Octicons;
 import com.mikepenz.typeicons_typeface_library.Typeicons;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.AnimationCompat.AnimatorListenerAdapterProxy;
-import org.telegram.messenger.AnimationCompat.ObjectAnimatorProxy;
-import org.telegram.messenger.AnimationCompat.ViewProxy;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.LocaleController;
@@ -81,6 +81,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.query.SearchQuery;
+import org.telegram.messenger.query.StickersQuery;
 import org.telegram.messenger.support.widget.LinearLayoutManager;
 import org.telegram.messenger.support.widget.RecyclerView;
 import org.telegram.tgnet.TLRPC;
@@ -137,13 +138,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private String addToGroupAlertString;
     private int dialogsType;
 
-    private static boolean dialogsLoaded;
+    public static boolean dialogsLoaded;
     private boolean searching;
     private boolean searchWas;
     private boolean onlySelect;
     private long selectedDialog;
     private String searchString;
     private long openedDialogId;
+    private boolean cantSendToChannels;
 
     private DialogsActivityDelegate delegate;
 
@@ -151,9 +153,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private float touchPositionDP;
     private int user_id = 0;
     private int chat_id = 0;
-    private BackupImageView avatarImage;
 
-    private Button toastBtn;
+    private static Context contextTgy;
 
     private FrameLayout tabsView;
     private LinearLayout tabsLayout;
@@ -198,6 +199,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (getArguments() != null) {
             onlySelect = arguments.getBoolean("onlySelect", false);
+            cantSendToChannels = arguments.getBoolean("cantSendToChannels", false);
             dialogsType = arguments.getInt("dialogsType", 0);
             selectAlertString = arguments.getString("selectAlertString");
             selectAlertStringGroup = arguments.getString("selectAlertStringGroup");
@@ -226,6 +228,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (!dialogsLoaded) {
             MessagesController.getInstance().loadDialogs(0, 100, true);
             ContactsController.getInstance().checkInviteText();
+            StickersQuery.checkFeaturedStickers();
             dialogsLoaded = true;
         }
         return true;
@@ -265,19 +268,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (all) {
-                    ArrayList<TLRPC.Dialog> dialogs = getDialogsArray();
+                    ArrayList<TLRPC.TL_dialog> dialogs = getDialogsArray();
                     if (dialogs != null && !dialogs.isEmpty()) {
                         for (int a = 0; a < dialogs.size(); a++) {
-                            TLRPC.Dialog dialg = getDialogsArray().get(a);
+                            TLRPC.TL_dialog dialg = getDialogsArray().get(a);
                             if (dialg.unread_count > 0) {
-                                MessagesController.getInstance().markDialogAsRead(dialg.id, dialg.last_read, Math.max(0, dialg.top_message), dialg.last_message_date, true, false);
+                                MessagesController.getInstance().markDialogAsRead(dialg.id, dialg.top_message, Math.max(0, dialg.top_message), dialg.last_message_date, true, false);
                             }
                         }
                     }
                 } else {
-                    TLRPC.Dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
+                    TLRPC.TL_dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
                     if (dialg.unread_count > 0) {
-                        MessagesController.getInstance().markDialogAsRead(dialg.id, dialg.last_read, Math.max(0, dialg.top_message), dialg.last_message_date, true, false);
+                        MessagesController.getInstance().markDialogAsRead(dialg.id, dialg.top_message, Math.max(0, dialg.top_message), dialg.last_message_date, true, false); //dialg.top_message instead of dialg.last_read
                     }
                 }
             }
@@ -288,6 +291,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public View createView(final Context context) {
+        contextTgy = context;
+
         searching = false;
         searchWas = false;
 
@@ -351,7 +356,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (!onlySelect) {
                         floatingButton.setVisibility(View.VISIBLE);
                         floatingHidden = true;
-                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100) + tabsHeight);
+                        floatingButton.setTranslationY(AndroidUtilities.dp(100) + tabsHeight); //BottGrav
                         hideFloatingButton(false);
                     }
                     if (listView.getAdapter() != dialogsAdapter) {
@@ -437,6 +442,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         listView.setItemAnimator(null);
         listView.setInstantClick(true);
         listView.setLayoutAnimation(null);
+        listView.setTag(4);
         layoutManager = new LinearLayoutManager(context) {
             @Override
             public boolean supportsPredictiveItemAnimations() {
@@ -445,9 +451,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         };
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         listView.setLayoutManager(layoutManager);
-        if (Build.VERSION.SDK_INT >= 11) {
-            listView.setVerticalScrollbarPosition(LocaleController.isRTL ? ListView.SCROLLBAR_POSITION_LEFT : ListView.SCROLLBAR_POSITION_RIGHT);
-        }
+        listView.setVerticalScrollbarPosition(LocaleController.isRTL ? ListView.SCROLLBAR_POSITION_LEFT : ListView.SCROLLBAR_POSITION_RIGHT);
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         onTouchListener = new DialogsOnTouch(context);
@@ -463,7 +467,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 int message_id = 0;
                 RecyclerView.Adapter adapter = listView.getAdapter();
                 if (adapter == dialogsAdapter) {
-                    TLRPC.Dialog dialog = dialogsAdapter.getItem(position);
+                    TLRPC.TL_dialog dialog = dialogsAdapter.getItem(position);
                     if (dialog == null) {
                         return;
                     }
@@ -661,8 +665,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                     return false;
                 }
-                TLRPC.Dialog dialog;
-                ArrayList<TLRPC.Dialog> dialogs = getDialogsArray();
+                TLRPC.TL_dialog dialog;
+                ArrayList<TLRPC.TL_dialog> dialogs = getDialogsArray();
                 if (position < 0 || position >= dialogs.size()) {
                     return false;
                 }
@@ -673,7 +677,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 int lower_id = (int) selectedDialog;
                 int high_id = (int) (selectedDialog >> 32);
 
-                if (dialog instanceof TLRPC.TL_dialogChannel) {
+                if (DialogObject.isChannel(dialog)) {
                     final TLRPC.Chat chat = MessagesController.getInstance().getChat(-lower_id);
                     CharSequence items[];
 
@@ -694,7 +698,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         @Override
                         public void onClick(DialogInterface dialog, final int which) {
                             if (which == 3) {
-                                TLRPC.Dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
+                                TLRPC.TL_dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
                                 if (isFav) {
                                     Favourite.deleteFavourite(selectedDialog);
                                     MessagesController.getInstance().dialogsFavs.remove(dialg);
@@ -719,7 +723,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                     editor.putInt("notify2_" + selectedDialog, 0);
                                     MessagesStorage.getInstance().setDialogFlags(selectedDialog, 0);
                                     editor.commit();
-                                    TLRPC.Dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
+                                    TLRPC.TL_dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
                                     if (dialg != null) {
                                         dialg.notify_settings = new TLRPC.TL_peerNotifySettings();
                                     }
@@ -798,7 +802,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         @Override
                         public void onClick(DialogInterface dialog, final int which) {
                             if (which == 3) {
-                                TLRPC.Dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
+                                TLRPC.TL_dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
                                 if (isFav) {
                                     Favourite.deleteFavourite(selectedDialog);
                                     MessagesController.getInstance().dialogsFavs.remove(dialg);
@@ -823,7 +827,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                     editor.putInt("notify2_" + selectedDialog, 0);
                                     MessagesStorage.getInstance().setDialogFlags(selectedDialog, 0);
                                     editor.commit();
-                                    TLRPC.Dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
+                                    TLRPC.TL_dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
                                     if (dialg != null) {
                                         dialg.notify_settings = new TLRPC.TL_peerNotifySettings();
                                     }
@@ -1160,7 +1164,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         shortcutIntent.setAction("com.tmessages.openchat" + Math.random() + Integer.MAX_VALUE);
         shortcutIntent.setFlags(32768);
 
-        TLRPC.Dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
+        TLRPC.TL_dialog dialg = MessagesController.getInstance().dialogs_dict.get(selectedDialog);
         TLRPC.Chat currentChat = MessagesController.getInstance().getChat((int) -selectedDialog);
         TLRPC.User user = MessagesController.getInstance().getUser((int) selectedDialog);
         TLRPC.EncryptedChat encryptedChat = null;
@@ -1387,8 +1391,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             }
         }
-//        updateTheme();
-        unreadCount();
+        if (contextTgy != null) {
+            createTabs(contextTgy);
+            refreshAdapter(contextTgy);
+            unreadCount();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -1426,7 +1433,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) + tabsHeight : 0);
+                    floatingButton.setTranslationY(floatingHidden ? (AndroidUtilities.dp(100) + tabsHeight) : 0); //BottGrav
                     floatingButton.setClickable(!floatingHidden);
                     if (floatingButton != null) {
                         if (Build.VERSION.SDK_INT < 16) {
@@ -1539,7 +1546,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    private ArrayList<TLRPC.Dialog> getDialogsArray() {
+    private ArrayList<TLRPC.TL_dialog> getDialogsArray() {
         if (dialogsType == 0) {
             return MessagesController.getInstance().dialogs;
         } else if (dialogsType == 1) {
@@ -1588,7 +1595,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return;
         }
         floatingHidden = hide;
-        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(floatingButton, "translationY", floatingHidden ? AndroidUtilities.dp(100) + tabsHeight : 0).setDuration(250);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(floatingButton, "translationY", floatingHidden ? AndroidUtilities.dp(100) + tabsHeight : 0).setDuration(250);
         animator.setInterpolator(floatingInterpolator);
         floatingButton.setClickable(!hide);
         animator.start();
@@ -1623,7 +1630,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 ((ProfileSearchCell) child).update(mask);
             }
         }
-//        updateListBG();
         unreadCount();
     }
 
@@ -1647,13 +1653,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    private void unreadCount(ArrayList<TLRPC.Dialog> dialogs, TextView tv) {
+    private void unreadCount(ArrayList<TLRPC.TL_dialog> dialogs, TextView tv) {
         SharedPreferences advancedPrefs = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
         boolean hTabs = advancedPrefs.getBoolean("hideTabs", false);
         if (hTabs) return;
         boolean hideCounters = advancedPrefs.getBoolean("hideTabsCounters", false);
         if (hideCounters) {
             tv.setVisibility(View.GONE);
+
             return;
         }
         boolean allMuted = true;
@@ -1663,7 +1670,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (dialogs != null && !dialogs.isEmpty()) {
             for (int a = 0; a < dialogs.size(); a++) {
-                TLRPC.Dialog dialg = dialogs.get(a);
+                TLRPC.TL_dialog dialg = dialogs.get(a);
                 boolean isMuted = MessagesController.getInstance().isDialogMuted(dialg.id);
                 if (!isMuted || !countNotMuted) {
                     int i = dialg.unread_count;
@@ -1683,7 +1690,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             tv.setVisibility(View.GONE);
         } else {
             tv.setVisibility(View.VISIBLE);
-            tv.setText("" + unreadCount);
+
+            String countStr;
+            if (LocaleController.isRTL) {
+                countStr = TelegramityUtilities.getInstance().getPersianNumbering(String.valueOf(unreadCount));
+            } else {
+                countStr = String.valueOf(unreadCount);
+            }
+            tv.setText(countStr);
 
             tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
             tv.setPadding(AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4), 0);
@@ -1742,7 +1756,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private void didSelectResult(final long dialog_id, boolean useAlert, final boolean param) {
         if (addToGroupAlertString == null) {
-            if ((int) dialog_id < 0 && ChatObject.isChannel(-(int) dialog_id) && !ChatObject.isCanWriteToChannel(-(int) dialog_id)) {
+            if ((int) dialog_id < 0 && ChatObject.isChannel(-(int) dialog_id) && (cantSendToChannels || !ChatObject.isCanWriteToChannel(-(int) dialog_id))) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                 builder.setTitle(LocaleController.getString("AppName", AppName));
                 builder.setMessage(LocaleController.getString("ChannelCantSendMessage", R.string.ChannelCantSendMessage));
@@ -2813,10 +2827,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         tabsHidden = hide;
         if (hide) listView.setPadding(0, 0, 0, 0);
-        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(tabsView, "translationY", hide ? AndroidUtilities.dp(100) : 0).setDuration(300);
-        animator.addListener(new AnimatorListenerAdapterProxy() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(tabsView, "translationY", hide ? AndroidUtilities.dp(100) : 0).setDuration(300);
+
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(Object animation) {
+            public void onAnimationEnd(Animator animation) {
                 if (!tabsHidden)
                     listView.setPadding(0, 0, 0, AndroidUtilities.dp(tabsHeight)); //BottGrav
             }

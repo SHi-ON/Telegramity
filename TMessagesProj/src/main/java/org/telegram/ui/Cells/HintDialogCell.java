@@ -70,10 +70,10 @@ public class HintDialogCell extends FrameLayout {
             countDrawableGrey = getResources().getDrawable(R.drawable.dialogs_badge2);
 
             countPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            countPaint.setTextSize(AndroidUtilities.dp(13));
             countPaint.setColor(0xffffffff);
             countPaint.setTypeface(AndroidUtilities.getTypeface());
         }
+        countPaint.setTextSize(AndroidUtilities.dp(13));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class HintDialogCell extends FrameLayout {
         if (mask != 0 && (mask & MessagesController.UPDATE_MASK_READ_DIALOG_MESSAGE) == 0 && (mask & MessagesController.UPDATE_MASK_NEW_MESSAGE) == 0) {
             return;
         }
-        TLRPC.Dialog dialog = MessagesController.getInstance().dialogs_dict.get(dialog_id);
+        TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogs_dict.get(dialog_id);
         if (dialog != null && dialog.unread_count != 0) {
             if (lastUnreadCount != dialog.unread_count) {
                 lastUnreadCount = dialog.unread_count;
@@ -115,7 +115,7 @@ public class HintDialogCell extends FrameLayout {
         }
     }
 
-    public void setDialog(int uid, boolean checked, CharSequence name) {
+    public void setDialog(int uid, boolean counter, CharSequence name) {
         dialog_id = uid;
         TLRPC.FileLocation photo = null;
         if (uid > 0) {
@@ -146,7 +146,11 @@ public class HintDialogCell extends FrameLayout {
             }
         }
         imageView.setImage(photo, "50_50", avatarDrawable);
-        checkUnreadCounter(0);
+        if (counter) {
+            checkUnreadCounter(0);
+        } else {
+            countLayout = null;
+        }
     }
 
     @Override
