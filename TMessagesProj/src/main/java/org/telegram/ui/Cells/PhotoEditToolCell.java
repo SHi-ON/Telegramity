@@ -3,7 +3,7 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.Cells;
@@ -25,33 +25,38 @@ public class PhotoEditToolCell extends FrameLayout {
     private TextView nameTextView;
     private TextView valueTextView;
 
-    public PhotoEditToolCell(Context context) {
+    private int width;
+
+    public PhotoEditToolCell(Context context, int w) {
         super(context);
+
+        width = w;
 
         iconImage = new ImageView(context);
         iconImage.setScaleType(ImageView.ScaleType.CENTER);
-        addView(iconImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 12));
+        addView(iconImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.CENTER, 0, 0, 7, 12));
 
         nameTextView = new TextView(context);
         nameTextView.setGravity(Gravity.CENTER);
         nameTextView.setTextColor(0xffffffff);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
-        nameTextView.setTypeface(AndroidUtilities.getTypeface());
+        nameTextView.setTypeface(AndroidUtilities.getTypeface(null));
         nameTextView.setMaxLines(1);
         nameTextView.setSingleLine(true);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
-        addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 4, 0, 4, 0));
+        addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER | Gravity.BOTTOM, 0, 0, 7, 0));
 
         valueTextView = new TextView(context);
         valueTextView.setTextColor(0xff6cc3ff);
         valueTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
-        valueTextView.setTypeface(AndroidUtilities.getTypeface());
-        addView(valueTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 57, 3, 0, 0));
+        valueTextView.setTypeface(AndroidUtilities.getTypeface(null));
+        valueTextView.setSingleLine(true);
+        addView(valueTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 50, 3, 0, 0));
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(86), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(60), MeasureSpec.EXACTLY));
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(60), MeasureSpec.EXACTLY));
     }
 
     public void setIconAndTextAndValue(int resId, String text, float value) {

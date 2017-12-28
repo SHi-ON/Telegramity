@@ -3,13 +3,13 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.SQLite;
 
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
 
 public class SQLiteDatabase {
 	private final int sqliteHandle;
@@ -60,7 +60,7 @@ public class SQLiteDatabase {
                 commitTransaction();
 				closedb(sqliteHandle);
 			} catch (SQLiteException e) {
-                FileLog.e("tmessages", e.getMessage(), e);
+                FileLog.e(e.getMessage(), e);
 			}
 			isOpen = false;
 		}

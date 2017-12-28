@@ -1,10 +1,7 @@
 package org.telegram.ui.Components.Paint;
 
 import android.graphics.RectF;
-import android.os.Handler;
-import android.os.HandlerThread;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
@@ -28,7 +25,7 @@ public class Slice {
             File outputDir = ApplicationLoader.applicationContext.getCacheDir();
             file = File.createTempFile("paint", ".bin", outputDir);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
 
         if (file == null)
@@ -62,7 +59,7 @@ public class Slice {
 
             fos.close();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
     }
 
@@ -101,7 +98,7 @@ public class Slice {
 
             return result;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
 
         return null;

@@ -3,7 +3,7 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.Components;
@@ -20,7 +20,7 @@ public class URLSpanNoUnderlineBold extends URLSpanNoUnderline {
     @Override
     public void updateDrawState(TextPaint ds) {
         super.updateDrawState(ds);
-        ds.setTypeface(AndroidUtilities.getTypeface());
+        ds.setTypeface(AndroidUtilities.getTypeface(null));
         ds.setUnderlineText(false);
     }
 }

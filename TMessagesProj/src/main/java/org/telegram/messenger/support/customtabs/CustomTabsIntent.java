@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,10 +30,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.BundleCompat;
-
-import com.ioton.TelegramityUtilities;
-
-import org.telegram.messenger.ApplicationLoader;
 
 import java.util.ArrayList;
 
@@ -111,9 +106,7 @@ public final class CustomTabsIntent {
         }
 
         public CustomTabsIntent.Builder setToolbarColor(@ColorInt int color) {
-            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-            int actionBarBackgroundColor = preferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
-            this.mIntent.putExtra("android.support.customtabs.extra.TOOLBAR_COLOR", actionBarBackgroundColor);
+            this.mIntent.putExtra("android.support.customtabs.extra.TOOLBAR_COLOR", color);
             return this;
         }
 

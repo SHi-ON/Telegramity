@@ -3,7 +3,7 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.ActionBar;
@@ -14,14 +14,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ioton.TelegramityUtilities;
-
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.tgnet.ConnectionsManager;
 
@@ -70,7 +67,7 @@ public class BaseFragment {
                 try {
                     parent.removeView(fragmentView);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e(e);
                 }
             }
             fragmentView = null;
@@ -81,7 +78,7 @@ public class BaseFragment {
                 try {
                     parent.removeView(actionBar);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e(e);
                 }
             }
             actionBar = null;
@@ -98,7 +95,7 @@ public class BaseFragment {
                     try {
                         parent.removeView(fragmentView);
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e(e);
                     }
                 }
                 if (parentLayout != null && parentLayout.getContext() != fragmentView.getContext()) {
@@ -113,7 +110,7 @@ public class BaseFragment {
                         try {
                             parent.removeView(actionBar);
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e(e);
                         }
                     }
                 }
@@ -129,11 +126,12 @@ public class BaseFragment {
     }
 
     protected ActionBar createActionBar(Context context) {
-        SharedPreferences themePreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        int aBBackgroundColor = themePreferences.getInt("actionBarBackgroundColor", TelegramityUtilities.colorABBG());
         ActionBar actionBar = new ActionBar(context);
-        actionBar.setBackgroundColor(aBBackgroundColor);
-        actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_SELECTOR_COLOR);
+        actionBar.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault));
+        actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSelector), false);
+        actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), true);
+        actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarDefaultIcon), false);
+        actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarActionModeDefaultIcon), true);
         return actionBar;
     }
 
@@ -185,7 +183,7 @@ public class BaseFragment {
                 visibleDialog = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
     }
 
@@ -246,7 +244,7 @@ public class BaseFragment {
             visibleDialog.dismiss();
             visibleDialog = null;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
     }
 
@@ -261,7 +259,7 @@ public class BaseFragment {
                 visibleDialog = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
         if (actionBar != null) {
             actionBar.onPause();
@@ -289,10 +287,14 @@ public class BaseFragment {
     }
 
     public Dialog showDialog(Dialog dialog) {
-        return showDialog(dialog, false);
+        return showDialog(dialog, false, null);
     }
 
-    public Dialog showDialog(Dialog dialog, boolean allowInTransition) {
+    public Dialog showDialog(Dialog dialog, Dialog.OnDismissListener onDismissListener) {
+        return showDialog(dialog, false, onDismissListener);
+    }
+
+    public Dialog showDialog(Dialog dialog, boolean allowInTransition, final Dialog.OnDismissListener onDismissListener) {
         if (dialog == null || parentLayout == null || parentLayout.animationInProgress || parentLayout.startedTracking || !allowInTransition && parentLayout.checkTransitionAnimation()) {
             return null;
         }
@@ -302,7 +304,7 @@ public class BaseFragment {
                 visibleDialog = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
         try {
             visibleDialog = dialog;
@@ -310,6 +312,9 @@ public class BaseFragment {
             visibleDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
+                    if (onDismissListener != null) {
+                        onDismissListener.onDismiss(dialog);
+                    }
                     onDialogDismiss(visibleDialog);
                     visibleDialog = null;
                 }
@@ -317,7 +322,7 @@ public class BaseFragment {
             visibleDialog.show();
             return visibleDialog;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
         return null;
     }
@@ -332,5 +337,13 @@ public class BaseFragment {
 
     public void setVisibleDialog(Dialog dialog) {
         visibleDialog = dialog;
+    }
+
+    public boolean extendActionMode(Menu menu) {
+        return false;
+    }
+
+    public ThemeDescription[] getThemeDescriptions() {
+        return null;
     }
 }

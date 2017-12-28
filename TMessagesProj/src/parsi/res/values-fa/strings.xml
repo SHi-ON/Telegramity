@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="TrialRemainingMessage">%1$d فرصت از %2$d فرصت آزمایش برنامه باقی است.\n\nبا جستجوی ""تلگرام پارسی" در اول مارکت همین الان نسخه طلایی را خریداری نمایید و از امکانات کامل لذت ببرید.</string>
+    <string name="TrialButtonContinue">ادامه فرصت آزمایشی</string>
+    <string name="TrialEndedMessage">فرصت استفاده آزمایشی شما به اتمام رسیده است.\n\nهمین الان با مراجعه به اول مارکت و جستجوی "تلگرام پارسی" نسخه طلایی را ببینید و بخرید و از امکانات کامل آن لذت ببرید.</string>
+    <string name="AvvalURL">http://avvalmarket.ir/frontpage/apps/org.telegram.engmariaamani.messenger</string> <!--TODO correct the link-->
+</resources>

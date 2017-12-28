@@ -3,7 +3,7 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.Adapters;
@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.gramity.GramityConstants;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.MessagesController;
@@ -23,24 +24,18 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Cells.LoadingCell;
+import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class DialogsAdapter extends RecyclerView.Adapter {
+public class DialogsAdapter extends RecyclerListView.SelectionAdapter {
 
     private Context mContext;
     private int dialogsType;
     private long openedDialogId;
     private int currentCount;
-
-    private class Holder extends RecyclerView.ViewHolder {
-
-        public Holder(View itemView) {
-            super(itemView);
-        }
-    }
 
     public DialogsAdapter(Context context, int type) {
         mContext = context;
@@ -57,7 +52,7 @@ public class DialogsAdapter extends RecyclerView.Adapter {
     }
 
     private ArrayList<TLRPC.TL_dialog> getDialogsArray() {
-        SharedPreferences tgyPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
+        SharedPreferences tgyPreferences = ApplicationLoader.applicationContext.getSharedPreferences(GramityConstants.ADVANCED_PREFERENCES, Activity.MODE_PRIVATE);
         if (dialogsType == 0) {
             boolean hideTabs = tgyPreferences.getBoolean("hideTabs", false);
             int sort = tgyPreferences.getInt("sortAll", 0);
@@ -260,8 +255,8 @@ public class DialogsAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public long getItemId(int i) {
-        return i;
+    public boolean isEnabled(RecyclerView.ViewHolder holder) {
+        return holder.getItemViewType() != 1;
     }
 
     @Override
@@ -273,8 +268,12 @@ public class DialogsAdapter extends RecyclerView.Adapter {
             view = new LoadingCell(mContext);
         }
         view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-        if(dialogsType > 2 && viewType == 1)view.setVisibility(View.GONE);
-        return new Holder(view);
+        //tgy
+        if (dialogsType > 2 && viewType == 1) {
+            view.setVisibility(View.GONE);
+        }
+        //
+        return new RecyclerListView.Holder(view);
     }
 
     @Override

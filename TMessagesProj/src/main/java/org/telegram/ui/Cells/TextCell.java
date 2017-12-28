@@ -3,24 +3,27 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.Cells;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
+import org.gramity.GramityConstants;
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.ui.ActionBar.SimpleTextView;
-import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.ActionBar.Theme;
 
 public class TextCell extends FrameLayout {
 
@@ -33,26 +36,39 @@ public class TextCell extends FrameLayout {
         super(context);
 
         textView = new SimpleTextView(context);
-        textView.setTextColor(0xff212121);
+        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         textView.setTextSize(16);
-        textView.setTypeface(AndroidUtilities.getTypeface());
+        textView.setTypeface(AndroidUtilities.getTypeface(null));
         textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         addView(textView);
 
         valueTextView = new SimpleTextView(context);
-        valueTextView.setTextColor(0xff2f8cc9);
+        valueTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
         valueTextView.setTextSize(16);
-        valueTextView.setTypeface(AndroidUtilities.getTypeface());
+        valueTextView.setTypeface(AndroidUtilities.getTypeface(null));
         valueTextView.setGravity(LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT);
         addView(valueTextView);
 
         imageView = new ImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
+        imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
         addView(imageView);
 
         valueImageView = new ImageView(context);
         valueImageView.setScaleType(ImageView.ScaleType.CENTER);
         addView(valueImageView);
+    }
+
+    public SimpleTextView getTextView() {
+        return textView;
+    }
+
+    public SimpleTextView getValueTextView() {
+        return valueTextView;
+    }
+
+    public ImageView getValueImageView() {
+        return valueImageView;
     }
 
     @Override
@@ -103,8 +119,16 @@ public class TextCell extends FrameLayout {
     }
 
     public void setTextAndIcon(String text, Drawable resDrawable) {
+        // TGY
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences(GramityConstants.ADVANCED_PREFERENCES, Activity.MODE_PRIVATE);
+        boolean isMonoColored = preferences.getBoolean(GramityConstants.PREF_MONOCOLORED_ICONS, false);
+        //
         textView.setText(text);
         valueTextView.setText(null);
+        // TGY
+        if (!isMonoColored) {
+            imageView.clearColorFilter();
+        } //
         imageView.setImageDrawable(resDrawable);
         imageView.setVisibility(VISIBLE);
         valueTextView.setVisibility(INVISIBLE);
@@ -120,14 +144,22 @@ public class TextCell extends FrameLayout {
         valueImageView.setVisibility(INVISIBLE);
     }
 
-    public void setTextAndValueAndIcon(String text, String value, int resId) {
+    public void setTextAndValueAndIcon(String text, String value, Drawable drawable) {
+        // TGY
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences(GramityConstants.ADVANCED_PREFERENCES, Activity.MODE_PRIVATE);
+        boolean isMonoColored = preferences.getBoolean(GramityConstants.PREF_MONOCOLORED_ICONS, false);
+        //
         textView.setText(text);
         valueTextView.setText(value);
         valueTextView.setVisibility(VISIBLE);
         valueImageView.setVisibility(INVISIBLE);
         imageView.setVisibility(VISIBLE);
         imageView.setPadding(0, AndroidUtilities.dp(7), 0, 0);
-        imageView.setImageResource(resId);
+        // TGY
+        if (!isMonoColored) {
+            imageView.clearColorFilter();
+        } //
+        imageView.setImageDrawable(drawable);
     }
 
     public void setTextAndValueDrawable(String text, Drawable drawable) {

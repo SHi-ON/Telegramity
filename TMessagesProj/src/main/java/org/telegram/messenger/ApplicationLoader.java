@@ -3,14 +3,14 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.messenger;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,28 +19,31 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.support.multidex.MultiDexApplication;
 import android.util.Base64;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.ioton.TelegramityUtilities;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OSNotificationPayload;
 import com.onesignal.OneSignal;
 
+import org.gramity.FontSelectActivity;
+import org.gramity.GramityConstants;
+import org.gramity.GramityUtilities;
+import org.gramity.MarketHandlerActivity;
+import org.gramity.database.DatabaseHandler;
 import org.json.JSONObject;
-import org.telegram.SQLite.DatabaseHandler;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.ForegroundDetector;
 import org.telegram.ui.LaunchActivity;
 
@@ -49,18 +52,9 @@ import java.io.RandomAccessFile;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
-public class ApplicationLoader extends Application {
+public class ApplicationLoader extends MultiDexApplication {
 
-    private static Drawable cachedWallpaper;
-
-    private static int selectedColor;
-    private static boolean isCustomTheme;
-
-    private static final Object sync = new Object();
-
-    private static int serviceMessageColor;
-    private static int serviceSelectedMessageColor;
-
+    @SuppressLint("StaticFieldLeak")
     public static volatile Context applicationContext;
     public static volatile Handler applicationHandler;
     private static volatile boolean applicationInited = false;
@@ -68,98 +62,13 @@ public class ApplicationLoader extends Application {
     public static volatile boolean isScreenOn = false;
     public static volatile boolean mainInterfacePaused = true;
 
+    //tgy
     public static DatabaseHandler databaseHandler;
     public static boolean KEEP_ORIGINAL_FILENAME;
+    //
 
-    public static boolean isCustomTheme() {
-        return isCustomTheme;
-    }
-
-    public static int getSelectedColor() {
-        return selectedColor;
-    }
-
-    public static void reloadWallpaper() {
-        cachedWallpaper = null;
-        serviceMessageColor = 0;
-        ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).edit().remove("serviceMessageColor").commit();
-        loadWallpaper();
-    }
-
-    private static void calcBackgroundColor() {
-        int result[] = AndroidUtilities.calcDrawableColor(cachedWallpaper);
-        serviceMessageColor = result[0];
-        serviceSelectedMessageColor = result[1];
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        preferences.edit().putInt("serviceMessageColor", serviceMessageColor).putInt("serviceSelectedMessageColor", serviceSelectedMessageColor).commit();
-    }
-
-    public static int getServiceMessageColor() {
-        return serviceMessageColor;
-    }
-
-    public static int getServiceSelectedMessageColor() {
-        return serviceSelectedMessageColor;
-    }
-
-    public static void loadWallpaper() {
-        if (cachedWallpaper != null) {
-            return;
-        }
-        Utilities.searchQueue.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (sync) {
-                    int selectedColor = 0;
-                    try {
-                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                        int selectedBackground = preferences.getInt("selectedBackground", 1000001);
-                        selectedColor = preferences.getInt("selectedColor", 0);
-                        serviceMessageColor = preferences.getInt("serviceMessageColor", 0);
-                        serviceSelectedMessageColor = preferences.getInt("serviceSelectedMessageColor", 0);
-                        if (selectedColor == 0) {
-                            if (selectedBackground == 1000001) {
-                                cachedWallpaper = applicationContext.getResources().getDrawable(R.drawable.background_hd);
-                                isCustomTheme = false;
-                            } else {
-                                File toFile = new File(getFilesDirFixed(), "wallpaper.jpg");
-                                if (toFile.exists()) {
-                                    cachedWallpaper = Drawable.createFromPath(toFile.getAbsolutePath());
-                                    isCustomTheme = true;
-                                } else {
-                                    cachedWallpaper = applicationContext.getResources().getDrawable(R.drawable.background_hd);
-                                    isCustomTheme = false;
-                                }
-                            }
-                        }
-                    } catch (Throwable throwable) {
-                        //ignore
-                    }
-                    if (cachedWallpaper == null) {
-                        if (selectedColor == 0) {
-                            selectedColor = -2693905;
-                        }
-                        cachedWallpaper = new ColorDrawable(selectedColor);
-                    }
-                    if (serviceMessageColor == 0) {
-                        calcBackgroundColor();
-                    }
-                    AndroidUtilities.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.didSetNewWallpapper);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public static Drawable getCachedWallpaper() {
-        synchronized (sync) {
-            return cachedWallpaper;
-        }
-    }
+    public static volatile boolean mainInterfacePausedStageQueue = true;
+    public static volatile long mainInterfacePausedStageQueueTime;
 
     private static void convertConfig() {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("dataconfig", Context.MODE_PRIVATE);
@@ -186,7 +95,7 @@ public class ApplicationLoader extends Application {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e(e);
             }
 
             try {
@@ -197,7 +106,7 @@ public class ApplicationLoader extends Application {
                 fileOutputStream.write(bytes);
                 fileOutputStream.close();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e(e);
             }
             buffer.cleanup();
             preferences.edit().clear().commit();
@@ -217,7 +126,7 @@ public class ApplicationLoader extends Application {
             path.mkdirs();
             return path;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
         return new File("/data/data/org.telegram.messenger/files");
     }
@@ -248,9 +157,9 @@ public class ApplicationLoader extends Application {
         try {
             PowerManager pm = (PowerManager) ApplicationLoader.applicationContext.getSystemService(Context.POWER_SERVICE);
             isScreenOn = pm.isScreenOn();
-            FileLog.e("tmessages", "screen state = " + isScreenOn);
+            FileLog.e("screen state = " + isScreenOn);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
 
         UserConfig.loadConfig();
@@ -299,7 +208,7 @@ public class ApplicationLoader extends Application {
 
         ApplicationLoader app = (ApplicationLoader) ApplicationLoader.applicationContext;
         app.initPlayServices();
-        FileLog.e("tmessages", "app initied");
+        FileLog.e("app initied");
 
         ContactsController.getInstance().checkAppAccount();
         MediaController.getInstance();
@@ -316,53 +225,34 @@ public class ApplicationLoader extends Application {
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
-        //tgy
+        //GTY
         databaseHandler = new DatabaseHandler(applicationContext);
-        SharedPreferences advancedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE);
-        KEEP_ORIGINAL_FILENAME = advancedPreferences.getBoolean("keepOriginalFilename", false);
+        SharedPreferences advancedPreferences = ApplicationLoader.applicationContext.getSharedPreferences(GramityConstants.ADVANCED_PREFERENCES, Activity.MODE_PRIVATE);
+        KEEP_ORIGINAL_FILENAME = advancedPreferences.getBoolean("keepOriginalFilename", true);
         //
 
-        final SharedPreferences premPreferences = getSharedPreferences("PremiumState", MODE_PRIVATE);
-//        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.ERROR); //TODO remove this line before release!
         OneSignal.startInit(this)
                 .setNotificationOpenedHandler(new ApplicationLoader.TGYNotificationOpenedHandler())
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .autoPromptLocation(true)
                 .init();
-//        OneSignal.sendTag("isTesting", "test"); //TODO remove this line before release!
-        try {
-            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-            int verCo = pInfo.versionCode % 10;
-            if (verCo == 5) {
-                if (pInfo.packageName == TelegramityUtilities.TGYPACKAGENAME) {
-                    OneSignal.sendTag("market", "avvalDemo");
-                } else if (pInfo.packageName == TelegramityUtilities.PTGPACKAGENAME) {
-                    OneSignal.sendTag("market", "avvalPro");
-                }
-            } else if (verCo == 4) {
-                if (premPreferences.getBoolean("isUserPremium", false)) {
-                    OneSignal.deleteTag("market");
-                    OneSignal.sendTag("market", "bazaarPaid");
-                } else {
-                    OneSignal.sendTag("market", "bazaarFree");
-                }
-            } else if (verCo == 6) {
-                if (premPreferences.getBoolean("isUserPremium", false)) {
-                    OneSignal.deleteTag("market");
-                    OneSignal.sendTag("market", "playPaid");
-                } else {
-                    OneSignal.sendTag("market", "playFree");
-                }
+
+        OneSignal.deleteTag("market");
+        OneSignal.deleteTag("store");
+        if (!ApplicationLoader.applicationContext.getPackageName().equals(GramityConstants.TGPPKG)) {
+            if (GramityUtilities.isPackageInstalled(GramityConstants.BAZAAR_PKG)) {
+                OneSignal.sendTag("store", "Bazaar");
+            } else if (GramityUtilities.isPackageInstalled(GramityConstants.PLAY_PKG)) {
+                OneSignal.sendTag("store", "Play");
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            FileLog.e("tmessages", e);
+        } else if (GramityUtilities.isPackageInstalled(GramityConstants.AVVAL_PKG)) {
+            OneSignal.sendTag("store", "Avval");
         }
 
         startPushService();
 
-        String customPath = ApplicationLoader.applicationContext.getSharedPreferences("AdvancedPreferences", Activity.MODE_PRIVATE).getString("customFontPath", TelegramityUtilities.DEFAULT_FONT_PATH);
-        if (customPath != "device") {
-            String customAssetPath = String.format("fonts/%s.ttf", customPath);
+        String customAssetPath = ApplicationLoader.applicationContext.getSharedPreferences(GramityConstants.ADVANCED_PREFERENCES, Activity.MODE_PRIVATE).getString(GramityConstants.PREF_CUSTOM_FONT_PATH, FontSelectActivity.DEFAULT_FONT_PATH);
+        if (!customAssetPath.equals("device")) {
             CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                     .setDefaultFontPath(customAssetPath)
                     .setFontAttrId(R.attr.fontPath)
@@ -372,11 +262,6 @@ public class ApplicationLoader extends Application {
     }
 
     private class TGYNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
-        // {"channel","username"}
-        // {"appBazaar","packageName"}
-        // {"rateBazaar","packageName"}
-        // {"iab",""}
-        // {"dialog",""}
         @Override
         public void notificationOpened(OSNotificationOpenResult openResult) {
             OSNotification notification = openResult.notification;
@@ -384,32 +269,47 @@ public class ApplicationLoader extends Application {
             JSONObject additionalData = payload.additionalData;
             try {
                 if (additionalData != null) {
-                    Intent intent = new Intent(applicationContext, LaunchActivity.class);
-                    intent.setAction("org.telegram.messenger.OPEN_NOTIFICATION");
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     if (additionalData.has("channel") && additionalData.getString("channel") != null) {
-                        intent.putExtra("iChannel", additionalData.getString("channel"));
+                        BaseFragment fragment = LaunchActivity.getMainFragment();
+                        if (fragment != null) {
+                            GramityUtilities.snkrGApnr(additionalData.getString("channel"), fragment, true, false);
+                        }
                     }
-                    if (additionalData.has("appBazaar") && additionalData.getString("appBazaar") != null) {
-                        intent.putExtra("iAppBazaar", additionalData.getString("appBazaar"));
+                    if (additionalData.has("appMarket") && additionalData.getString("appMarket") != null) {
+                        MarketHandlerActivity.openAppPage(additionalData.getString("appMarket"));
                     }
-                    if (additionalData.has("rateBazaar") && additionalData.getString("rateBazaar") != null) {
-                        intent.putExtra("iRateBazaar", additionalData.getString("rateBazaar"));
+                    if (additionalData.has("rateMarket")) {
+                        try {
+                            PendingIntent.getActivity(ApplicationLoader.this, 0, new Intent(ApplicationLoader.this, MarketHandlerActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0).send();
+                        } catch (Exception e) {
+                            FileLog.e("Error starting app rating activity", e);
+                        }
                     }
-                    if (additionalData.has("iab")) {
-                        intent.putExtra("iIAB", "iIAB");
+                    if (additionalData.has("link") && additionalData.getString("link") != null) {
+                        Intent linkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(additionalData.getString("link")));
+                        startActivity(linkIntent);
                     }
-                    if (additionalData.has("dialog")) {
-                        intent.putExtra("iDialogTitle", payload.title);
-                        intent.putExtra("iDialogMessage", payload.body);
-                    }
-                    startActivity(intent);
+                    /*if (additionalData.has("iab")) { // TGY ad
+                        purchasePresenter();
+                    }*/
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
     }
+
+    /*private void purchasePresenter() { // TGY ad
+        actionBarLayout.presentFragment(new PremiumActivity(), false, true, true);
+        if (AndroidUtilities.isTablet()) {
+            actionBarLayout.showLastFragment();
+            rightActionBarLayout.showLastFragment();
+            drawerLayoutContainer.setAllowOpenDrawer(false, false);
+        } else {
+            drawerLayoutContainer.setAllowOpenDrawer(true, false);
+        }
+    }*/
 
     /*public static void sendRegIdToBackend(final String token) {
         Utilities.stageQueue.postRunnable(new Runnable() {
@@ -465,19 +365,19 @@ public class ApplicationLoader extends Application {
             public void run() {
                 if (checkPlayServices()) {
                     if (UserConfig.pushString != null && UserConfig.pushString.length() != 0) {
-                        FileLog.d("tmessages", "GCM regId = " + UserConfig.pushString);
+                        FileLog.d("GCM regId = " + UserConfig.pushString);
                     } else {
-                        FileLog.d("tmessages", "GCM Registration not found.");
+                        FileLog.d("GCM Registration not found.");
                     }
 
                     //if (UserConfig.pushString == null || UserConfig.pushString.length() == 0) {
                     Intent intent = new Intent(applicationContext, GcmRegistrationIntentService.class);
                     startService(intent);
                     //} else {
-                    //    FileLog.d("tmessages", "GCM regId = " + UserConfig.pushString);
+                    //    FileLog.d("GCM regId = " + UserConfig.pushString);
                     //}
                 } else {
-                    FileLog.d("tmessages", "No valid Google Play Services APK found.");
+                    FileLog.d("No valid Google Play Services APK found.");
                 }
             }
         }, 1000);
@@ -489,9 +389,9 @@ public class ApplicationLoader extends Application {
             public void run() {
                 if (checkPlayServices()) {
                     if (UserConfig.pushString != null && UserConfig.pushString.length() != 0) {
-                        FileLog.d("tmessages", "GCM regId = " + UserConfig.pushString);
+                        FileLog.d("GCM regId = " + UserConfig.pushString);
                     } else {
-                        FileLog.d("tmessages", "GCM Registration not found.");
+                        FileLog.d("GCM Registration not found.");
                     }
                     try {
                         if (!FirebaseApp.getApps(ApplicationLoader.applicationContext).isEmpty()) {
@@ -501,10 +401,10 @@ public class ApplicationLoader extends Application {
                             }
                         }
                     } catch (Throwable e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e(e);
                     }
                 } else {
-                    FileLog.d("tmessages", "No valid Google Play Services APK found.");
+                    FileLog.d("No valid Google Play Services APK found.");
                 }
             }
         }, 2000);
@@ -515,7 +415,7 @@ public class ApplicationLoader extends Application {
             int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
             return resultCode == ConnectionResult.SUCCESS;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
         return true;
 

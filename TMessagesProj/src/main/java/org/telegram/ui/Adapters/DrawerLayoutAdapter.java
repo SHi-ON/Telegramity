@@ -3,141 +3,101 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 
+import org.gramity.GramityConstants;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.support.widget.RecyclerView;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.DividerCell;
 import org.telegram.ui.Cells.DrawerActionCell;
 import org.telegram.ui.Cells.DrawerProfileCell;
 import org.telegram.ui.Cells.EmptyCell;
+import org.telegram.ui.Components.RecyclerListView;
 
-public class DrawerLayoutAdapter extends BaseAdapter {
+import java.util.ArrayList;
+
+public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
     private Context mContext;
+    private ArrayList<Item> items = new ArrayList<>(18);
 
     public DrawerLayoutAdapter(Context context) {
         mContext = context;
+        Theme.createDialogsResources(context);
+        resetItems();
     }
 
     @Override
-    public boolean areAllItemsEnabled() {
-        return false;
+    public int getItemCount() {
+        return items.size();
     }
 
     @Override
-    public boolean isEnabled(int i) {
-        if (i == 6 || i == 13 || i == 14) {
-            try {
-                PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                if (pInfo.versionCode % 10 == 5) {
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                FileLog.e("tmessages", e);
-            }
-        }
-        return !(i == 0 || i == 1 || i == 5 || i == 12);
+    public void notifyDataSetChanged() {
+        resetItems();
+        super.notifyDataSetChanged();
     }
 
     @Override
-    public int getCount() {
-        return UserConfig.isClientActivated() ? 16 : 0;
+    public boolean isEnabled(RecyclerView.ViewHolder holder) {
+        return holder.getItemViewType() == 3;
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        int type = getItemViewType(i);
-        if (type == 0) {
-            DrawerProfileCell drawerProfileCell;
-            if (view == null) {
-                view = drawerProfileCell = new DrawerProfileCell(mContext);
-            } else {
-                drawerProfileCell = (DrawerProfileCell) view;
-            }
-            drawerProfileCell.setUser(MessagesController.getInstance().getUser(UserConfig.getClientUserId()));
-        } else if (type == 1) {
-            if (view == null) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+        switch (viewType) {
+            case 0:
+                view = new DrawerProfileCell(mContext);
+                break;
+            case 1:
+            default:
                 view = new EmptyCell(mContext, AndroidUtilities.dp(8));
-            }
-            EmptyCell emptyCell = (EmptyCell) view;
-            if (i == 6 || i == 13 || i == 14) {
-                emptyCell.setHeight(AndroidUtilities.dp(1));
-            }
-        } else if (type == 2) {
-            if (view == null) {
+                break;
+            case 2:
                 view = new DividerCell(mContext);
-            }
-        } else if (type == 3) {
-            if (view == null) {
+                break;
+            case 3:
                 view = new DrawerActionCell(mContext);
-            }
-            DrawerActionCell actionCell = (DrawerActionCell) view;
-            if (i == 2) {
-                actionCell.setTextAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), new IconicsDrawable(mContext, FontAwesome.Icon.faw_users).sizePx(48).color(0xff0c85e6));
-            } else if (i == 3) {
-                actionCell.setTextAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user_secret).sizePx(48).color(0xff25d025));
-            } else if (i == 4) {
-                actionCell.setTextAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), new IconicsDrawable(mContext, FontAwesome.Icon.faw_bullhorn).sizePx(48).color(0xff832194));
-            } else if (i == 6) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerPremium", R.string.DrawerPremium), new IconicsDrawable(mContext, FontAwesome.Icon.faw_star).sizePx(48).color(0xffffa01f));
-            } else if (i == 7) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerIDRevealer", R.string.DrawerIDRevealer), new IconicsDrawable(mContext, FontAwesome.Icon.faw_crosshairs).sizePx(48).color(0xff673ab7));
-            } else if (i == 8) {
-                actionCell.setTextAndIcon(LocaleController.getString("Contacts", R.string.Contacts), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user).sizePx(48).color(0xffe0165b));
-            } else if (i == 9) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), mContext.getResources().getDrawable(R.drawable.menu_telegram));
-            } else if (i == 10) {
-                actionCell.setTextAndIcon(LocaleController.getString("Settings", R.string.Settings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_cog).sizePx(48).color(0xff845c4e));
-            } else if (i == 11) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerAdvancedSettings", R.string.TelegramitySettings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_wrench).sizePx(48).color(0xff3f51b5));
-            } else if (i == 13) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerOfficialChannel", R.string.DrawerOfficialChannel), new IconicsDrawable(mContext, MaterialDesignIconic.Icon.gmi_tv_list).sizePx(48).color(0xffff6433));
-            } else if (i == 14) {
-                actionCell.setTextAndIcon(LocaleController.getString("DrawerComment", R.string.DrawerComment), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_comment_check).sizePx(48).color(0xff00a797));
-            } else if (i == 15) {
-                actionCell.setTextAndIcon(LocaleController.getString("TelegramFaq", R.string.TelegramFaq), new IconicsDrawable(mContext, FontAwesome.Icon.faw_question_circle).sizePx(48).color(0xff607d8b));
-            }
+                break;
         }
+        view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return new RecyclerListView.Holder(view);
+    }
 
-        return view;
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        switch (holder.getItemViewType()) {
+            case 0:
+                ((DrawerProfileCell) holder.itemView).setUser(MessagesController.getInstance().getUser(UserConfig.getClientUserId()));
+                holder.itemView.setBackgroundColor(Theme.getColor(Theme.key_avatar_backgroundActionBarBlue));
+                break;
+            case 3:
+                items.get(position).bind((DrawerActionCell) holder.itemView);
+                break;
+        }
     }
 
     @Override
@@ -146,30 +106,76 @@ public class DrawerLayoutAdapter extends BaseAdapter {
             return 0;
         } else if (i == 1) {
             return 1;
-        } else if (i == 5 || i == 12) {
+        } else if (i == 3 || i == 7 || i == 14) { //dividers
             return 2;
-        } else if (i == 6 || i == 13 || i == 14) {
-            try {
-                PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                if (pInfo.versionCode % 10 == 5) {
-                    return 1;
-                } else {
-                    return 3;
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                FileLog.e("tmessages", e);
+        } else if (i == 15 || i == 16) {
+            if (ApplicationLoader.applicationContext.getPackageName().equals(GramityConstants.TGPPKG)) {
+                return 1;
+            } else {
+                return 3;
             }
         }
         return 3;
     }
 
-    @Override
-    public int getViewTypeCount() {
-        return 4;
+    private void resetItems() {
+        // TGY
+        int itemIconSize = 24;
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences(GramityConstants.ADVANCED_PREFERENCES, Activity.MODE_PRIVATE);
+        boolean isMonoColored = preferences.getBoolean(GramityConstants.PREF_MONOCOLORED_ICONS, false);
+        Drawable drawbleTgyColorful = mContext.getResources().getDrawable(R.drawable.menu_telegram);
+        Drawable drawbleTgyMono = mContext.getResources().getDrawable(R.drawable.notification);
+        if (isMonoColored) {
+            drawbleTgyMono.setColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_ATOP);
+        }
+        //
+        items.clear();
+        if (!UserConfig.isClientActivated()) {
+            return;
+        }
+        items.add(null); // profile 0
+        items.add(null); // padding 1
+        items.add(new Item(2, LocaleController.getString("ChangeUserAccount", R.string.ChangeUserAccount), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user_circle_o).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffd1df47)));
+        items.add(null); // divider 3
+        items.add(new Item(4, LocaleController.getString("NewGroup", R.string.NewGroup), new IconicsDrawable(mContext, FontAwesome.Icon.faw_users).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff0c85e6)));
+        items.add(new Item(5, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), new IconicsDrawable(mContext, FontAwesome.Icon.faw_lock).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffffa01f)));
+        items.add(new Item(6, LocaleController.getString("NewChannel", R.string.NewChannel), new IconicsDrawable(mContext, FontAwesome.Icon.faw_bullhorn).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff832194)));
+        items.add(null); // divider 7
+        items.add(new Item(8, LocaleController.getString("DrawerIDRevealer", R.string.DrawerIDRevealer), new IconicsDrawable(mContext, FontAwesome.Icon.faw_crosshairs).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff673ab7)));
+        items.add(new Item(9, LocaleController.getString("Contacts", R.string.Contacts), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffe0165b)));
+        if (MessagesController.getInstance().callsEnabled) {
+            items.add(new Item(10, LocaleController.getString("Calls", R.string.Calls), new IconicsDrawable(mContext, FontAwesome.Icon.faw_phone).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff08ff49)));
+        }
+        items.add(new Item(11, LocaleController.getString("InviteFriends", R.string.InviteFriends), isMonoColored ? drawbleTgyMono : drawbleTgyColorful));
+        items.add(new Item(12, LocaleController.getString("Settings", R.string.Settings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_cog).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff845c4e)));
+        items.add(new Item(13, LocaleController.getString("AdvancedSettings", R.string.AdvancedSettings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_wrench).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff3f51b5)));
+        items.add(null); // divider 14
+        items.add(new Item(15, LocaleController.getString("DrawerOfficialChannel", R.string.DrawerOfficialChannel), new IconicsDrawable(mContext, MaterialDesignIconic.Icon.gmi_tv_list).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffff6433)));
+        items.add(new Item(16, LocaleController.getString("DrawerComment", R.string.DrawerComment), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_comment_check).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff00a797)));
+        items.add(new Item(17, LocaleController.getString("TelegramFaq", R.string.TelegramFaq), new IconicsDrawable(mContext, FontAwesome.Icon.faw_question_circle).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff607d8b)));
     }
 
-    @Override
-    public boolean isEmpty() {
-        return !UserConfig.isClientActivated();
+    public int getId(int position) {
+        if (position < 0 || position >= items.size()) {
+            return -1;
+        }
+        Item item = items.get(position);
+        return item != null ? item.id : -1;
+    }
+
+    private class Item {
+        public Drawable icon;
+        public String text;
+        public int id;
+
+        public Item(int id, String text, Drawable icon) {
+            this.icon = icon;
+            this.id = id;
+            this.text = text;
+        }
+
+        public void bind(DrawerActionCell actionCell) {
+            actionCell.setTextAndIcon(text, icon);
+        }
     }
 }

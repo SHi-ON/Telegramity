@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="TrialRemainingMessage">%1$d out of %2$d times of trying the app is remaining.\n\nSearch “Telegram Parsi” on Avval Market and buy the full version right now and enjoy the features.</string>
+    <string name="TrialButtonContinue">Continue trial</string>
+    <string name="TrialEndedMessage">Your trial is ended.\n\nSearch “Telegram Parsi” on Avval Market right now and buy the full version to enjoy the features.</string>
+    <string name="AvvalURL">http://avvalmarket.ir/frontpage/apps/org.telegram.engmariaamani.parsi</string>
+</resources>

@@ -9,19 +9,28 @@ configurations {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-gcm:10.2.0'
-    compile 'com.google.android.gms:play-services-maps:10.2.0'
-    compile 'com.google.android.gms:play-services-vision:10.2.0'
-    compile 'com.android.support:support-core-ui:25.1.1'
-    compile 'com.android.support:support-compat:25.1.1'
-    compile 'com.android.support:support-core-utils:25.1.1'
-    compile 'net.hockeyapp.android:HockeySDK:4.0.1'
+    compile 'com.google.android.gms:play-services-gcm:11.0.2'
+    compile 'com.google.android.gms:play-services-maps:11.0.2'
+    compile 'com.google.android.gms:play-services-vision:11.0.2'
+    compile 'com.google.android.gms:play-services-wallet:11.0.2'
+    compile 'com.google.android.gms:play-services-wearable:11.0.2'
+    compile 'com.android.support:support-core-ui:25.3.1'
+    compile 'com.android.support:support-compat:25.3.1'
+    compile 'com.android.support:support-core-utils:25.3.1'
+    compile 'com.android.support:support-v13:25.3.1'
+    compile 'com.android.support:palette-v7:25.3.1'
+    compile 'net.hockeyapp.android:HockeySDK:4.1.5'
     compile 'com.googlecode.mp4parser:isoparser:1.0.6'
-    compile 'com.onesignal:OneSignal:3.+@aar'
-    compile "com.google.android.gms:play-services-location:10.2.0"
-    compile files('libs/adad-client-3.1.jar')
-    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    compile 'com.larswerkman:HoloColorPicker:1.5'
+    compile 'com.stripe:stripe-android:2.0.2'
+    //
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'co.ronash.android:pushe-base:1.3.1'
+    compile 'com.onesignal:OneSignal:3.5.8'
+    compile 'com.google.android.gms:play-services-location:11.0.2'
+    compile 'com.android.support:customtabs:25.3.1'
+    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
+    compile 'com.github.QuadFlask:colorpicker:0.0.13'
+    compile 'com.nightonke:boommenu:2.1.0'
     compile 'com.mikepenz:iconics-core:2.8.2@aar'
     compile 'com.mikepenz:community-material-typeface:1.7.22.1@aar'
     compile 'com.mikepenz:entypo-typeface:1.0.0.2@aar'
@@ -36,7 +45,7 @@ dependencies {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '25.0.3'
 
     useLibrary 'org.apache.http.legacy'
     defaultConfig.applicationId = "org.telegram.engmariaamani.messenger"
@@ -47,6 +56,11 @@ android {
         ndkBuild {
             path "jni/Android.mk"
         }
+    }
+
+    dexOptions {
+        jumboMode = true
+        javaMaxHeapSize "4g"
     }
 
     compileOptions {
@@ -85,17 +99,12 @@ android {
             jniDebuggable false
             signingConfig signingConfigs.release
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-        foss {
-            debuggable false
-            jniDebuggable false
-            signingConfig signingConfigs.release
         }
     }
 
-    defaultConfig.versionCode = 7073 //2 GREATER than BuildVars.BUILD_VERSION
+    defaultConfig.versionCode = 7402 //2 GREATER than BuildVars.BUILD_VERSION
 
     sourceSets.debug {
         manifest.srcFile 'config/debug/AndroidManifest.xml'
@@ -103,10 +112,6 @@ android {
 
     sourceSets.release {
         manifest.srcFile 'config/release/AndroidManifest.xml'
-    }
-
-    sourceSets.foss {
-        manifest.srcFile 'config/foss/AndroidManifest.xml'
     }
 
     productFlavors {
@@ -122,34 +127,218 @@ android {
             }
             versionCode = 1
         }
-        fat {
-            versionCode = 3
-        }
-        bazaar {
+        x86_SDK23 {
+            ndk {
+                abiFilter "x86"
+            }
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            minSdkVersion 23
             versionCode = 4
         }
-        avval {
-            versionCode = 5
-            versionName "3.9.7997"
-            applicationId "org.telegram.engmariaamani.parsi"
+        armv7_SDK23 {
+            ndk {
+                abiFilter "armeabi-v7a"
+            }
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            minSdkVersion 23
+            versionCode = 3
         }
-        play {
+        fat {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            versionCode = 5
+        }
+        telegramity {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
             versionCode = 6
+            applicationId "org.telegram.engmariaamani.messenger"
+            manifestPlaceholders = [pusheToken                     : "PUSHE_780056599264",
+                                    onesignal_app_id               : "28a3e90b-11f2-40ce-b3b3-2103fd3f5bd7",
+                                    onesignal_google_project_number: "REMOTE"]
+        }
+        gramity1 {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            versionCode = 7
+            applicationId "org.gramity.messenger"
+            manifestPlaceholders = [pusheToken                     : "PUSHE_211396322764",
+                                    onesignal_app_id               : "a7ce3cd2-0fce-498a-aa82-de5cc10f6ff4",
+                                    onesignal_google_project_number: "REMOTE"]
+        }
+        gramity2 {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            versionCode = 8
+            applicationId "org.gramity.messenger.two"
+            manifestPlaceholders = [pusheToken                     : "PUSHE_249437059970",
+                                    onesignal_app_id               : "7c03c348-1332-4b27-90fa-5efa15a8730f",
+                                    onesignal_google_project_number: "REMOTE"]
+        }
+        gramity3 {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            versionCode = 9
+            applicationId "org.gramity.messenger.three"
+            manifestPlaceholders = [pusheToken                     : "PUSHE_717033430122",
+                                    onesignal_app_id               : "899c6680-23a8-4a3a-802c-4c6212cf576a",
+                                    onesignal_google_project_number: "REMOTE"]
+        }
+        parsi {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            versionCode = 10
+            applicationId "org.telegram.engmariaamani.parsi"
+            manifestPlaceholders = [pusheToken                     : "", //TODO: fill it with its token!
+                                    onesignal_app_id               : "911ffc2b-606b-4bee-b07f-0a4223a9195b",
+                                    onesignal_google_project_number: "REMOTE"]
+        }
+        modern {
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            versionCode = 11
+            applicationId "com.moderngram.messenger"
+            versionName "3.18.0_Modern523"
+            manifestPlaceholders = [pusheToken                     : "", //TODO: fill it with its token!
+                                    onesignal_app_id               : "911ffc2b-606b-4bee-b07f-0a4223a9195b",
+                                    onesignal_google_project_number: "REMOTE"]
         }
     }
 
     applicationVariants.all { variant ->
         def abiVersion = variant.productFlavors.get(0).versionCode
-        variant.mergedFlavor.versionCode = defaultConfig.versionCode * 10 + abiVersion;
+        variant.mergedFlavor.versionCode = defaultConfig.versionCode * 10 + abiVersion
+        if (variant.flavorName.equals("gramity1")) {
+            variant.mergeResources.doLast {
+                def dir = new File("${buildDir}/intermediates/res/merged/${variant.dirName}")
+                println("Resources dir " + dir)
+                dir.eachFileRecurse { file ->
+                    if (file.name.endsWith(".xml")) {
+                        String content = file.getText('UTF-8')
+                        if (content != null && (content.contains("Telegramity") || content.contains("تلگرامیتی") || content.contains("تیلیجرامیتی"))) {
+                            println("Replacing name in " + file)
+                            content = content.replace("Telegramity", "Gramity")
+                            content = content.replace("تلگرامیتی", "گرامیتی")
+                            content = content.replace("تیلیجرامیتی", "جرامیتی")
+                            file.write(content, 'UTF-8')
+                        }
+                    }
+                }
+            }
+        } else if (variant.flavorName.equals("gramity2")) {
+            variant.mergeResources.doLast {
+                def dir = new File("${buildDir}/intermediates/res/merged/${variant.dirName}")
+                println("Resources dir " + dir)
+                dir.eachFileRecurse { file ->
+                    if (file.name.endsWith(".xml")) {
+                        String content = file.getText('UTF-8')
+                        if (content != null && (content.contains("Telegramity") || content.contains("تلگرامیتی") || content.contains("تیلیجرامیتی"))) {
+                            println("Replacing name in " + file)
+                            content = content.replace("Telegramity", "Gramity 2")
+                            content = content.replace("تلگرامیتی", "گرامیتی ۲")
+                            content = content.replace("تیلیجرامیتی", "جرامیتی ۲")
+                            file.write(content, 'UTF-8')
+                        }
+                    }
+                }
+            }
+        } else if (variant.flavorName.equals("gramity3")) {
+            variant.mergeResources.doLast {
+                def dir = new File("${buildDir}/intermediates/res/merged/${variant.dirName}")
+                println("Resources dir " + dir)
+                dir.eachFileRecurse { file ->
+                    if (file.name.endsWith(".xml")) {
+                        String content = file.getText('UTF-8')
+                        if (content != null && (content.contains("Telegramity") || content.contains("تلگرامیتی") || content.contains("تیلیجرامیتی"))) {
+                            println("Replacing name in " + file)
+                            content = content.replace("Telegramity", "Gramity 3")
+                            content = content.replace("تلگرامیتی", "گرامیتی ۳")
+                            content = content.replace("تیلیجرامیتی", "جرامیتی ۳")
+                            file.write(content, 'UTF-8')
+                        }
+                    }
+                }
+            }
+        } else if (variant.flavorName.equals("parsi")) {
+            variant.mergeResources.doLast {
+                def dir = new File("${buildDir}/intermediates/res/merged/${variant.dirName}")
+                println("Resources dir " + dir)
+                dir.eachFileRecurse { file ->
+                    if (file.name.endsWith(".xml")) {
+                        String content = file.getText('UTF-8')
+                        if (content != null && (content.contains("Telegramity") || content.contains("تلگرامیتی") || content.contains("تیلیجرامیتی"))) {
+                            println("Replacing name in " + file)
+                            content = content.replace("Telegramity", "Telegram Parsi")
+                            content = content.replace("تلگرامیتی", "تلگرام پارسی")
+                            content = content.replace("تیلیجرامیتی", "تیلیجرام پارسی")
+                            file.write(content, 'UTF-8')
+                        }
+                    }
+                }
+            }
+
+        } else if (variant.flavorName.equals("modern")) {
+            variant.mergeResources.doLast {
+                def dir = new File("${buildDir}/intermediates/res/merged/${variant.dirName}")
+                println("Resources dir " + dir)
+                dir.eachFileRecurse { file ->
+                    if (file.name.endsWith(".xml")) {
+                        String content = file.getText('UTF-8')
+                        if (content != null && (content.contains("Telegramity") || content.contains("تلگرامیتی") || content.contains("تیلیجرامیتی"))) {
+                            println("Replacing name in " + file)
+                            content = content.replace("Telegramity", "Modern Gram")
+                            content = content.replace("تلگرامیتی", "مدرن گرام")
+                            content = content.replace("تیلیجرامیتی", "مدرن جرام")
+                            file.write(content, 'UTF-8')
+                        }
+                    }
+                }
+            }
+        }
     }
 
     defaultConfig {
-        manifestPlaceholders = [manifestApplicationId          : "${applicationId}",
-                                onesignal_app_id               : "28a3e90b-11f2-40ce-b3b3-2103fd3f5bd7",
-                                onesignal_google_project_number: "REMOTE"]
         minSdkVersion 14
         targetSdkVersion 25
-        versionName "3.13.15 - TGY-Build 1144"
+        versionName "3.18.20-GTY1498"
         multiDexEnabled true
 
         externalNativeBuild {
@@ -159,11 +348,6 @@ android {
             }
         }
     }
-
-    dexOptions {
-        jumboMode = true
-    }
-
 }
 
 apply plugin: 'com.google.gms.google-services'
