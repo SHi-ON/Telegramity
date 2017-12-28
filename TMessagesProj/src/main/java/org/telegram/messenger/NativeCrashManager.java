@@ -2,7 +2,6 @@ package org.telegram.messenger;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.util.Log;
 
 import net.hockeyapp.android.Constants;
 import net.hockeyapp.android.utils.SimpleMultipartEntity;
@@ -51,7 +50,7 @@ public class NativeCrashManager {
             write.close();
             return filename + ".faketrace";
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e(e);
         }
 
         return null;
@@ -88,7 +87,7 @@ public class NativeCrashManager {
 
                     urlConnection.connect();
 
-                    FileLog.e("tmessages", "response code = " + urlConnection.getResponseCode() + " message = " + urlConnection.getResponseMessage());
+                    FileLog.e("response code = " + urlConnection.getResponseCode() + " message = " + urlConnection.getResponseMessage());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

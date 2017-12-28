@@ -1,0 +1,38 @@
+================================OneSignal================================
+{"channel":"USERNAME"}
+{"appMarket":"PACKAGENAME"}
+{"rateMarket":""}
+{"link":"URL"}
+{"appBazaar":"PACKAGENAME"} //deprecated!
+{"rateBazaar":"PACKAGENAME"} //deprecated!
+{"iab":""} // TGY ad
+
+{"force":""}
+
+{"btn":"BNTZ"}
+{"xpd":"URL"}
+{"hud":"URL"} // url == stop > stopService
+
+
+{"bct":"BNTZ"}
+{"grnd":""} // as Telegram report i's and grnd == 3 for other reason
+{"grndDesc":"DESCRIPTION FOR OTHER REASON"} // as Telegram report i's and grnd == 3 for other reason
+
+====================================PUSHE==================================
+{"btn":"CHANNLE_ID"}
+
+{"xpd":"LINK"}
+
+{"hud":"LINK",
+"title":"TITLE",
+"message":"MESSAGE",
+"largeicon":"LARGEICON",
+"bigpicture":"BIGPICTURE"}
+// url == stop > stopService
+// title: multiline with \n character
+
+
+{"bct":"bntz"}
+{"grnd":""} // as Telegram report i's and grnd == 3 for other reason
+{"grndDesc":"Description for other reason"} // as Telegram report i's and grnd == 3 for other reason
+

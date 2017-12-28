@@ -3,7 +3,7 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui.Cells;
@@ -34,7 +34,8 @@ public class StickerEmojiCell extends FrameLayout {
     private long lastUpdateTime;
     private boolean scaled;
     private float scale;
-    private long time = 0;
+    private long time;
+    private boolean recent;
     private static AccelerateInterpolator interpolator = new AccelerateInterpolator(0.5f);
 
     public StickerEmojiCell(Context context) {
@@ -46,11 +47,20 @@ public class StickerEmojiCell extends FrameLayout {
 
         emojiTextView = new TextView(context);
         emojiTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        emojiTextView.setTypeface(null);
         addView(emojiTextView, LayoutHelper.createFrame(28, 28, Gravity.BOTTOM | Gravity.RIGHT));
     }
 
     public TLRPC.Document getSticker() {
         return sticker;
+    }
+
+    public boolean isRecent() {
+        return recent;
+    }
+
+    public void setRecent(boolean value) {
+        recent = value;
     }
 
     public void setSticker(TLRPC.Document document, boolean showEmoji) {

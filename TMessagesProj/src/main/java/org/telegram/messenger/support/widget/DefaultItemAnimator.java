@@ -20,8 +20,9 @@ import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
-import org.telegram.messenger.support.widget.RecyclerView.ViewHolder;
 import android.view.View;
+
+import org.telegram.messenger.support.widget.RecyclerView.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,20 +42,20 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
     private ArrayList<MoveInfo> mPendingMoves = new ArrayList<>();
     private ArrayList<ChangeInfo> mPendingChanges = new ArrayList<>();
 
-    private ArrayList<ArrayList<ViewHolder>> mAdditionsList = new ArrayList<>();
-    private ArrayList<ArrayList<MoveInfo>> mMovesList = new ArrayList<>();
-    private ArrayList<ArrayList<ChangeInfo>> mChangesList = new ArrayList<>();
+    ArrayList<ArrayList<ViewHolder>> mAdditionsList = new ArrayList<>();
+    ArrayList<ArrayList<MoveInfo>> mMovesList = new ArrayList<>();
+    ArrayList<ArrayList<ChangeInfo>> mChangesList = new ArrayList<>();
 
-    private ArrayList<ViewHolder> mAddAnimations = new ArrayList<>();
-    private ArrayList<ViewHolder> mMoveAnimations = new ArrayList<>();
-    private ArrayList<ViewHolder> mRemoveAnimations = new ArrayList<>();
-    private ArrayList<ViewHolder> mChangeAnimations = new ArrayList<>();
+    ArrayList<ViewHolder> mAddAnimations = new ArrayList<>();
+    ArrayList<ViewHolder> mMoveAnimations = new ArrayList<>();
+    ArrayList<ViewHolder> mRemoveAnimations = new ArrayList<>();
+    ArrayList<ViewHolder> mChangeAnimations = new ArrayList<>();
 
     private static class MoveInfo {
         public ViewHolder holder;
         public int fromX, fromY, toX, toY;
 
-        private MoveInfo(ViewHolder holder, int fromX, int fromY, int toX, int toY) {
+        MoveInfo(ViewHolder holder, int fromX, int fromY, int toX, int toY) {
             this.holder = holder;
             this.fromX = fromX;
             this.fromY = fromY;
@@ -71,7 +72,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
             this.newHolder = newHolder;
         }
 
-        private ChangeInfo(ViewHolder oldHolder, ViewHolder newHolder,
+        ChangeInfo(ViewHolder oldHolder, ViewHolder newHolder,
                 int fromX, int fromY, int toX, int toY) {
             this(oldHolder, newHolder);
             this.fromX = fromX;
@@ -162,6 +163,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
             mAdditionsList.add(additions);
             mPendingAdditions.clear();
             Runnable adder = new Runnable() {
+                @Override
                 public void run() {
                     for (ViewHolder holder : additions) {
                         animateAddImpl(holder);
@@ -220,7 +222,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    private void animateAddImpl(final ViewHolder holder) {
+    void animateAddImpl(final ViewHolder holder) {
         final View view = holder.itemView;
         final ViewPropertyAnimatorCompat animation = ViewCompat.animate(view);
         mAddAnimations.add(holder);
@@ -268,7 +270,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    private void animateMoveImpl(final ViewHolder holder, int fromX, int fromY, int toX, int toY) {
+    void animateMoveImpl(final ViewHolder holder, int fromX, int fromY, int toX, int toY) {
         final View view = holder.itemView;
         final int deltaX = toX - fromX;
         final int deltaY = toY - fromY;
@@ -336,7 +338,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    private void animateChangeImpl(final ChangeInfo changeInfo) {
+    void animateChangeImpl(final ChangeInfo changeInfo) {
         final ViewHolder holder = changeInfo.oldHolder;
         final View view = holder == null ? null : holder.itemView;
         final ViewHolder newHolder = changeInfo.newHolder;
@@ -535,7 +537,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
      * pending/running, call {@link #dispatchAnimationsFinished()} to notify any
      * listeners.
      */
-    private void dispatchFinishedWhenDone() {
+    void dispatchFinishedWhenDone() {
         if (!isRunning()) {
             dispatchAnimationsFinished();
         }
@@ -656,6 +658,9 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
     }
 
     private static class VpaListenerAdapter implements ViewPropertyAnimatorListener {
+        VpaListenerAdapter() {
+        }
+
         @Override
         public void onAnimationStart(View view) {}
 

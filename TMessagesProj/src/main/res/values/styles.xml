@@ -1,12 +1,11 @@
-<resources
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--THEMES-->
 
     <style name="Theme.TMessages.Start" parent="@android:style/Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
-        <item name="android:colorBackground">@android:color/white</item>
-        <item name="android:windowBackground">@android:color/white</item>
+        <!--<item name="android:colorBackground">@android:color/white</item>--> <!--TGY for Hockey support attachments-->
+        <!--<item name="android:windowBackground">@android:color/white</item>-->
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
@@ -19,9 +18,7 @@
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/ActionBar.Transparent.TMessages.Item</item>
         <item name="android:listViewStyle">@style/Theme.TMessages.ListView</item>
-        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector</item>
-        <item name="android:textViewStyle">@style/Theme.TMessages.TextView</item>
-        <item name="android:editTextStyle">@style/Theme.TMessages.EditText</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector_ex</item>
         <item name="android:actionBarItemBackground">@drawable/bar_selector_style</item>
     </style>
 
@@ -46,9 +43,18 @@
         <item name="android:windowActionBar">false</item>
     </style>
 
+    <style name="Theme.TMessages.TransparentWithAlerts" parent="Theme.TMessages">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+
     <!-- POPUP -->
 
-    <style name="PopupAnimation" parent="android:Animation" mce_bogus="1">
+    <style name="PopupAnimation" mce_bogus="1" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_in</item>
         <item name="android:windowExitAnimation">@anim/popup_out</item>
     </style>
@@ -71,24 +77,10 @@
     <!--LIST VIEW-->
 
     <style name="Theme.TMessages.ListView" parent="@android:style/Widget.ListView">
-        <item name="android:listSelector">@drawable/list_selector</item>
+        <item name="android:listSelector">@drawable/list_selector_ex</item>
         <item name="android:fadingEdge">none</item>
         <item name="android:dividerHeight">1dp</item>
         <item name="android:divider">@color/divider</item>
-    </style>
-
-    <!--TEXT VIEW-->
-
-    <style name="Theme.TMessages.TextView" parent="android:Widget.TextView">
-        <!--<item name="fontPath">fonts/rmedium.ttf</item>-->
-    </style>
-
-    <!--EDIT TEXT-->
-
-    <style name="Theme.TMessages.EditText" parent="android:Widget.EditText">
-        <item name="android:background">@drawable/edit_text</item>
-        <item name="android:textColor">#000000</item>
-        <!--<item name="fontPath">fonts/rmedium.ttf</item>-->
     </style>
 
     <!--ALERT DIALOG-->
@@ -106,6 +98,29 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowFullscreen">false</item>
+    </style>
+
+    <style name="mdtp_ActionButton">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:focusable">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/mdtp_material_button_height</item>
+    </style>
+    <style name="mdtp_ActionButton.Text" parent="@style/mdtp_ActionButton">
+        <item name="android:textSize">@dimen/mdtp_material_button_textsize</item>
+        <item name="android:textColor">@color/mdtp_button_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/mdtp_material_button_textpadding_horizontal</item>
+        <item name="android:paddingRight">@dimen/mdtp_material_button_textpadding_horizontal</item>
+        <item name="android:minWidth">@dimen/mdtp_material_button_minwidth</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="ColorDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowNoTitle">true</item>
+        ...
     </style>
 
 </resources>

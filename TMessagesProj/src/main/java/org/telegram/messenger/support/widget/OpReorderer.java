@@ -16,9 +16,10 @@
 
 package org.telegram.messenger.support.widget;
 
+import org.telegram.messenger.support.widget.AdapterHelper.UpdateOp;
+
 import java.util.List;
 
-import org.telegram.messenger.support.widget.AdapterHelper.UpdateOp;
 import static org.telegram.messenger.support.widget.AdapterHelper.UpdateOp.ADD;
 import static org.telegram.messenger.support.widget.AdapterHelper.UpdateOp.MOVE;
 import static org.telegram.messenger.support.widget.AdapterHelper.UpdateOp.REMOVE;

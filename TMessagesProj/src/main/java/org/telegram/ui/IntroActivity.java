@@ -3,7 +3,7 @@
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2016.
+ * Copyright Nikolai Kudashov, 2013-2017.
  */
 
 package org.telegram.ui;
@@ -12,7 +12,6 @@ import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.DataSetObserver;
 import android.graphics.Shader;
@@ -27,15 +26,19 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
+
+import org.gramity.ChooseLanguageActivity;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.ui.ActionBar.Theme;
 
 public class IntroActivity extends Activity {
 
@@ -49,16 +52,16 @@ public class IntroActivity extends Activity {
     private int[] icons;
     private int[] titles;
     private int[] messages;
+    private TextView startMessagingButton;
+    private Button changeLanguageButton;
+    private IntroAdapter introAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.Theme_TMessages);
         super.onCreate(savedInstanceState);
-        Theme.loadRecources(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        advancedPreferencesInit();
-        SharedPreferences premPreferences = getSharedPreferences("PremiumState", MODE_PRIVATE);
-        premPreferences.edit().putBoolean("isUserPremium", false).apply();
+
         if (AndroidUtilities.isTablet()) {
             setContentView(R.layout.intro_layout_tablet);
             View imageView = findViewById(R.id.background_image_intro);
@@ -128,20 +131,31 @@ public class IntroActivity extends Activity {
             };
         }
         viewPager = (ViewPager) findViewById(R.id.intro_view_pager);
-        TextView startMessagingButton = (TextView) findViewById(R.id.start_messaging_button);
+        startMessagingButton = (TextView) findViewById(R.id.start_messaging_button);
         startMessagingButton.setText(LocaleController.getString("StartMessaging", R.string.StartMessaging).toUpperCase());
-        startMessagingButton.setTypeface(AndroidUtilities.getTypeface());
+        startMessagingButton.setTypeface(AndroidUtilities.getTypeface(null));
         if (Build.VERSION.SDK_INT >= 21) {
             StateListAnimator animator = new StateListAnimator();
             animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(startMessagingButton, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
             animator.addState(new int[]{}, ObjectAnimator.ofFloat(startMessagingButton, "translationZ", AndroidUtilities.dp(4), AndroidUtilities.dp(2)).setDuration(200));
             startMessagingButton.setStateListAnimator(animator);
         }
+        changeLanguageButton = (Button) findViewById(R.id.change_language_button);
+        changeLanguageButton.setText(LocaleController.getCurrentLanguageName());
+        changeLanguageButton.setCompoundDrawables(new IconicsDrawable(this, MaterialDesignIconic.Icon.gmi_globe_alt).color(0xff2693d9).sizeDp(30).paddingDp(5), null, null, null);
+        changeLanguageButton.setTypeface(AndroidUtilities.getTypeface(null));
+        if (Build.VERSION.SDK_INT >= 21) {
+            StateListAnimator animator = new StateListAnimator();
+            animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(startMessagingButton, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
+            animator.addState(new int[]{}, ObjectAnimator.ofFloat(startMessagingButton, "translationZ", AndroidUtilities.dp(4), AndroidUtilities.dp(2)).setDuration(200));
+            changeLanguageButton.setStateListAnimator(animator);
+        }
         topImage1 = (ImageView) findViewById(R.id.icon_image1);
         topImage2 = (ImageView) findViewById(R.id.icon_image2);
         bottomPages = (ViewGroup) findViewById(R.id.bottom_pages);
         topImage2.setVisibility(View.GONE);
-        viewPager.setAdapter(new IntroAdapter());
+        introAdapter = new IntroAdapter();
+        viewPager.setAdapter(introAdapter);
         viewPager.setPageMargin(0);
         viewPager.setOffscreenPageLimit(1);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -241,6 +255,13 @@ public class IntroActivity extends Activity {
                 }
             });
         }
+        changeLanguageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IntroActivity.this, ChooseLanguageActivity.class);
+                startActivity(intent);
+            }
+        });
 
         justCreated = true;
     }
@@ -258,6 +279,11 @@ public class IntroActivity extends Activity {
             }
             justCreated = false;
         }
+
+        introAdapter.notifyDataSetChanged();
+        startMessagingButton.setText(LocaleController.getString("StartMessaging", R.string.StartMessaging).toUpperCase());
+        changeLanguageButton.setText(LocaleController.getCurrentLanguageName());
+
         AndroidUtilities.checkForCrashes(this);
         AndroidUtilities.checkForUpdates(this);
     }
@@ -283,9 +309,14 @@ public class IntroActivity extends Activity {
 
             headerTextView.setText(getString(titles[position]));
             messageTextView.setText(AndroidUtilities.replaceTags(getString(messages[position])));
-            headerTextView.setTypeface(AndroidUtilities.getTypeface());
-            messageTextView.setTypeface(AndroidUtilities.getTypeface());
+            headerTextView.setTypeface(AndroidUtilities.getTypeface(null));
+            messageTextView.setTypeface(AndroidUtilities.getTypeface(null));
             return view;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
