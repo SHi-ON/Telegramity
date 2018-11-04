@@ -70,8 +70,9 @@ import java.util.ArrayList;
     ProtectionElement protectionElement = manifest.protectionElement;
     if (protectionElement != null) {
       byte[] keyId = getProtectionElementKeyId(protectionElement.data);
+      // We assume pattern encryption does not apply.
       trackEncryptionBoxes = new TrackEncryptionBox[] {
-          new TrackEncryptionBox(true, INITIALIZATION_VECTOR_SIZE, keyId)};
+          new TrackEncryptionBox(true, null, INITIALIZATION_VECTOR_SIZE, keyId, 0, 0, null)};
     } else {
       trackEncryptionBoxes = null;
     }
@@ -95,7 +96,7 @@ import java.util.ArrayList;
   }
 
   @Override
-  public void prepare(Callback callback) {
+  public void prepare(Callback callback, long positionUs) {
     this.callback = callback;
     callback.onPrepared(this);
   }
@@ -139,6 +140,11 @@ import java.util.ArrayList;
   }
 
   @Override
+  public void discardBuffer(long positionUs) {
+    // Do nothing.
+  }
+
+  @Override
   public boolean continueLoading(long positionUs) {
     return sequenceableLoader.continueLoading(positionUs);
   }
@@ -155,14 +161,7 @@ import java.util.ArrayList;
 
   @Override
   public long getBufferedPositionUs() {
-    long bufferedPositionUs = Long.MAX_VALUE;
-    for (ChunkSampleStream<SsChunkSource> sampleStream : sampleStreams) {
-      long rendererBufferedPositionUs = sampleStream.getBufferedPositionUs();
-      if (rendererBufferedPositionUs != C.TIME_END_OF_SOURCE) {
-        bufferedPositionUs = Math.min(bufferedPositionUs, rendererBufferedPositionUs);
-      }
-    }
-    return bufferedPositionUs == Long.MAX_VALUE ? C.TIME_END_OF_SOURCE : bufferedPositionUs;
+    return sequenceableLoader.getBufferedPositionUs();
   }
 
   @Override
@@ -187,8 +186,8 @@ import java.util.ArrayList;
     int streamElementIndex = trackGroups.indexOf(selection.getTrackGroup());
     SsChunkSource chunkSource = chunkSourceFactory.createChunkSource(manifestLoaderErrorThrower,
         manifest, streamElementIndex, selection, trackEncryptionBoxes);
-    return new ChunkSampleStream<>(manifest.streamElements[streamElementIndex].type, chunkSource,
-        this, allocator, positionUs, minLoadableRetryCount, eventDispatcher);
+    return new ChunkSampleStream<>(manifest.streamElements[streamElementIndex].type, null,
+        chunkSource, this, allocator, positionUs, minLoadableRetryCount, eventDispatcher);
   }
 
   private static TrackGroupArray buildTrackGroups(SsManifest manifest) {

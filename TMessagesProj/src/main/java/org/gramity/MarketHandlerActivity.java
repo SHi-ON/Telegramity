@@ -4,17 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
-import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +24,6 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.BetterRatingView;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.LaunchActivity;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -53,7 +47,7 @@ public class MarketHandlerActivity extends Activity {
         text.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         text.setTypeface(AndroidUtilities.getTypeface(null));
         text.setGravity(Gravity.CENTER);
-        text.setText(LocaleController.formatString("RateAlert", R.string.RateAlert, LocaleController.getString("AppName", R.string.AppName)));
+        text.setText(LocaleController.formatString("RateAlert", R.string.RateAlert, LocaleController.getString("AppNameTgy", R.string.AppNameTgy)));
         ll.addView(text);
 
         final BetterRatingView bar = new BetterRatingView(this);

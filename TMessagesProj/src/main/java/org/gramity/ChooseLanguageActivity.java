@@ -2,7 +2,7 @@ package org.gramity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
@@ -24,6 +25,8 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.IntroActivity;
+import org.telegram.ui.LaunchActivity;
 
 public class ChooseLanguageActivity extends Activity {
 
@@ -63,15 +66,18 @@ public class ChooseLanguageActivity extends Activity {
             @Override
             public void onItemClick(View view, int position) {
                 LocaleController.LocaleInfo localeInfo = null;
-                if (position >= 0 && position < LocaleController.getInstance().sortedLanguages.size()) {
-                    localeInfo = LocaleController.getInstance().sortedLanguages.get(position);
+                if (position >= 0 && position < LocaleController.getInstance().languages.size()) {
+                    localeInfo = LocaleController.getInstance().languages.get(position);
                 }
                 if (localeInfo != null) {
-                    LocaleController.getInstance().applyLanguage(localeInfo, true);
-//                    parentLayout.rebuildAllFragmentViews(false);
+                    LocaleController.getInstance().applyLanguage(localeInfo, true, false, false, true);
                 }
-//                finishFragment();
+                Intent intent2 = new Intent(ChooseLanguageActivity.this, LaunchActivity.class);
+                intent2.putExtra("fromIntro", true);
+                startActivity(intent2);
                 finish();
+//                Toast.makeText(ChooseLanguageActivity.this, LocaleController.getString("Loading", R.string.Loading),Toast.LENGTH_LONG).show();
+//                GramityUtilities.restartTelegramity();
             }
         });
 
@@ -108,10 +114,10 @@ public class ChooseLanguageActivity extends Activity {
 
         @Override
         public int getItemCount() {
-            if (LocaleController.getInstance().sortedLanguages == null) {
+            if (LocaleController.getInstance().languages == null) {
                 return 0;
             }
-            return LocaleController.getInstance().sortedLanguages.size();
+            return LocaleController.getInstance().languages.size();
         }
 
         @Override
@@ -123,7 +129,7 @@ public class ChooseLanguageActivity extends Activity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
             LocaleController.LocaleInfo localeInfo;
-            localeInfo = LocaleController.getInstance().sortedLanguages.get(position);
+            localeInfo = LocaleController.getInstance().languages.get(position);
 //            boolean last = position == LocaleController.getInstance().sortedLanguages.size() - 1;
             textSettingsCell.setText(localeInfo.name, false);
         }

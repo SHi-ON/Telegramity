@@ -41,7 +41,7 @@ import java.util.ArrayList;
 public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
     private Context mContext;
-    private ArrayList<Item> items = new ArrayList<>(18);
+    private ArrayList<Item> items = new ArrayList<>(21);
 
     public DrawerLayoutAdapter(Context context) {
         mContext = context;
@@ -106,9 +106,9 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             return 0;
         } else if (i == 1) {
             return 1;
-        } else if (i == 3 || i == 7 || i == 14) { //dividers
+        } else if (i == 3 || i == 7 || i == 17) { //dividers TODO: change it if update add new row!
             return 2;
-        } else if (i == 15 || i == 16) {
+        } else if (i == 18 || i == 19) { // official channel and comment us TODO: change it if update add new row!
             if (ApplicationLoader.applicationContext.getPackageName().equals(GramityConstants.TGPPKG)) {
                 return 1;
             } else {
@@ -135,24 +135,25 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         }
         items.add(null); // profile 0
         items.add(null); // padding 1
-        items.add(new Item(2, LocaleController.getString("ChangeUserAccount", R.string.ChangeUserAccount), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user_circle_o).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffd1df47)));
-        items.add(null); // divider 3
+        items.add(new Item(2, LocaleController.getString("ChangeUserAccount", R.string.ChangeUserAccount), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user_circle2).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffd1df47)));
+        items.add(null); // DIVIDER 3
         items.add(new Item(4, LocaleController.getString("NewGroup", R.string.NewGroup), new IconicsDrawable(mContext, FontAwesome.Icon.faw_users).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff0c85e6)));
         items.add(new Item(5, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), new IconicsDrawable(mContext, FontAwesome.Icon.faw_lock).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffffa01f)));
         items.add(new Item(6, LocaleController.getString("NewChannel", R.string.NewChannel), new IconicsDrawable(mContext, FontAwesome.Icon.faw_bullhorn).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff832194)));
-        items.add(null); // divider 7
-        items.add(new Item(8, LocaleController.getString("DrawerIDRevealer", R.string.DrawerIDRevealer), new IconicsDrawable(mContext, FontAwesome.Icon.faw_crosshairs).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff673ab7)));
-        items.add(new Item(9, LocaleController.getString("Contacts", R.string.Contacts), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffe0165b)));
-        if (MessagesController.getInstance().callsEnabled) {
-            items.add(new Item(10, LocaleController.getString("Calls", R.string.Calls), new IconicsDrawable(mContext, FontAwesome.Icon.faw_phone).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff08ff49)));
-        }
-        items.add(new Item(11, LocaleController.getString("InviteFriends", R.string.InviteFriends), isMonoColored ? drawbleTgyMono : drawbleTgyColorful));
-        items.add(new Item(12, LocaleController.getString("Settings", R.string.Settings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_cog).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff845c4e)));
-        items.add(new Item(13, LocaleController.getString("AdvancedSettings", R.string.AdvancedSettings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_wrench).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff3f51b5)));
-        items.add(null); // divider 14
-        items.add(new Item(15, LocaleController.getString("DrawerOfficialChannel", R.string.DrawerOfficialChannel), new IconicsDrawable(mContext, MaterialDesignIconic.Icon.gmi_tv_list).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffff6433)));
-        items.add(new Item(16, LocaleController.getString("DrawerComment", R.string.DrawerComment), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_comment_check).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff00a797)));
-        items.add(new Item(17, LocaleController.getString("TelegramFaq", R.string.TelegramFaq), new IconicsDrawable(mContext, FontAwesome.Icon.faw_question_circle).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff607d8b)));
+        items.add(null); // DIVIDER 7
+        items.add(new Item(8, LocaleController.getString("DrawerOnlineContacts", R.string.DrawerOnlineContacts), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_account_box).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff8efa00)));
+        items.add(new Item(9, LocaleController.getString("DrawerMutualContacts", R.string.DrawerMutualContacts), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_account_switch).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffff9300)));
+        items.add(new Item(10, LocaleController.getString("DrawerIDRevealer", R.string.DrawerIDRevealer), new IconicsDrawable(mContext, FontAwesome.Icon.faw_crosshairs).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff673ab7)));
+        items.add(new Item(11, LocaleController.getString("Contacts", R.string.Contacts), new IconicsDrawable(mContext, FontAwesome.Icon.faw_user).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffe0165b)));
+        items.add(new Item(12, LocaleController.getString("SavedMessages", R.string.SavedMessages), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_bookmark).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xfffffc79)));
+        items.add(new Item(13, LocaleController.getString("Calls", R.string.Calls), new IconicsDrawable(mContext, FontAwesome.Icon.faw_phone).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff08ff49)));
+        items.add(new Item(14, LocaleController.getString("InviteFriends", R.string.InviteFriends), isMonoColored ? drawbleTgyMono : drawbleTgyColorful));
+        items.add(new Item(15, LocaleController.getString("Settings", R.string.Settings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_cog).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff845c4e)));
+        items.add(new Item(16, LocaleController.getString("AdvancedSettings", R.string.AdvancedSettings), new IconicsDrawable(mContext, FontAwesome.Icon.faw_wrench).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff3f51b5)));
+        items.add(null); // DIVIDER 17
+        items.add(new Item(18, LocaleController.getString("DrawerOfficialChannel", R.string.DrawerOfficialChannel), new IconicsDrawable(mContext, MaterialDesignIconic.Icon.gmi_tv_list).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xffff6433)));
+        items.add(new Item(19, LocaleController.getString("DrawerComment", R.string.DrawerComment), new IconicsDrawable(mContext, CommunityMaterial.Icon.cmd_comment_check).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff00a797)));
+        items.add(new Item(20, LocaleController.getString("TelegramFaq", R.string.TelegramFaq), new IconicsDrawable(mContext, FontAwesome.Icon.faw_question_circle).sizeDp(itemIconSize).color(isMonoColored ? Theme.getColor(Theme.key_chats_menuItemIcon) : 0xff607d8b)));
     }
 
     public int getId(int position) {

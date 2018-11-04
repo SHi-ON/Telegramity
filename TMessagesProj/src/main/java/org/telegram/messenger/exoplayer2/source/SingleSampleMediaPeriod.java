@@ -29,10 +29,12 @@ import org.telegram.messenger.exoplayer2.upstream.DataSpec;
 import org.telegram.messenger.exoplayer2.upstream.Loader;
 import org.telegram.messenger.exoplayer2.upstream.Loader.Loadable;
 import org.telegram.messenger.exoplayer2.util.Assertions;
+import org.telegram.messenger.exoplayer2.util.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 /**
  * A {@link MediaPeriod} with a single sample.
@@ -80,7 +82,7 @@ import java.util.Arrays;
   }
 
   @Override
-  public void prepare(Callback callback) {
+  public void prepare(Callback callback, long positionUs) {
     callback.onPrepared(this);
   }
 
@@ -110,6 +112,11 @@ import java.util.Arrays;
       }
     }
     return positionUs;
+  }
+
+  @Override
+  public void discardBuffer(long positionUs) {
+    // Do nothing.
   }
 
   @Override
@@ -206,11 +213,12 @@ import java.util.Arrays;
     }
 
     @Override
-    public int readData(FormatHolder formatHolder, DecoderInputBuffer buffer) {
+    public int readData(FormatHolder formatHolder, DecoderInputBuffer buffer,
+        boolean requireFormat) {
       if (streamState == STREAM_STATE_END_OF_STREAM) {
         buffer.addFlag(C.BUFFER_FLAG_END_OF_STREAM);
         return C.RESULT_BUFFER_READ;
-      } else if (streamState == STREAM_STATE_SEND_FORMAT) {
+      } else if (requireFormat || streamState == STREAM_STATE_SEND_FORMAT) {
         formatHolder.format = format;
         streamState = STREAM_STATE_SEND_SAMPLE;
         return C.RESULT_FORMAT_READ;
@@ -230,8 +238,10 @@ import java.util.Arrays;
     }
 
     @Override
-    public void skipToKeyframeBefore(long timeUs) {
-      // Do nothing.
+    public void skipData(long positionUs) {
+      if (positionUs > 0) {
+        streamState = STREAM_STATE_END_OF_STREAM;
+      }
     }
 
   }
@@ -278,7 +288,7 @@ import java.util.Arrays;
           result = dataSource.read(sampleData, sampleSize, sampleData.length - sampleSize);
         }
       } finally {
-        dataSource.close();
+        Util.closeQuietly(dataSource);
       }
     }
 

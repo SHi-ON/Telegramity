@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Vibrator;
+import android.support.v4.content.FileProvider;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -22,7 +24,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import org.gramity.GramityConstants;
 import org.gramity.GramityUtilities;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -51,6 +53,7 @@ import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.ThemeCell;
+import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ThemeEditorView;
@@ -126,7 +129,7 @@ public class ThemeActivity extends BaseFragment {
                     if (getParentActivity() == null) {
                         return;
                     }
-                    final EditText editText = new EditText(getParentActivity());
+                    final EditTextBoldCursor editText = new EditTextBoldCursor(getParentActivity());
                     editText.setBackgroundDrawable(Theme.createEditTextDrawable(getParentActivity(), true));
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
@@ -159,7 +162,9 @@ public class ThemeActivity extends BaseFragment {
                     editText.setGravity(Gravity.LEFT | Gravity.TOP);
                     editText.setSingleLine(true);
                     editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                    AndroidUtilities.clearCursorDrawable(editText);
+                    editText.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                    editText.setCursorSize(AndroidUtilities.dp(20));
+                    editText.setCursorWidth(1.5f);
                     editText.setPadding(0, AndroidUtilities.dp(4), 0, 0);
                     linearLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36, Gravity.TOP | Gravity.LEFT, 24, 6, 24, 0));
                     editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -219,7 +224,7 @@ public class ThemeActivity extends BaseFragment {
                         Theme.ThemeInfo themeInfo = Theme.themes.get(position);
                         Theme.applyTheme(themeInfo);
                         if (parentLayout != null) {
-                            parentLayout.rebuildAllFragmentViews(false);
+                            parentLayout.rebuildAllFragmentViews(false, false);
                         }
                         finishFragment();
                     }
@@ -322,7 +327,16 @@ public class ThemeActivity extends BaseFragment {
                                             }
                                             Intent intent = new Intent(Intent.ACTION_SEND);
                                             intent.setType("text/xml");
-                                            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(finalFile));
+                                            if (Build.VERSION.SDK_INT >= 24) {
+                                                try {
+                                                    intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(getParentActivity(), BuildConfig.APPLICATION_ID + ".provider", finalFile));
+                                                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                } catch (Exception ignore) {
+                                                    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(finalFile));
+                                                }
+                                            } else {
+                                                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(finalFile));
+                                            }
                                             startActivityForResult(Intent.createChooser(intent, LocaleController.getString("ShareFile", R.string.ShareFile)), 500);
                                         } catch (Exception e) {
                                             FileLog.e(e);
@@ -330,8 +344,7 @@ public class ThemeActivity extends BaseFragment {
                                     } else if (which == 1) {
                                         if (parentLayout != null) {
                                             Theme.applyTheme(themeInfo);
-                                            parentLayout.rebuildAllFragmentViews(true);
-                                            parentLayout.showLastFragment();
+                                            parentLayout.rebuildAllFragmentViews(true, true);
                                             new ThemeEditorView().show(getParentActivity(), themeInfo.name);
                                         }
                                     } else {
@@ -340,13 +353,12 @@ public class ThemeActivity extends BaseFragment {
                                         }
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                                         builder.setMessage(LocaleController.getString("DeleteThemeAlert", R.string.DeleteThemeAlert));
-                                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                        builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                                         builder.setPositiveButton(LocaleController.getString("Delete", R.string.Delete), new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 if (Theme.deleteTheme(themeInfo)) {
-                                                    parentLayout.rebuildAllFragmentViews(true);
-                                                    parentLayout.showLastFragment();
+                                                    parentLayout.rebuildAllFragmentViews(true, true);
                                                 }
                                                 if (listAdapter != null) {
                                                     listAdapter.notifyDataSetChanged();
@@ -385,7 +397,7 @@ public class ThemeActivity extends BaseFragment {
                 case 1:
                     TextCell textCell = (TextCell) holder.itemView;
                     if (position == themesGalleryRow) {
-                        textCell.setTextAndIcon(LocaleController.getString("ThemeGallery", R.string.ThemeGallery), new IconicsDrawable(mContext, Ionicons.Icon.ion_images).sizeDp(24).color(0xffec3d78));
+                        textCell.setTextAndIcon(LocaleController.getString("ThemeGallery", R.string.ThemeStudioGallery), new IconicsDrawable(mContext, Ionicons.Icon.ion_images).sizeDp(24).color(0xffec3d78));
                     } else if (position == createNewThemeRow) {
                         textCell.setTextAndIcon(LocaleController.getString("CreateNewTheme", R.string.CreateNewTheme), new IconicsDrawable(mContext, Ionicons.Icon.ion_android_color_palette).sizeDp(24).color(0xfff6dd00));
                     }
@@ -393,7 +405,7 @@ public class ThemeActivity extends BaseFragment {
                 case 2:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
                     if (position == themesGalleryDescriptionRow) {
-                        textInfoPrivacyCell.setText(LocaleController.getString("ThemeGalleryDescription", R.string.ThemeGalleryDescription));
+                        textInfoPrivacyCell.setText(LocaleController.getString("ThemeGalleryDescription", R.string.ThemeStudioGalleryDescription));
                     } else if (position == createNewThemeRowDescription) {
                         textInfoPrivacyCell.setText(LocaleController.getString("CreateNewThemeInfo", R.string.CreateNewThemeInfo));
                     }

@@ -152,7 +152,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
         if (currentType == StickersQuery.TYPE_IMAGE) {
-            actionBar.setTitle(LocaleController.getString("Stickers", R.string.Stickers));
+            actionBar.setTitle(LocaleController.getString("StickersName", R.string.StickersName));
         } else {
             actionBar.setTitle(LocaleController.getString("Masks", R.string.Masks));
         }
@@ -409,7 +409,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
             View view = null;
             switch (viewType) {
                 case 0:
-                    view = new StickerSetCell(mContext);
+                    view = new StickerSetCell(mContext, 1);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     ((StickerSetCell) view).setOnOptionsClick(new View.OnClickListener() {
                         @Override

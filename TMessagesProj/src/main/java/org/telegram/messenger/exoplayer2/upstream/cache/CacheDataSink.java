@@ -33,6 +33,9 @@ import java.io.OutputStream;
  */
 public final class CacheDataSink implements DataSink {
 
+  /** Default buffer size. */
+  public static final int DEFAULT_BUFFER_SIZE = 20480;
+
   private final Cache cache;
   private final long maxCacheFileSize;
   private final int bufferSize;
@@ -57,13 +60,15 @@ public final class CacheDataSink implements DataSink {
   }
 
   /**
+   * Constructs a CacheDataSink using the {@link #DEFAULT_BUFFER_SIZE}.
+   *
    * @param cache The cache into which data should be written.
    * @param maxCacheFileSize The maximum size of a cache file, in bytes. If the sink is opened for
    *    a {@link DataSpec} whose size exceeds this value, then the data will be fragmented into
    *    multiple cache files.
    */
   public CacheDataSink(Cache cache, long maxCacheFileSize) {
-    this(cache, maxCacheFileSize, 0);
+    this(cache, maxCacheFileSize, DEFAULT_BUFFER_SIZE);
   }
 
   /**
@@ -82,10 +87,12 @@ public final class CacheDataSink implements DataSink {
 
   @Override
   public void open(DataSpec dataSpec) throws CacheDataSinkException {
-    this.dataSpec = dataSpec;
-    if (dataSpec.length == C.LENGTH_UNSET) {
+    if (dataSpec.length == C.LENGTH_UNSET
+        && !dataSpec.isFlagSet(DataSpec.FLAG_ALLOW_CACHING_UNKNOWN_LENGTH)) {
+      this.dataSpec = null;
       return;
     }
+    this.dataSpec = dataSpec;
     dataSpecBytesWritten = 0;
     try {
       openNextOutputStream();
@@ -96,7 +103,7 @@ public final class CacheDataSink implements DataSink {
 
   @Override
   public void write(byte[] buffer, int offset, int length) throws CacheDataSinkException {
-    if (dataSpec.length == C.LENGTH_UNSET) {
+    if (dataSpec == null) {
       return;
     }
     try {
@@ -120,7 +127,7 @@ public final class CacheDataSink implements DataSink {
 
   @Override
   public void close() throws CacheDataSinkException {
-    if (dataSpec == null || dataSpec.length == C.LENGTH_UNSET) {
+    if (dataSpec == null) {
       return;
     }
     try {
@@ -131,8 +138,10 @@ public final class CacheDataSink implements DataSink {
   }
 
   private void openNextOutputStream() throws IOException {
+    long maxLength = dataSpec.length == C.LENGTH_UNSET ? maxCacheFileSize
+        : Math.min(dataSpec.length - dataSpecBytesWritten, maxCacheFileSize);
     file = cache.startFile(dataSpec.key, dataSpec.absoluteStreamPosition + dataSpecBytesWritten,
-        Math.min(dataSpec.length - dataSpecBytesWritten, maxCacheFileSize));
+        maxLength);
     underlyingFileOutputStream = new FileOutputStream(file);
     if (bufferSize > 0) {
       if (bufferedOutputStream == null) {

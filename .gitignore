@@ -12,3 +12,8 @@ TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
 /TMessagesProj/.externalNativeBuild/
 .DS_Store
 
+TMessagesProj/src/main/assets/fonts/IRANSansDNBold.ttf
+TMessagesProj/src/main/assets/fonts/IRANSansDNLight.ttf
+TMessagesProj/src/main/assets/fonts/IRANSansDNRegular.ttf
+
+

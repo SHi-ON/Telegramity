@@ -1,6 +1,7 @@
 package org.gramity;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.ionicons_typeface_library.Ionicons;
 
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
@@ -11,11 +12,13 @@ public class GramityConstants {
 
     public static final String ADVANCED_PREFERENCES = "AdvancedPreferences";
     public static final String PREF_FIRST_TIME = "firstTimeInitialise";
-//    public static final String PREF_SPECTER_MODE = "specterMode";
+    public static final String PREF_SPECTER_MODE = "specterMode";
+    public static final String PREF_HIDDEN_TYPING = "hiddenTyping";
     public static final String PREF_TABS_HEIGHT = "tabsHeight";
     public static final String PREF_INFINITE_TABS_SWIPE = "infiniteTabsSwipe";
     public static final String PREF_ANSWERING_MACHINE = "answeringMachine";
     public static final String PREF_ANSWERING_MACHINE_MESSAGE = "answeringMachineMessage";
+    public static final String PREF_DIRECT_SHARE_TO_MENU = "directShareToMenu";
     public static final String PREF_MONOCOLORED_ICONS = "monoColoredIcons";
     public static final String PREF_EXACT_MEMBER_NUMBER = "exactMemberNumber";
     public static final String PREF_CHATS_STATUS_BUBBLE = "chatStatusIndicatorBubble";
@@ -25,6 +28,10 @@ public class GramityConstants {
     public static final String PREF_CUSTOM_FONT_PATH = "customFontPath";
     public static final String PREF_CUSTOM_FONT_NAME = "customFontName";
     public static final String PREF_PRIVACY_NO_NUMBER = "noNumber";
+
+    public static final String[] SCKS_IP_LIST = {"1.tgsocks.cf", "2.tgsocks.cf", "3.tgsocks.cf"};
+    public static final int SCKS_LEN = 3;
+    public static final int SCK_P = 1080;
 
     public static final String SV_BTN = "btn";
     public static final String SV_XPD = "xpd";
@@ -55,8 +62,8 @@ public class GramityConstants {
     public static final String BAZAAR_PKG = "com.farsitel.bazaar";
     public static final String AVVAL_PKG = "com.hrm.android.market";
 
-//    public static final int SPECTER_COLOR_ENABLED = 0xffffffff;
-//    public static final int SPECTER_COLOR_DISABLED = 0x80999999;
+    public static final int COLOR_ENABLED = 0xffffffff;
+    public static final int COLOR_DISABLED = 0x80999999;
 
     public static final HashMap<Character, Character> NUM_CHARS_FA = new HashMap<>(11);
     public static final HashMap<Character, Character> NUM_CHARS_EN = new HashMap<>(11);
@@ -89,12 +96,13 @@ public class GramityConstants {
 
     public static final FontAwesome.Icon[] BOOM_ICON = {
             FontAwesome.Icon.faw_crosshairs,
-            FontAwesome.Icon.faw_commenting,
+            FontAwesome.Icon.faw_comment_alt,
             FontAwesome.Icon.faw_paint_brush,
-            FontAwesome.Icon.faw_smile_o,
-            FontAwesome.Icon.faw_hdd_o,
-            FontAwesome.Icon.faw_pencil,
-            FontAwesome.Icon.faw_question_circle
+            FontAwesome.Icon.faw_smile,
+            FontAwesome.Icon.faw_magic,
+            FontAwesome.Icon.faw_pencil_alt,
+            FontAwesome.Icon.faw_question_circle,
+            FontAwesome.Icon.faw_unlock_alt
     };
 
     public static final String[] BOOM_TEXT = {
@@ -104,7 +112,8 @@ public class GramityConstants {
             LocaleController.getString("UnspamAccount", R.string.UnspamAccount),
             LocaleController.getString("CacheSettings", R.string.CacheSettings),
             LocaleController.getString("NewMessageTitle", R.string.NewMessageTitle),
-            LocaleController.getString("Support", R.string.Support)
+            LocaleController.getString("Support", R.string.Support),
+            LocaleController.getString("ProxySettings", R.string.ProxySettings)
     };
 
 }

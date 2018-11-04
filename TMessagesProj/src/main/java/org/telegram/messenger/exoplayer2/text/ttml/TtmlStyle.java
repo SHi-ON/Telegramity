@@ -58,16 +58,11 @@ import java.lang.annotation.RetentionPolicy;
   private boolean hasFontColor;
   private int backgroundColor;
   private boolean hasBackgroundColor;
-  @OptionalBoolean
-  private int linethrough;
-  @OptionalBoolean
-  private int underline;
-  @OptionalBoolean
-  private int bold;
-  @OptionalBoolean
-  private int italic;
-  @FontSizeUnit
-  private int fontSizeUnit;
+  @OptionalBoolean private int linethrough;
+  @OptionalBoolean private int underline;
+  @OptionalBoolean private int bold;
+  @OptionalBoolean private int italic;
+  @FontSizeUnit private int fontSizeUnit;
   private float fontSize;
   private String id;
   private TtmlStyle inheritableStyle;
@@ -87,8 +82,7 @@ import java.lang.annotation.RetentionPolicy;
    * @return {@link #UNSPECIFIED}, {@link #STYLE_NORMAL}, {@link #STYLE_BOLD}, {@link #STYLE_BOLD}
    *     or {@link #STYLE_BOLD_ITALIC}.
    */
-  @StyleFlags
-  public int getStyle() {
+  @StyleFlags public int getStyle() {
     if (bold == UNSPECIFIED && italic == UNSPECIFIED) {
       return UNSPECIFIED;
     }
@@ -257,8 +251,7 @@ import java.lang.annotation.RetentionPolicy;
     return this;
   }
 
-  @FontSizeUnit
-  public int getFontSizeUnit() {
+  @FontSizeUnit public int getFontSizeUnit() {
     return fontSizeUnit;
   }
 

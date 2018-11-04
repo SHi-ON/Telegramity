@@ -10,6 +10,8 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -41,11 +43,8 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
-import org.telegram.messenger.query.StickersQuery;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.ActionBarMenu;
-import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
@@ -93,10 +92,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
     private ImageView paintButton;
 
-    private ActionBar actionBar;
-    private ActionBarMenuItem undoItem;
-    private ActionBarMenuItem doneItem;
-
     private EntityView currentEntityView;
 
     private boolean editingText;
@@ -122,7 +117,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
     private ArrayList<PhotoFace> faces;
 
     private final static int gallery_menu_done = 1;
-    private final static int gallery_menu_undo = 2;
 
     public PhotoPaintView(Context context, Bitmap bitmap, int rotation) {
         super(context);
@@ -135,7 +129,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         undoStore.setDelegate(new UndoStore.UndoStoreDelegate() {
             @Override
             public void historyChanged() {
-                setMenuItemEnabled(undoStore.canUndo());
+                colorPicker.setUndoEnabled(undoStore.canUndo());
             }
         });
 
@@ -149,7 +143,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
             @Override
             public void onBeganDrawing() {
-                setColorPickerVisibilityFade(false);
                 if (currentEntityView != null) {
                     selectEntity(null);
                 }
@@ -157,10 +150,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
             @Override
             public void onFinishedDrawing(boolean moved) {
-                if (moved) {
-                    setColorPickerVisibilityFade(true);
-                }
-                setMenuItemEnabled(undoStore.canUndo());
+                colorPicker.setUndoEnabled(undoStore.canUndo());
             }
 
             @Override
@@ -259,6 +249,11 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
                     showBrushSettings();
                 }
             }
+
+            @Override
+            public void onUndoPressed() {
+                undoStore.undo();
+            }
         });
 
         toolsView = new FrameLayout(context);
@@ -285,27 +280,27 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         doneTextView.setTypeface(AndroidUtilities.getTypeface(null));
         toolsView.addView(doneTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.RIGHT));
 
-        ImageView stickerButton = new ImageView(context);
-        stickerButton.setScaleType(ImageView.ScaleType.CENTER);
-        stickerButton.setImageResource(R.drawable.photo_sticker);
-        stickerButton.setBackgroundDrawable(Theme.createSelectorDrawable(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR));
-        toolsView.addView(stickerButton, LayoutHelper.createFrame(54, LayoutHelper.MATCH_PARENT, Gravity.CENTER, 0, 0, 56, 0));
-        stickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openStickersView();
-            }
-        });
-
         paintButton = new ImageView(context);
         paintButton.setScaleType(ImageView.ScaleType.CENTER);
         paintButton.setImageResource(R.drawable.photo_paint);
         paintButton.setBackgroundDrawable(Theme.createSelectorDrawable(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR));
-        toolsView.addView(paintButton, LayoutHelper.createFrame(54, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
+        toolsView.addView(paintButton, LayoutHelper.createFrame(54, LayoutHelper.MATCH_PARENT, Gravity.CENTER, 0, 0, 56, 0));
         paintButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectEntity(null);
+            }
+        });
+
+        ImageView stickerButton = new ImageView(context);
+        stickerButton.setScaleType(ImageView.ScaleType.CENTER);
+        stickerButton.setImageResource(R.drawable.photo_sticker);
+        stickerButton.setBackgroundDrawable(Theme.createSelectorDrawable(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR));
+        toolsView.addView(stickerButton, LayoutHelper.createFrame(54, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
+        stickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openStickersView();
             }
         });
 
@@ -321,57 +316,22 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
             }
         });
 
-        actionBar = new ActionBar(context);
-        actionBar.setBackgroundColor(Theme.ACTION_BAR_PHOTO_VIEWER_COLOR);
-        actionBar.setOccupyStatusBar(Build.VERSION.SDK_INT >= 21);
-        actionBar.setTitleColor(0xffffffff);
-        actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR, false);
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setTitle(LocaleController.getString("PaintDraw", R.string.PaintDraw));
-        addView(actionBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
-            @Override
-            public void onItemClick(int id) {
-                if (id == -1) {
-                    cancelTextView.callOnClick();
-                } else if (id == gallery_menu_done) {
-                    closeTextEnter(true);
-                } else if (id == gallery_menu_undo) {
-                    undoStore.undo();
-                }
-            }
-
-            @Override
-            public boolean canOpenMenu() {
-                return false;
-            }
-        });
-
-        ActionBarMenu menu = actionBar.createMenu();
-        undoItem = menu.addItem(gallery_menu_undo, R.drawable.photo_undo, AndroidUtilities.dp(56));
-        setMenuItemEnabled(false);
-        doneItem = menu.addItemWithWidth(gallery_menu_done, R.drawable.ic_done, AndroidUtilities.dp(56));
-        doneItem.setVisibility(GONE);
-
+        colorPicker.setUndoEnabled(false);
         setCurrentSwatch(colorPicker.getSwatch(), false);
         updateSettingsButton();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getY() > actionBar.getHeight()) {
-            if (currentEntityView != null) {
-                if (editingText) {
-                    closeTextEnter(true);
-                }
-                else {
-                    selectEntity(null);
-                }
+        if (currentEntityView != null) {
+            if (editingText) {
+                closeTextEnter(true);
             }
-            return true;
+            else {
+                selectEntity(null);
+            }
         }
-        return false;
+        return true;
     }
 
     private Size getPaintingSize() {
@@ -405,8 +365,10 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
                 resource = R.drawable.photo_outline;
             }
             paintButton.setImageResource(R.drawable.photo_paint);
+            paintButton.setColorFilter(null);
         } else {
-            paintButton.setImageResource(R.drawable.photo_paint2);
+            paintButton.setColorFilter(new PorterDuffColorFilter(0xff51bdf3, PorterDuff.Mode.MULTIPLY));
+            paintButton.setImageResource(R.drawable.photo_paint);
         }
 
         colorPicker.setSettingsButtonImage(resource);
@@ -433,17 +395,8 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         });
     }
 
-    private void setMenuItemEnabled(boolean enabled) {
-        undoItem.setAlpha(enabled ? 1.0f : 0.3f);
-        undoItem.setEnabled(enabled);
-    }
-
     public FrameLayout getToolsView() {
         return toolsView;
-    }
-
-    public ActionBar getActionBar() {
-        return actionBar;
     }
 
     public TextView getDoneTextView() {
@@ -514,7 +467,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
             builder.setMessage(LocaleController.getString("DiscardChanges", R.string.DiscardChanges));
-            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+            builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -538,35 +491,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
         if (currentEntityView instanceof TextPaintView) {
             ((TextPaintView) currentEntityView).setSwatch(swatch);
-        }
-    }
-
-    private void setColorPickerVisibilitySlide(boolean visible) {
-        Animator animator = ObjectAnimator.ofFloat(colorPicker, "translationX", visible ? AndroidUtilities.dp(60) : 0, visible ? 0 : AndroidUtilities.dp(60));
-        animator.setDuration(200);
-        animator.start();
-    }
-
-    private void setColorPickerVisibilityFade(boolean visible) {
-        if (visible) {
-            colorPickerAnimator = ObjectAnimator.ofFloat(colorPicker, "alpha", colorPicker.getAlpha(), 1.0f);
-            colorPickerAnimator.setStartDelay(200);
-            colorPickerAnimator.setDuration(200);
-            colorPickerAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (colorPickerAnimator != null) {
-                        colorPickerAnimator = null;
-                    }
-                }
-            });
-            colorPickerAnimator.start();
-        } else {
-            if (colorPickerAnimator != null) {
-                colorPickerAnimator.cancel();
-                colorPickerAnimator = null;
-            }
-            colorPicker.setAlpha(0.0f);
         }
     }
 
@@ -630,7 +554,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         int height = MeasureSpec.getSize(heightMeasureSpec);
 
         setMeasuredDimension(width, height);
-        actionBar.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
 
         float bitmapW;
         float bitmapH;
@@ -658,7 +581,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         colorPicker.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY));
         toolsView.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(48), MeasureSpec.EXACTLY));
         if (stickersView != null) {
-            stickersView.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(fullHeight, MeasureSpec.EXACTLY));
+            stickersView.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.y, MeasureSpec.EXACTLY));
         }
     }
 
@@ -667,9 +590,9 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         int width = right - left;
         int height = bottom - top;
 
+        int status = (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0);
         int actionBarHeight = ActionBar.getCurrentActionBarHeight();
-        int actionBarHeight2 = actionBar.getMeasuredHeight();
-        actionBar.layout(0, 0, actionBar.getMeasuredWidth(), actionBarHeight2);
+        int actionBarHeight2 = ActionBar.getCurrentActionBarHeight() + status;
 
         float bitmapW;
         float bitmapH;
@@ -690,7 +613,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         }
 
         int x = (int) Math.ceil((width - renderView.getMeasuredWidth()) / 2);
-        int y = actionBarHeight2 + (height - actionBarHeight2 - AndroidUtilities.dp(48) - renderView.getMeasuredHeight()) / 2;
+        int y = actionBarHeight2 + (height - actionBarHeight2 - AndroidUtilities.dp(48) - renderView.getMeasuredHeight()) / 2 - ActionBar.getCurrentActionBarHeight() + AndroidUtilities.dp(8);
 
         renderView.layout(x, y, x + renderView.getMeasuredWidth(), y + renderView.getMeasuredHeight());
 
@@ -698,17 +621,17 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         entitiesView.setScaleX(scale);
         entitiesView.setScaleY(scale);
         entitiesView.layout(x, y, x + entitiesView.getMeasuredWidth(), y + entitiesView.getMeasuredHeight());
-        dimView.layout(0, actionBarHeight2, dimView.getMeasuredWidth(), actionBarHeight2 + dimView.getMeasuredHeight());
-        selectionContainerView.layout(0, actionBarHeight2, selectionContainerView.getMeasuredWidth(), actionBarHeight2 + selectionContainerView.getMeasuredHeight());
+        dimView.layout(0, status, dimView.getMeasuredWidth(), status + dimView.getMeasuredHeight());
+        selectionContainerView.layout(0, status, selectionContainerView.getMeasuredWidth(), status + selectionContainerView.getMeasuredHeight());
         colorPicker.layout(0, actionBarHeight2, colorPicker.getMeasuredWidth(), actionBarHeight2 + colorPicker.getMeasuredHeight());
         toolsView.layout(0, height - toolsView.getMeasuredHeight(), toolsView.getMeasuredWidth(), height);
         curtainView.layout(0, 0, width, maxHeight);
         if (stickersView != null) {
-            stickersView.layout(0, actionBarHeight2, stickersView.getMeasuredWidth(), actionBarHeight2 + stickersView.getMeasuredHeight());
+            stickersView.layout(0, status, stickersView.getMeasuredWidth(), status + stickersView.getMeasuredHeight());
         }
 
         if (currentEntityView != null) {
-            currentEntityView.updateSelectionView();
+            currentEntityView.updateSelectionView(); //TODO this is bug
             currentEntityView.setOffset(entitiesView.getLeft() - selectionContainerView.getLeft(), entitiesView.getTop() - selectionContainerView.getTop());
         }
     }
@@ -727,16 +650,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
     @Override
     public boolean allowInteraction(EntityView entityView) {
         return !editingText;
-    }
-
-    @Override
-    public void onBeganEntityDragging(EntityView entityView) {
-        setColorPickerVisibilityFade(false);
-    }
-
-    @Override
-    public void onFinishedEntityDragging(EntityView entityView) {
-        setColorPickerVisibilityFade(true);
     }
 
     private Point centerPositionForEntity() {
@@ -832,6 +745,9 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
     private void removeEntity(EntityView entityView) {
         if (entityView == currentEntityView) {
             currentEntityView.deselect();
+            if (editingText) {
+                closeTextEnter(false);
+            }
             currentEntityView = null;
             updateSettingsButton();
         }
@@ -882,7 +798,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
                 @Override
                 public void onTypeChanged() {
-                    updateStickersTitle();
+
                 }
             });
             addView(stickersView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP));
@@ -892,23 +808,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         Animator a = ObjectAnimator.ofFloat(stickersView, "alpha", 0.0f, 1.0f);
         a.setDuration(200);
         a.start();
-
-        undoItem.setVisibility(GONE);
-        updateStickersTitle();
-    }
-
-    private void updateStickersTitle() {
-        if (stickersView == null || stickersView.getVisibility() != VISIBLE) {
-            return;
-        }
-        switch (stickersView.getCurrentType()) {
-            case StickersQuery.TYPE_IMAGE:
-                actionBar.setTitle(LocaleController.getString("PaintStickers", R.string.PaintStickers));
-                break;
-            case StickersQuery.TYPE_MASK:
-                actionBar.setTitle(LocaleController.getString("Masks", R.string.Masks));
-                break;
-        }
     }
 
     private void closeStickersView() {
@@ -926,9 +825,6 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
             }
         });
         a.start();
-
-        undoItem.setVisibility(VISIBLE);
-        actionBar.setTitle(LocaleController.getString("PaintDraw", R.string.PaintDraw));
     }
 
     private Size baseStickerSize() {
@@ -999,11 +895,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
         textPaintView.setRotation(0.0f);
         textPaintView.setScale(1.0f);
 
-        undoItem.setVisibility(GONE);
-        doneItem.setVisibility(VISIBLE);
-        actionBar.setTitle(LocaleController.getString("PaintText", R.string.PaintText));
         toolsView.setVisibility(GONE);
-        setColorPickerVisibilitySlide(false);
 
         setTextDimVisibility(true, textPaintView);
         textPaintView.beginEditing();
@@ -1019,11 +911,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
         TextPaintView textPaintView = (TextPaintView) currentEntityView;
 
-        undoItem.setVisibility(VISIBLE);
-        doneItem.setVisibility(GONE);
-        actionBar.setTitle(LocaleController.getString("PaintDraw", R.string.PaintDraw));
         toolsView.setVisibility(VISIBLE);
-        setColorPickerVisibilitySlide(true);
 
         AndroidUtilities.hideKeyboard(textPaintView.getFocusedView());
 
@@ -1086,6 +974,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
                 TextView deleteView = new TextView(getContext());
                 deleteView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem));
+                deleteView.setTypeface(AndroidUtilities.getTypeface(null));
                 deleteView.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                 deleteView.setGravity(Gravity.CENTER_VERTICAL);
                 deleteView.setPadding(AndroidUtilities.dp(16), 0, AndroidUtilities.dp(14), 0);
@@ -1107,6 +996,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
                 if (entityView instanceof TextPaintView) {
                     TextView editView = new TextView(getContext());
                     editView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem));
+                    editView.setTypeface(AndroidUtilities.getTypeface(null));
                     editView.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                     editView.setGravity(Gravity.CENTER_VERTICAL);
                     editView.setPadding(AndroidUtilities.dp(16), 0, AndroidUtilities.dp(16), 0);
@@ -1134,6 +1024,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
                 duplicateView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
                 duplicateView.setTag(2);
                 duplicateView.setText(LocaleController.getString("PaintDuplicate", R.string.PaintDuplicate));
+                duplicateView.setTypeface(AndroidUtilities.getTypeface(null));
                 duplicateView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -1176,7 +1067,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
         if (selected) {
             ImageView check = new ImageView(getContext());
-            check.setImageResource(R.drawable.ic_ab_done);//TODO color
+            check.setImageResource(R.drawable.ic_ab_done);
             check.setScaleType(ImageView.ScaleType.CENTER);
             button.addView(check, LayoutHelper.createFrame(50, LayoutHelper.MATCH_PARENT));
         }
@@ -1249,7 +1140,7 @@ public class PhotoPaintView extends FrameLayout implements EntityView.EntityView
 
         if (selected) {
             ImageView check = new ImageView(getContext());
-            check.setImageResource(R.drawable.ic_ab_done); //TODO color
+            check.setImageResource(R.drawable.ic_ab_done);
             check.setScaleType(ImageView.ScaleType.CENTER);
             button.addView(check, LayoutHelper.createFrame(50, LayoutHelper.MATCH_PARENT));
         }

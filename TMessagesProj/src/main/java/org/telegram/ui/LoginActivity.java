@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,6 +69,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
+import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.HintEditText;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SlideView;
@@ -147,7 +147,7 @@ public class LoginActivity extends BaseFragment {
 
     @Override
     public View createView(Context context) {
-        actionBar.setTitle(LocaleController.getString("AppName", R.string.AppName));
+        actionBar.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -161,6 +161,7 @@ public class LoginActivity extends BaseFragment {
         });
 
         ActionBarMenu menu = actionBar.createMenu();
+        actionBar.setAllowOverlayTitle(true);
         doneButton = menu.addItemWithWidth(done_button, R.drawable.ic_done, AndroidUtilities.dp(56));
 
         fragmentView = new ScrollView(context);
@@ -380,7 +381,7 @@ public class LoginActivity extends BaseFragment {
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+        builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
         if (banned) {
             builder.setMessage(LocaleController.getString("BannedPhoneNumber", R.string.BannedPhoneNumber));
         } else {
@@ -405,7 +406,7 @@ public class LoginActivity extends BaseFragment {
                     }
                     getParentActivity().startActivity(Intent.createChooser(mailer, "Send email..."));
                 } catch (Exception e) {
-                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("NoMailInstalled", R.string.NoMailInstalled));
+                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("NoMailInstalled", R.string.NoMailInstalled));
                 }
             }
         });
@@ -413,15 +414,25 @@ public class LoginActivity extends BaseFragment {
         showDialog(builder.create());
     }
 
-    private void needShowProgress() {
+    private void needShowProgress(final int reqiestId) {
         if (getParentActivity() == null || getParentActivity().isFinishing() || progressDialog != null) {
             return;
         }
-        progressDialog = new AlertDialog(getParentActivity(), 1);
-        progressDialog.setMessage(LocaleController.getString("Loading", R.string.Loading));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), 1);
+        builder.setMessage(LocaleController.getString("Loading", R.string.Loading));
+        if (reqiestId != 0) {
+            builder.setPositiveButton(LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    views[currentViewNum].onCancelPressed();
+                    ConnectionsManager.getInstance().cancelRequest(reqiestId, true);
+                    progressDialog = null;
+                }
+            });
+        }
+        progressDialog = builder.show();
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-        progressDialog.show();
     }
 
     public void needHideProgress() {
@@ -573,7 +584,7 @@ public class LoginActivity extends BaseFragment {
 
     public class PhoneView extends SlideView implements AdapterView.OnItemSelectedListener {
 
-        private EditText codeField;
+        private EditTextBoldCursor codeField;
         private HintEditText phoneField;
         private TextView countryButton;
         private View view;
@@ -645,12 +656,14 @@ public class LoginActivity extends BaseFragment {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
-            codeField = new EditText(context);
+            codeField = new EditTextBoldCursor(context);
             codeField.setInputType(InputType.TYPE_CLASS_PHONE);
             codeField.setTypeface(AndroidUtilities.getTypeface(null));
             codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             codeField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
-            AndroidUtilities.clearCursorDrawable(codeField);
+            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            codeField.setCursorSize(AndroidUtilities.dp(20));
+            codeField.setCursorWidth(1.5f);
             codeField.setPadding(AndroidUtilities.dp(10), 0, 0, 0);
             codeField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             codeField.setMaxLines(1);
@@ -753,7 +766,9 @@ public class LoginActivity extends BaseFragment {
             phoneField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             phoneField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             phoneField.setPadding(0, 0, 0, 0);
-            AndroidUtilities.clearCursorDrawable(phoneField);
+            phoneField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            phoneField.setCursorSize(AndroidUtilities.dp(20));
+            phoneField.setCursorWidth(1.5f);
             phoneField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             phoneField.setMaxLines(1);
             phoneField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
@@ -929,6 +944,11 @@ public class LoginActivity extends BaseFragment {
         }
 
         @Override
+        public void onCancelPressed() {
+            nextPressed = false;
+        }
+
+        @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             if (ignoreSelection) {
                 ignoreSelection = false;
@@ -964,6 +984,9 @@ public class LoginActivity extends BaseFragment {
                     }
                     if (!allowSms) {
                         permissionsItems.add(Manifest.permission.RECEIVE_SMS);
+                        if (Build.VERSION.SDK_INT >= 23) {
+                            permissionsItems.add(Manifest.permission.READ_SMS);
+                        }
                     }
                     if (!allowCancelCall) {
                         permissionsItems.add(Manifest.permission.CALL_PHONE);
@@ -978,7 +1001,7 @@ public class LoginActivity extends BaseFragment {
                         } else if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.RECEIVE_SMS)) {
                             preferences.edit().putBoolean("firstlogin", false).commit();
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                            builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
                             if (permissionsItems.size() >= 2) {
                                 builder.setMessage(LocaleController.getString("AllowReadCallAndSms", R.string.AllowReadCallAndSms));
@@ -1003,21 +1026,20 @@ public class LoginActivity extends BaseFragment {
             }
 
             if (countryState == 1) {
-                needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
+                needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
                 return;
             } else if (countryState == 2 && !BuildVars.DEBUG_VERSION && !codeField.getText().toString().equals("999")) {
-                needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("WrongCountry", R.string.WrongCountry));
+                needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("WrongCountry", R.string.WrongCountry));
                 return;
             }
             if (codeField.length() == 0) {
-                needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
+                needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                 return;
             }
 
             ConnectionsManager.getInstance().cleanup();
             final TLRPC.TL_auth_sendCode req = new TLRPC.TL_auth_sendCode();
             String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
-            ConnectionsManager.getInstance().applyCountryPortNumber(phone);
             req.api_hash = BuildVars.APP_HASH;
             req.api_id = BuildVars.APP_ID;
             req.phone_number = phone;
@@ -1048,8 +1070,7 @@ public class LoginActivity extends BaseFragment {
             }
             params.putString("phoneFormated", phone);
             nextPressed = true;
-            needShowProgress();
-            ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
+            int reqId = ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
                 @Override
                 public void run(final TLObject response, final TLRPC.TL_error error) {
                     AndroidUtilities.runOnUIThread(new Runnable() {
@@ -1063,17 +1084,17 @@ public class LoginActivity extends BaseFragment {
                                     if (error.text.contains("PHONE_NUMBER_INVALID")) {
                                         needShowInvalidAlert(req.phone_number, false);
                                     } else if (error.text.contains("PHONE_NUMBER_FLOOD")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("PhoneNumberFlood", R.string.PhoneNumberFlood));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("PhoneNumberFlood", R.string.PhoneNumberFlood));
                                     } else if (error.text.contains("PHONE_NUMBER_BANNED")) {
                                         needShowInvalidAlert(req.phone_number, true);
                                     } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidCode", R.string.InvalidCode));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                                     } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("CodeExpired", R.string.CodeExpired));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                                     } else if (error.text.startsWith("FLOOD_WAIT")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("FloodWait", R.string.FloodWait));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("FloodWait", R.string.FloodWait));
                                     } else if (error.code != -1000) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                     }
                                 }
                             }
@@ -1082,6 +1103,7 @@ public class LoginActivity extends BaseFragment {
                     });
                 }
             }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
+            needShowProgress(reqId);
         }
 
         public void fillNumber() {
@@ -1100,13 +1122,16 @@ public class LoginActivity extends BaseFragment {
                             }
                             if (!allowSms) {
                                 permissionsShowItems.add(Manifest.permission.RECEIVE_SMS);
+                                if (Build.VERSION.SDK_INT >= 23) {
+                                    permissionsShowItems.add(Manifest.permission.READ_SMS);
+                                }
                             }
                             if (!permissionsShowItems.isEmpty()) {
                                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                                 if (preferences.getBoolean("firstloginshow", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.RECEIVE_SMS)) {
                                     preferences.edit().putBoolean("firstloginshow", false).commit();
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                    builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
                                     builder.setMessage(LocaleController.getString("AllowFillNumber", R.string.AllowFillNumber));
                                     permissionsShowDialog = showDialog(builder.create());
@@ -1204,7 +1229,7 @@ public class LoginActivity extends BaseFragment {
         private String phoneHash;
         private String requestPhone;
         private String emailPhone;
-        private EditText codeField;
+        private EditTextBoldCursor codeField;
         private TextView confirmTextView;
         private TextView timeText;
         private TextView problemText;
@@ -1261,11 +1286,13 @@ public class LoginActivity extends BaseFragment {
                 addView(confirmTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT));
             }
 
-            codeField = new EditText(context);
+            codeField = new EditTextBoldCursor(context);
             codeField.setTypeface(AndroidUtilities.getTypeface(null));
             codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             codeField.setHint(LocaleController.getString("Code", R.string.Code));
-            AndroidUtilities.clearCursorDrawable(codeField);
+            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            codeField.setCursorSize(AndroidUtilities.dp(20));
+            codeField.setCursorWidth(1.5f);
             codeField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             codeField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             codeField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -1353,7 +1380,7 @@ public class LoginActivity extends BaseFragment {
                             mailer.putExtra(Intent.EXTRA_TEXT, "Phone: " + requestPhone + "\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + "\nLocale: " + Locale.getDefault() + "\nError: " + lastError);
                             getContext().startActivity(Intent.createChooser(mailer, "Send email..."));
                         } catch (Exception e) {
-                            needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("NoMailInstalled", R.string.NoMailInstalled));
+                            needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("NoMailInstalled", R.string.NoMailInstalled));
                         }
                     }
                 }
@@ -1390,6 +1417,11 @@ public class LoginActivity extends BaseFragment {
             });
         }
 
+        @Override
+        public void onCancelPressed() {
+            nextPressed = false;
+        }
+
         private void resendCode() {
             final Bundle params = new Bundle();
             params.putString("phone", phone);
@@ -1397,12 +1429,11 @@ public class LoginActivity extends BaseFragment {
             params.putString("phoneFormated", requestPhone);
 
             nextPressed = true;
-            needShowProgress();
 
             TLRPC.TL_auth_resendCode req = new TLRPC.TL_auth_resendCode();
             req.phone_number = requestPhone;
             req.phone_code_hash = phoneHash;
-            ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
+            int reqId = ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
                 @Override
                 public void run(final TLObject response, final TLRPC.TL_error error) {
                     AndroidUtilities.runOnUIThread(new Runnable() {
@@ -1414,17 +1445,17 @@ public class LoginActivity extends BaseFragment {
                             } else {
                                 if (error.text != null) {
                                     if (error.text.contains("PHONE_NUMBER_INVALID")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                                     } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidCode", R.string.InvalidCode));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                                     } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
                                         onBackPressed();
                                         setPage(0, true, null, true);
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("CodeExpired", R.string.CodeExpired));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                                     } else if (error.text.startsWith("FLOOD_WAIT")) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("FloodWait", R.string.FloodWait));
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("FloodWait", R.string.FloodWait));
                                     } else if (error.code != -1000) {
-                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred) + "\n" + error.text);
+                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred) + "\n" + error.text);
                                     }
                                 }
                             }
@@ -1433,6 +1464,7 @@ public class LoginActivity extends BaseFragment {
                     });
                 }
             }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+            needShowProgress(0);
         }
 
         @Override
@@ -1692,8 +1724,7 @@ public class LoginActivity extends BaseFragment {
             req.phone_code = code;
             req.phone_code_hash = phoneHash;
             destroyTimer();
-            needShowProgress();
-            ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
+            int reqId = ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
                 @Override
                 public void run(final TLObject response, final TLRPC.TL_error error) {
                     AndroidUtilities.runOnUIThread(new Runnable() {
@@ -1756,7 +1787,7 @@ public class LoginActivity extends BaseFragment {
                                                         bundle.putInt("has_recovery", password.has_recovery ? 1 : 0);
                                                         setPage(6, true, bundle, false);
                                                     } else {
-                                                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                                        needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                                     }
                                                 }
                                             });
@@ -1779,17 +1810,17 @@ public class LoginActivity extends BaseFragment {
                                     waitingForEvent = true;
                                     if (currentType != 3) {
                                         if (error.text.contains("PHONE_NUMBER_INVALID")) {
-                                            needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
+                                            needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                                         } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
-                                            needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidCode", R.string.InvalidCode));
+                                            needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                                         } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
                                             onBackPressed();
                                             setPage(0, true, null, true);
-                                            needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("CodeExpired", R.string.CodeExpired));
+                                            needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                                         } else if (error.text.startsWith("FLOOD_WAIT")) {
-                                            needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("FloodWait", R.string.FloodWait));
+                                            needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("FloodWait", R.string.FloodWait));
                                         } else {
-                                            needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred) + "\n" + error.text);
+                                            needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred) + "\n" + error.text);
                                         }
                                     }
                                 }
@@ -1804,6 +1835,7 @@ public class LoginActivity extends BaseFragment {
                     });
                 }
             }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+            needShowProgress(0);
         }
 
         @Override
@@ -1919,7 +1951,7 @@ public class LoginActivity extends BaseFragment {
 
     public class LoginActivityPasswordView extends SlideView {
 
-        private EditText codeField;
+        private EditTextBoldCursor codeField;
         private TextView confirmTextView;
         private TextView resetAccountButton;
         private TextView resetAccountText;
@@ -1949,9 +1981,11 @@ public class LoginActivity extends BaseFragment {
             confirmTextView.setText(LocaleController.getString("LoginPasswordText", R.string.LoginPasswordText));
             addView(confirmTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT));
 
-            codeField = new EditText(context);
+            codeField = new EditTextBoldCursor(context);
             codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            AndroidUtilities.clearCursorDrawable(codeField);
+            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            codeField.setCursorSize(AndroidUtilities.dp(20));
+            codeField.setCursorWidth(1.5f);
             codeField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             codeField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             codeField.setHint(LocaleController.getString("LoginPassword", R.string.LoginPassword));
@@ -1988,7 +2022,7 @@ public class LoginActivity extends BaseFragment {
                 @Override
                 public void onClick(View view) {
                     if (has_recovery) {
-                        needShowProgress();
+                        needShowProgress(0);
                         TLRPC.TL_auth_requestPasswordRecovery req = new TLRPC.TL_auth_requestPasswordRecovery();
                         ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
                             @Override
@@ -2001,7 +2035,7 @@ public class LoginActivity extends BaseFragment {
                                             final TLRPC.TL_auth_passwordRecovery res = (TLRPC.TL_auth_passwordRecovery) response;
                                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                                             builder.setMessage(LocaleController.formatString("RestoreEmailSent", R.string.RestoreEmailSent, res.email_pattern));
-                                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                            builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -2024,9 +2058,9 @@ public class LoginActivity extends BaseFragment {
                                                 } else {
                                                     timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                                 }
-                                                needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                                needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                             } else {
-                                                needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                                needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                             }
                                         }
                                     }
@@ -2061,7 +2095,7 @@ public class LoginActivity extends BaseFragment {
                     builder.setPositiveButton(LocaleController.getString("ResetMyAccountWarningReset", R.string.ResetMyAccountWarningReset), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            needShowProgress();
+                            needShowProgress(0);
                             TLRPC.TL_account_deleteAccount req = new TLRPC.TL_account_deleteAccount();
                             req.reason = "Forgot password";
                             ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
@@ -2079,7 +2113,7 @@ public class LoginActivity extends BaseFragment {
                                                 setPage(5, true, params, false);
                                             } else {
                                                 if (error.text.equals("2FA_RECENT_CONFIRM")) {
-                                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
+                                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
                                                 } else if (error.text.startsWith("2FA_CONFIRM_WAIT_")) {
                                                     Bundle params = new Bundle();
                                                     params.putString("phoneFormated", requestPhone);
@@ -2089,7 +2123,7 @@ public class LoginActivity extends BaseFragment {
                                                     params.putInt("waitTime", Utilities.parseInt(error.text.replace("2FA_CONFIRM_WAIT_", "")));
                                                     setPage(8, true, params, false);
                                                 } else {
-                                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                                 }
                                             }
                                         }
@@ -2116,6 +2150,11 @@ public class LoginActivity extends BaseFragment {
         @Override
         public String getHeaderName() {
             return LocaleController.getString("LoginPassword", R.string.LoginPassword);
+        }
+
+        @Override
+        public void onCancelPressed() {
+            nextPressed = false;
         }
 
         @Override
@@ -2181,7 +2220,7 @@ public class LoginActivity extends BaseFragment {
                 FileLog.e(e);
             }
 
-            needShowProgress();
+            needShowProgress(0);
             byte[] hash = new byte[current_salt.length * 2 + oldPasswordBytes.length];
             System.arraycopy(current_salt, 0, hash, 0, current_salt.length);
             System.arraycopy(oldPasswordBytes, 0, hash, current_salt.length, oldPasswordBytes.length);
@@ -2224,9 +2263,9 @@ public class LoginActivity extends BaseFragment {
                                     } else {
                                         timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                     }
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                 } else {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                 }
                             }
                         }
@@ -2341,7 +2380,7 @@ public class LoginActivity extends BaseFragment {
                     builder.setPositiveButton(LocaleController.getString("ResetMyAccountWarningReset", R.string.ResetMyAccountWarningReset), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            needShowProgress();
+                            needShowProgress(0);
                             TLRPC.TL_account_deleteAccount req = new TLRPC.TL_account_deleteAccount();
                             req.reason = "Forgot password";
                             ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
@@ -2359,9 +2398,9 @@ public class LoginActivity extends BaseFragment {
                                                 setPage(5, true, params, false);
                                             } else {
                                                 if (error.text.equals("2FA_RECENT_CONFIRM")) {
-                                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
+                                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
                                                 } else {
-                                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                                 }
                                             }
                                         }
@@ -2457,7 +2496,7 @@ public class LoginActivity extends BaseFragment {
 
     public class LoginActivityRecoverView extends SlideView {
 
-        private EditText codeField;
+        private EditTextBoldCursor codeField;
         private TextView confirmTextView;
         private TextView cancelButton;
 
@@ -2478,9 +2517,11 @@ public class LoginActivity extends BaseFragment {
             confirmTextView.setText(LocaleController.getString("RestoreEmailSentInfo", R.string.RestoreEmailSentInfo));
             addView(confirmTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT)));
 
-            codeField = new EditText(context);
+            codeField = new EditTextBoldCursor(context);
             codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            AndroidUtilities.clearCursorDrawable(codeField);
+            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            codeField.setCursorSize(AndroidUtilities.dp(20));
+            codeField.setCursorWidth(1.5f);
             codeField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             codeField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             codeField.setHint(LocaleController.getString("PasswordCode", R.string.PasswordCode));
@@ -2539,6 +2580,11 @@ public class LoginActivity extends BaseFragment {
         }
 
         @Override
+        public void onCancelPressed() {
+            nextPressed = false;
+        }
+
+        @Override
         public String getHeaderName() {
             return LocaleController.getString("LoginPassword", R.string.LoginPassword);
         }
@@ -2589,7 +2635,7 @@ public class LoginActivity extends BaseFragment {
                 onPasscodeError(false);
                 return;
             }
-            needShowProgress();
+            needShowProgress(0);
             TLRPC.TL_auth_recoverPassword req = new TLRPC.TL_auth_recoverPassword();
             req.code = code;
             ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
@@ -2627,9 +2673,9 @@ public class LoginActivity extends BaseFragment {
                                     } else {
                                         timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                     }
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                 } else {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                 }
                             }
                         }
@@ -2678,8 +2724,8 @@ public class LoginActivity extends BaseFragment {
 
     public class LoginActivityRegisterView extends SlideView {
 
-        private EditText firstNameField;
-        private EditText lastNameField;
+        private EditTextBoldCursor firstNameField;
+        private EditTextBoldCursor lastNameField;
         private TextView textView;
         private TextView wrongNumber;
         private String requestPhone;
@@ -2700,11 +2746,13 @@ public class LoginActivity extends BaseFragment {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 0, 8, 0, 0));
 
-            firstNameField = new EditText(context);
+            firstNameField = new EditTextBoldCursor(context);
             firstNameField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             firstNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             firstNameField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
-            AndroidUtilities.clearCursorDrawable(firstNameField);
+            firstNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            firstNameField.setCursorSize(AndroidUtilities.dp(20));
+            firstNameField.setCursorWidth(1.5f);
             firstNameField.setHint(LocaleController.getString("FirstName", R.string.FirstName));
             firstNameField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
@@ -2722,17 +2770,29 @@ public class LoginActivity extends BaseFragment {
                 }
             });
 
-            lastNameField = new EditText(context);
+            lastNameField = new EditTextBoldCursor(context);
             lastNameField.setHint(LocaleController.getString("LastName", R.string.LastName));
             lastNameField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             lastNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             lastNameField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
-            AndroidUtilities.clearCursorDrawable(lastNameField);
-            lastNameField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            lastNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            lastNameField.setCursorSize(AndroidUtilities.dp(20));
+            lastNameField.setCursorWidth(1.5f);
+            lastNameField.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             lastNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             lastNameField.setMaxLines(1);
             lastNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
             addView(lastNameField, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36, 0, 10, 0, 0));
+            lastNameField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                    if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT) {
+                        onNextPressed();
+                        return true;
+                    }
+                    return false;
+                }
+            });
 
             LinearLayout linearLayout = new LinearLayout(context);
             linearLayout.setGravity(Gravity.BOTTOM | Gravity.CENTER_VERTICAL);
@@ -2751,7 +2811,7 @@ public class LoginActivity extends BaseFragment {
                 @Override
                 public void onClick(View view) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                     builder.setMessage(LocaleController.getString("AreYouSureRegistration", R.string.AreYouSureRegistration));
                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                         @Override
@@ -2774,6 +2834,11 @@ public class LoginActivity extends BaseFragment {
         @Override
         public String getHeaderName() {
             return LocaleController.getString("YourName", R.string.YourName);
+        }
+
+        @Override
+        public void onCancelPressed() {
+            nextPressed = false;
         }
 
         @Override
@@ -2810,7 +2875,7 @@ public class LoginActivity extends BaseFragment {
             req.phone_number = requestPhone;
             req.first_name = firstNameField.getText().toString();
             req.last_name = lastNameField.getText().toString();
-            needShowProgress();
+            needShowProgress(0);
             ConnectionsManager.getInstance().sendRequest(req, new RequestDelegate() {
                 @Override
                 public void run(final TLObject response, final TLRPC.TL_error error) {
@@ -2838,17 +2903,17 @@ public class LoginActivity extends BaseFragment {
                                 needFinishActivity();
                             } else {
                                 if (error.text.contains("PHONE_NUMBER_INVALID")) {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                                 } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidCode", R.string.InvalidCode));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                                 } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("CodeExpired", R.string.CodeExpired));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                                 } else if (error.text.contains("FIRSTNAME_INVALID")) {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidFirstName", R.string.InvalidFirstName));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidFirstName", R.string.InvalidFirstName));
                                 } else if (error.text.contains("LASTNAME_INVALID")) {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("InvalidLastName", R.string.InvalidLastName));
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("InvalidLastName", R.string.InvalidLastName));
                                 } else {
-                                    needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                    needShowAlert(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                 }
                             }
                         }

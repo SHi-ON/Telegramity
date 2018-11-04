@@ -159,7 +159,7 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
                     }
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                     builder.setMessage(LocaleController.getString("AreYouSureSessions", R.string.AreYouSureSessions));
-                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -194,9 +194,12 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                     showDialog(builder.create());
                 } else if (position >= otherSessionsStartRow && position < otherSessionsEndRow) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                     builder.setMessage(LocaleController.getString("TerminateSessionQuestion", R.string.TerminateSessionQuestion));
-                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int option) {
