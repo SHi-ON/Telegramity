@@ -34,7 +34,7 @@ import android.widget.Toast;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
-//import com.onesignal.OneSignal;
+import com.onesignal.OneSignal;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -62,13 +62,18 @@ import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextInfoCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.NumberPicker;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.PasscodeActivity;
 import org.telegram.ui.ThemeActivity;
 
 import java.util.Locale;
+
+import co.ronash.pushe.Pushe;
+import co.ronash.pushe.service.PusheActivityService;
 
 public class GramitySettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -135,6 +140,7 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.refreshTabs);
 
         rowCount = 0;
@@ -194,8 +200,8 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.refreshTabs);
-
         if (needRestart) {
             GramityUtilities.restartTelegramity();
         }
@@ -259,7 +265,12 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
 
         listView = new RecyclerListView(context);
         listView.setVerticalScrollBarEnabled(true);
-        listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public boolean supportsPredictiveItemAnimations() {
+                return false;
+            }
+        });
         listView.setGlowColor(Theme.getColor(Theme.key_avatar_backgroundActionBarBlue));
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT));
         listView.setAdapter(listAdapter);
@@ -439,7 +450,7 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setCustomTitle(GramityUtilities.alertTitleMaker(context, LocaleController.getString("AnsweringMachineMessage", R.string.AnsweringMachineMessage)));
                     String message = preferences.getString(GramityConstants.PREF_ANSWERING_MACHINE_MESSAGE, LocaleController.getString("AnsweringMachineDefaultMessage", R.string.AnsweringMachineDefaultMessage));
-                    final EditText input = new EditText(context);
+                    final EditTextBoldCursor input = new EditTextBoldCursor(context);
 
                     input.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                     input.setTypeface(AndroidUtilities.getTypeface(null));
@@ -454,7 +465,10 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                     InputFilter[] inputFilters = new InputFilter[1];
                     inputFilters[0] = new InputFilter.LengthFilter(255);
                     input.setFilters(inputFilters);
-                    AndroidUtilities.clearCursorDrawable(input);
+                    input.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                    input.setCursorSize(AndroidUtilities.dp(20));
+                    input.setCursorWidth(1.5f);
+//                    AndroidUtilities.clearCursorDrawable(input);
 
                     builder.setView(input);
                     builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
@@ -486,9 +500,9 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                     });
                     showDialog(builder.create());
                 } else if (position == chatDirectShareToMenu) {
-                    boolean send = preferences.getBoolean("directShareToMenu", false);
+                    boolean send = preferences.getBoolean(GramityConstants.PREF_DIRECT_SHARE_TO_MENU, true);
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean("directShareToMenu", !send);
+                    editor.putBoolean(GramityConstants.PREF_DIRECT_SHARE_TO_MENU, !send);
                     editor.apply();
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(!send);
@@ -505,6 +519,7 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                     presentFragment(new CacheControlActivity());
                 } else if (position == themeRow) {
                     presentFragment(new ThemeActivity());
+                    GramityUtilities.snkrGApnr(GramityConstants.GRAMITY_THEMES_ID, GramitySettingsActivity.this, false, false);
                 } else if (position == monoColoredIconsRow) {
                     boolean isMonoColored = preferences.getBoolean(GramityConstants.PREF_MONOCOLORED_ICONS, false);
                     SharedPreferences.Editor editor = preferences.edit();
@@ -663,24 +678,24 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
             }
         });
 
-        /*listView.setOnItemLongClickListener(new RecyclerListView.OnItemLongClickListener() {
+        listView.setOnItemLongClickListener(new RecyclerListView.OnItemLongClickListener() {
             @Override
             public boolean onItemClick(View view, int position) {
                 if (position == versionDescriptionRow) {
                     OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
                         @Override
                         public void idsAvailable(final String userId, final String registrationId) {
+                            final CharSequence cs = "OS_Player ID: " + userId + "\n\nOS_Reg ID: " + registrationId + "\n\nOS_SDK_type: " + OneSignal.sdkType + "\n\nOS_ver:" + OneSignal.VERSION + "\n\n-------\n\nP_pid: " + Pushe.getPusheId(ApplicationLoader.applicationContext) + "\n\nP_isInit = " + Pushe.isPusheInitialized(ApplicationLoader.applicationContext);
+
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                             builder.setTitle("INFO");
-                            builder.setItems(new CharSequence[]{
-                                    "Player ID: " + userId + "\n\n" + "Reg ID: " + registrationId
-                            }, new DialogInterface.OnClickListener() {
+                            builder.setItems(new CharSequence[]{cs}, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (which == 0) {
                                         try {
                                             android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                                            android.content.ClipData clip = android.content.ClipData.newPlainText("label", "Player ID: " + userId + "\n\n" + "Reg ID: " + registrationId);
+                                            android.content.ClipData clip = android.content.ClipData.newPlainText("label", cs);
                                             clipboard.setPrimaryClip(clip);
                                             toast(context, LocaleController.formatString("Copied", R.string.Copied, "INFO"));
                                         } catch (Exception e) {
@@ -697,7 +712,7 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                 }
                 return false;
             }
-        });*/
+        });
 
         frameLayout.addView(actionBar);
 
@@ -713,7 +728,9 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
         nameTextView = new TextView(context);
         nameTextView.setTextColor(Theme.getColor(Theme.key_profile_title));
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        nameTextView.setMaxLines(2);
+        nameTextView.setLines(1);
+        nameTextView.setMaxLines(1);
+        nameTextView.setSingleLine(true);
         nameTextView.setEllipsize(TextUtils.TruncateAt.END);
         nameTextView.setGravity(Gravity.LEFT);
         nameTextView.setTypeface(AndroidUtilities.getTypeface(null));
@@ -998,11 +1015,11 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                     } else if (position == dialogsTabsCountersCountChats) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountChats", R.string.HeaderTabCounterCountChats), preferences.getBoolean("tabsCountersCountChats", false), true);
                     } else if (position == dialogsTabsCountersCountNotMuted) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountNotMuted", R.string.HeaderTabCounterCountNotMuted), preferences.getBoolean("tabsCountersCountNotMuted", false), false);
+                        textCheckCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountNotMuted", R.string.HeaderTabCounterCountNotMuted), preferences.getBoolean("tabsCountersCountNotMuted", false), true);
                     } else if (position == answeringMachineRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("AnsweringMachine", R.string.AnsweringMachine), LocaleController.getString("AnsweringMachineDescription", R.string.AnsweringMachineDescription), preferences.getBoolean(GramityConstants.PREF_ANSWERING_MACHINE, false), true, true);
                     } else if (position == chatDirectShareToMenu) {
-                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("DirectShareInPopupMenu", R.string.DirectShareInPopupMenu), LocaleController.getString("DirectShareInPopupMenuDescription", R.string.DirectShareInPopupMenuDescription), preferences.getBoolean("directShareToMenu", true), true, true);
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("DirectShareInPopupMenu", R.string.DirectShareInPopupMenu), LocaleController.getString("DirectShareInPopupMenuDescription", R.string.DirectShareInPopupMenuDescription), preferences.getBoolean(GramityConstants.PREF_DIRECT_SHARE_TO_MENU, true), true, true);
                     } else if (position == chatDirectShareFavsFirst) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("DirectShareShowFavsFirst", R.string.DirectShareShowFavsFirst), LocaleController.getString("DirectShareShowFavsFirstDescription", R.string.DirectShareShowFavsFirstDescription), preferences.getBoolean("directShareFavsFirst", true), true, true);
                     } else if (position == monoColoredIconsRow) {
@@ -1165,7 +1182,7 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-            return  position == noNumberRow || position == dialogsHideTabsCheckRow ||
+            return position == noNumberRow || position == dialogsHideTabsCheckRow ||
                     position == dialogsTabsRow || position == dialogsTabsHeightRow || position == dialogsDisableTabsAnimationCheckRow ||
                     position == dialogsInfiniteTabsSwipe || position == dialogsHideTabsCounters || position == dialogsTabsCountersCountChats ||
                     position == dialogsTabsCountersCountNotMuted || position == answeringMachineRow || position == answeringMachineMessageRow || position == chatShowDirectShareBtn || position == chatDirectShareToMenu ||
@@ -1204,7 +1221,7 @@ public class GramitySettingsActivity extends BaseFragment implements Notificatio
                     try {
                         PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
                         int code = pInfo.versionCode / 10;
-                        ((TextInfoCell) view).setText(LocaleController.formatString("TelegramVersion", R.string.TelegramVersion, String.format(Locale.US, "v%s (%d) %s", pInfo.versionName, code)));
+                        ((TextInfoCell) view).setText(LocaleController.formatString("TelegramVersion", R.string.TelegramVersion, String.format(Locale.US, "v%s (%d)", pInfo.versionName, code)));
                     } catch (Exception e) {
                         FileLog.e(e);
                     }

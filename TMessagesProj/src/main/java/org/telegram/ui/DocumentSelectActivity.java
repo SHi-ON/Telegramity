@@ -481,7 +481,6 @@ public class DocumentSelectActivity extends BaseFragment {
             showErrorBox(LocaleController.getString("AccessError", R.string.AccessError));
             return false;
         }
-        emptyView.setText(LocaleController.getString("NoFiles", R.string.NoFiles));
         File[] files;
         try {
             files = dir.listFiles();
@@ -561,7 +560,7 @@ public class DocumentSelectActivity extends BaseFragment {
         if (getParentActivity() == null) {
             return;
         }
-        new AlertDialog.Builder(getParentActivity()).setTitle(LocaleController.getString("AppName", R.string.AppName)).setMessage(error).setPositiveButton(LocaleController.getString("OK", R.string.OK), null).show();
+        new AlertDialog.Builder(getParentActivity()).setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy)).setMessage(error).setPositiveButton(LocaleController.getString("OK", R.string.OK), null).show();
     }
 
     @SuppressLint("NewApi")

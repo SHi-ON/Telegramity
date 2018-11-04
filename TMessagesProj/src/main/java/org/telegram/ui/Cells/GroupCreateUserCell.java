@@ -59,6 +59,7 @@ public class GroupCreateUserCell extends FrameLayout {
 
         statusTextView = new SimpleTextView(context);
         statusTextView.setTextSize(16);
+        statusTextView.setTypeface(AndroidUtilities.getTypeface(null));
         statusTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
         addView(statusTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 28 : 72, 39, LocaleController.isRTL ? 72 : 28, 0));
 

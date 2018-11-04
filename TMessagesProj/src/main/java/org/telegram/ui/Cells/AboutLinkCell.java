@@ -14,11 +14,13 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
+import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.view.Gravity;
@@ -82,17 +84,15 @@ public class AboutLinkCell extends FrameLayout {
         invalidate();
     }
 
-    public void setTextAndIcon(String text, Drawable resDrawable) {
-        if (text == null || text.length() == 0) {
-            setVisibility(GONE);
-            return;
-        }
-        if (text != null && oldText != null && text.equals(oldText)) {
+    public void setTextAndIcon(String text, Drawable resDrawable, boolean parseLinks) {
+        if (TextUtils.isEmpty(text) || text != null && oldText != null && text.equals(oldText)) {
             return;
         }
         oldText = text;
         stringBuilder = new SpannableStringBuilder(oldText);
-        MessageObject.addLinks(false, stringBuilder, false);
+        if (parseLinks) {
+            MessageObject.addLinks(false, stringBuilder, false);
+        }
         Emoji.replaceEmoji(stringBuilder, Theme.profile_aboutTextPaint.getFontMetricsInt(), AndroidUtilities.dp(20), false);
         TypefaceSpan typefaceSpan = new TypefaceSpan(AndroidUtilities.getTypeface(null));
         stringBuilder.setSpan(typefaceSpan, 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -177,8 +177,19 @@ public class AboutLinkCell extends FrameLayout {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        textLayout = new StaticLayout(stringBuilder, Theme.profile_aboutTextPaint, MeasureSpec.getSize(widthMeasureSpec) - AndroidUtilities.dp(71 + 16), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(textLayout.getHeight() + AndroidUtilities.dp(16), MeasureSpec.EXACTLY));
+        if (stringBuilder != null) {
+            int maxWidth = MeasureSpec.getSize(widthMeasureSpec) - AndroidUtilities.dp(71 + 16);
+            if (Build.VERSION.SDK_INT >= 24) {
+                textLayout = StaticLayout.Builder.obtain(stringBuilder, 0, stringBuilder.length(), Theme.profile_aboutTextPaint, maxWidth)
+                        .setBreakStrategy(StaticLayout.BREAK_STRATEGY_HIGH_QUALITY)
+                        .setHyphenationFrequency(StaticLayout.HYPHENATION_FREQUENCY_NONE)
+                        .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                        .build();
+            } else {
+                textLayout = new StaticLayout(stringBuilder, Theme.profile_aboutTextPaint, maxWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+            }
+        }
+        super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((textLayout != null ? textLayout.getHeight() : AndroidUtilities.dp(20)) + AndroidUtilities.dp(16), MeasureSpec.EXACTLY));
     }
 
     @Override

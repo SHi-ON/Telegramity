@@ -24,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -52,6 +51,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.EmptyTextProgressView;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
@@ -63,7 +63,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
     private TextView titleTextView;
     private TextView bottomTextView;
     private TextView bottomButton;
-    private EditText passwordEditText;
+    private EditTextBoldCursor passwordEditText;
     private AlertDialog progressDialog;
     private EmptyTextProgressView emptyView;
     private ActionBarMenuItem doneItem;
@@ -175,7 +175,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
         titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
         linearLayout.addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 38, 0, 0));
 
-        passwordEditText = new EditText(context);
+        passwordEditText = new EditTextBoldCursor(context);
         passwordEditText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         passwordEditText.setTypeface(AndroidUtilities.getTypeface(null));
         passwordEditText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
@@ -188,7 +188,9 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
         passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         passwordEditText.setTypeface(Typeface.DEFAULT);
-        AndroidUtilities.clearCursorDrawable(passwordEditText);
+        passwordEditText.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        passwordEditText.setCursorSize(AndroidUtilities.dp(20));
+        passwordEditText.setCursorWidth(1.5f);
         linearLayout.addView(passwordEditText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36, Gravity.TOP | Gravity.LEFT, 40, 32, 40, 0));
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -255,7 +257,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                             final TLRPC.TL_auth_passwordRecovery res = (TLRPC.TL_auth_passwordRecovery) response;
                                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                                             builder.setMessage(LocaleController.formatString("RestoreEmailSent", R.string.RestoreEmailSent, res.email_pattern));
-                                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                            builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -280,9 +282,9 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                                 } else {
                                                     timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                                 }
-                                                showAlertWithText(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                                showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                             } else {
-                                                showAlertWithText(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                                showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                             }
                                         }
                                     }
@@ -341,7 +343,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                     } else if (position == turnPasswordOffRow || position == abortPasswordRow) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                         builder.setMessage(LocaleController.getString("TurnPasswordOffQuestion", R.string.TurnPasswordOffQuestion));
-                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                        builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                         builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -663,7 +665,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
             }
             if (email.length() > 0) {
                 req.new_settings.flags |= 2;
-                req.new_settings.email = email;
+                req.new_settings.email = email.trim();
             }
         }
         needShowProgress();
@@ -720,7 +722,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                 }
                             } else {
                                 if (error.text.equals("EMAIL_INVALID")) {
-                                    showAlertWithText(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("PasswordEmailInvalid", R.string.PasswordEmailInvalid));
+                                    showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.getString("PasswordEmailInvalid", R.string.PasswordEmailInvalid));
                                 } else if (error.text.startsWith("FLOOD_WAIT")) {
                                     int time = Utilities.parseInt(error.text);
                                     String timeString;
@@ -729,9 +731,9 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                     } else {
                                         timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                     }
-                                    showAlertWithText(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                    showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                 } else {
-                                    showAlertWithText(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                    showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                 }
                             }
                         }
@@ -787,9 +789,9 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                         } else {
                                             timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                         }
-                                        showAlertWithText(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                        showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                     } else {
-                                        showAlertWithText(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                        showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                     }
                                 }
                             }
@@ -865,7 +867,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                         }
                                     });
                                     builder.setMessage(LocaleController.getString("PasswordReset", R.string.PasswordReset));
-                                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                    builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                                     Dialog dialog = showDialog(builder.create());
                                     if (dialog != null) {
                                         dialog.setCanceledOnTouchOutside(false);
@@ -882,9 +884,9 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
                                         } else {
                                             timeString = LocaleController.formatPluralString("Minutes", time / 60);
                                         }
-                                        showAlertWithText(LocaleController.getString("AppName", R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+                                        showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
                                     } else {
-                                        showAlertWithText(LocaleController.getString("AppName", R.string.AppName), error.text);
+                                        showAlertWithText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy), error.text);
                                     }
                                 }
                             }

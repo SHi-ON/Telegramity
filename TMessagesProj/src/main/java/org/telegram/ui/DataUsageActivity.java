@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.StatsController;
 import org.telegram.messenger.support.widget.LinearLayoutManager;
@@ -133,23 +132,13 @@ public class DataUsageActivity extends BaseFragment {
         filesBytesReceivedRow = rowCount++;
         filesSection2Row = rowCount++;
 
-        if (MessagesController.getInstance().callsEnabled) {
-            callsSectionRow = rowCount++;
-            callsSentRow = rowCount++;
-            callsReceivedRow = rowCount++;
-            callsBytesSentRow = rowCount++;
-            callsBytesReceivedRow = rowCount++;
-            callsTotalTimeRow = rowCount++;
-            callsSection2Row = rowCount++;
-        } else {
-            callsSectionRow = -1;
-            callsSentRow = -1;
-            callsReceivedRow = -1;
-            callsBytesSentRow = -1;
-            callsBytesReceivedRow = -1;
-            callsTotalTimeRow = -1;
-            callsSection2Row = -1;
-        }
+        callsSectionRow = rowCount++;
+        callsSentRow = rowCount++;
+        callsReceivedRow = rowCount++;
+        callsBytesSentRow = rowCount++;
+        callsBytesReceivedRow = rowCount++;
+        callsTotalTimeRow = rowCount++;
+        callsSection2Row = rowCount++;
 
         messagesSectionRow = rowCount++;
         /*if (BuildVars.DEBUG_VERSION) {
@@ -212,7 +201,7 @@ public class DataUsageActivity extends BaseFragment {
                 }
                 if (position == resetRow) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                     builder.setMessage(LocaleController.getString("ResetStatisticsAlert", R.string.ResetStatisticsAlert));
                     builder.setPositiveButton(LocaleController.getString("Reset", R.string.Reset), new DialogInterface.OnClickListener() {
                         @Override

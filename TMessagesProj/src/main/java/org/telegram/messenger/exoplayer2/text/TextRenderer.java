@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.IntDef;
 
 import org.telegram.messenger.exoplayer2.BaseRenderer;
 import org.telegram.messenger.exoplayer2.C;
@@ -28,6 +29,8 @@ import org.telegram.messenger.exoplayer2.FormatHolder;
 import org.telegram.messenger.exoplayer2.util.Assertions;
 import org.telegram.messenger.exoplayer2.util.MimeTypes;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,6 +57,27 @@ public final class TextRenderer extends BaseRenderer implements Callback {
 
   }
 
+  @Retention(RetentionPolicy.SOURCE)
+  @IntDef({REPLACEMENT_STATE_NONE, REPLACEMENT_STATE_SIGNAL_END_OF_STREAM,
+      REPLACEMENT_STATE_WAIT_END_OF_STREAM})
+  private @interface ReplacementState {}
+  /**
+   * The decoder does not need to be replaced.
+   */
+  private static final int REPLACEMENT_STATE_NONE = 0;
+  /**
+   * The decoder needs to be replaced, but we haven't yet signaled an end of stream to the existing
+   * decoder. We need to do so in order to ensure that it outputs any remaining buffers before we
+   * release it.
+   */
+  private static final int REPLACEMENT_STATE_SIGNAL_END_OF_STREAM = 1;
+  /**
+   * The decoder needs to be replaced, and we've signaled an end of stream to the existing decoder.
+   * We're waiting for the decoder to output an end of stream signal to indicate that it has output
+   * any remaining buffers before we release it.
+   */
+  private static final int REPLACEMENT_STATE_WAIT_END_OF_STREAM = 2;
+
   private static final int MSG_UPDATE_OUTPUT = 0;
 
   private final Handler outputHandler;
@@ -63,6 +87,8 @@ public final class TextRenderer extends BaseRenderer implements Callback {
 
   private boolean inputStreamEnded;
   private boolean outputStreamEnded;
+  @ReplacementState private int decoderReplacementState;
+  private Format streamFormat;
   private SubtitleDecoder decoder;
   private SubtitleInputBuffer nextInputBuffer;
   private SubtitleOutputBuffer subtitle;
@@ -106,21 +132,26 @@ public final class TextRenderer extends BaseRenderer implements Callback {
   }
 
   @Override
-  protected void onStreamChanged(Format[] formats) throws ExoPlaybackException {
+  protected void onStreamChanged(Format[] formats, long offsetUs) throws ExoPlaybackException {
+    streamFormat = formats[0];
     if (decoder != null) {
-      decoder.release();
-      nextInputBuffer = null;
+      decoderReplacementState = REPLACEMENT_STATE_SIGNAL_END_OF_STREAM;
+    } else {
+      decoder = decoderFactory.createDecoder(streamFormat);
     }
-    decoder = decoderFactory.createDecoder(formats[0]);
   }
 
   @Override
   protected void onPositionReset(long positionUs, boolean joining) {
     clearOutput();
-    resetBuffers();
-    decoder.flush();
     inputStreamEnded = false;
     outputStreamEnded = false;
+    if (decoderReplacementState != REPLACEMENT_STATE_NONE) {
+      replaceDecoder();
+    } else {
+      releaseBuffers();
+      decoder.flush();
+    }
   }
 
   @Override
@@ -157,13 +188,12 @@ public final class TextRenderer extends BaseRenderer implements Callback {
     if (nextSubtitle != null) {
       if (nextSubtitle.isEndOfStream()) {
         if (!textRendererNeedsUpdate && getNextEventTime() == Long.MAX_VALUE) {
-          if (subtitle != null) {
-            subtitle.release();
-            subtitle = null;
+          if (decoderReplacementState == REPLACEMENT_STATE_WAIT_END_OF_STREAM) {
+            replaceDecoder();
+          } else {
+            releaseBuffers();
+            outputStreamEnded = true;
           }
-          nextSubtitle.release();
-          nextSubtitle = null;
-          outputStreamEnded = true;
         }
       } else if (nextSubtitle.timeUs <= positionUs) {
         // Advance to the next subtitle. Sync the next event index and trigger an update.
@@ -182,6 +212,10 @@ public final class TextRenderer extends BaseRenderer implements Callback {
       updateOutput(subtitle.getCues(positionUs));
     }
 
+    if (decoderReplacementState == REPLACEMENT_STATE_WAIT_END_OF_STREAM) {
+      return;
+    }
+
     try {
       while (!inputStreamEnded) {
         if (nextInputBuffer == null) {
@@ -190,11 +224,16 @@ public final class TextRenderer extends BaseRenderer implements Callback {
             return;
           }
         }
+        if (decoderReplacementState == REPLACEMENT_STATE_SIGNAL_END_OF_STREAM) {
+          nextInputBuffer.setFlags(C.BUFFER_FLAG_END_OF_STREAM);
+          decoder.queueInputBuffer(nextInputBuffer);
+          nextInputBuffer = null;
+          decoderReplacementState = REPLACEMENT_STATE_WAIT_END_OF_STREAM;
+          return;
+        }
         // Try and read the next subtitle from the source.
-        int result = readSource(formatHolder, nextInputBuffer);
+        int result = readSource(formatHolder, nextInputBuffer, false);
         if (result == C.RESULT_BUFFER_READ) {
-          // Clear BUFFER_FLAG_DECODE_ONLY (see [Internal: b/27893809]) and queue the buffer.
-          nextInputBuffer.clearFlag(C.BUFFER_FLAG_DECODE_ONLY);
           if (nextInputBuffer.isEndOfStream()) {
             inputStreamEnded = true;
           } else {
@@ -204,7 +243,7 @@ public final class TextRenderer extends BaseRenderer implements Callback {
           decoder.queueInputBuffer(nextInputBuffer);
           nextInputBuffer = null;
         } else if (result == C.RESULT_NOTHING_READ) {
-          break;
+          return;
         }
       }
     } catch (SubtitleDecoderException e) {
@@ -214,11 +253,9 @@ public final class TextRenderer extends BaseRenderer implements Callback {
 
   @Override
   protected void onDisabled() {
+    streamFormat = null;
     clearOutput();
-    resetBuffers();
-    decoder.release();
-    decoder = null;
-    super.onDisabled();
+    releaseDecoder();
   }
 
   @Override
@@ -233,7 +270,7 @@ public final class TextRenderer extends BaseRenderer implements Callback {
     return true;
   }
 
-  private void resetBuffers() {
+  private void releaseBuffers() {
     nextInputBuffer = null;
     nextSubtitleEventIndex = C.INDEX_UNSET;
     if (subtitle != null) {
@@ -246,10 +283,22 @@ public final class TextRenderer extends BaseRenderer implements Callback {
     }
   }
 
+  private void releaseDecoder() {
+    releaseBuffers();
+    decoder.release();
+    decoder = null;
+    decoderReplacementState = REPLACEMENT_STATE_NONE;
+  }
+
+  private void replaceDecoder() {
+    releaseDecoder();
+    decoder = decoderFactory.createDecoder(streamFormat);
+  }
+
   private long getNextEventTime() {
-    return ((nextSubtitleEventIndex == C.INDEX_UNSET)
-        || (nextSubtitleEventIndex >= subtitle.getEventTimeCount())) ? Long.MAX_VALUE
-        : (subtitle.getEventTime(nextSubtitleEventIndex));
+    return nextSubtitleEventIndex == C.INDEX_UNSET
+        || nextSubtitleEventIndex >= subtitle.getEventTimeCount()
+        ? Long.MAX_VALUE : subtitle.getEventTime(nextSubtitleEventIndex);
   }
 
   private void updateOutput(List<Cue> cues) {
@@ -271,8 +320,9 @@ public final class TextRenderer extends BaseRenderer implements Callback {
       case MSG_UPDATE_OUTPUT:
         invokeUpdateOutputInternal((List<Cue>) msg.obj);
         return true;
+      default:
+        throw new IllegalStateException();
     }
-    return false;
   }
 
   private void invokeUpdateOutputInternal(List<Cue> cues) {

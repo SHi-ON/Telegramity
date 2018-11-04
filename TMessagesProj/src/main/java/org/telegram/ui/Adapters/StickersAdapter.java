@@ -77,7 +77,7 @@ public class StickersAdapter extends RecyclerListView.SelectionAdapter implement
             File f = FileLoader.getPathToAttach(document.thumb, "webp", true);
             if (!f.exists()) {
                 stickersToLoad.add(FileLoader.getAttachFileName(document.thumb, "webp"));
-                FileLoader.getInstance().loadFile(document.thumb.location, "webp", 0, true);
+                FileLoader.getInstance().loadFile(document.thumb.location, "webp", 0, 1);
             }
         }
         return stickersToLoad.isEmpty();
@@ -111,9 +111,15 @@ public class StickersAdapter extends RecyclerListView.SelectionAdapter implement
                     stickers = newStickers != null && !newStickers.isEmpty() ? new ArrayList<>(newStickers) : null;
                     if (stickers != null) {
                         final ArrayList<TLRPC.Document> recentStickers = StickersQuery.getRecentStickersNoCopy(StickersQuery.TYPE_IMAGE);
+                        final ArrayList<TLRPC.Document> favsStickers = StickersQuery.getRecentStickersNoCopy(StickersQuery.TYPE_FAVE);
                         if (!recentStickers.isEmpty()) {
                             Collections.sort(stickers, new Comparator<TLRPC.Document>() {
                                 private int getIndex(long id) {
+                                    for (int a = 0; a < favsStickers.size(); a++) {
+                                        if (favsStickers.get(a).id == id) {
+                                            return a + 1000;
+                                        }
+                                    }
                                     for (int a = 0; a < recentStickers.size(); a++) {
                                         if (recentStickers.get(a).id == id) {
                                             return a;

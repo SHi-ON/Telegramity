@@ -48,6 +48,8 @@ import org.telegram.ui.VoIPFeedbackActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.TreeMap;
 
 public class GramityUtilities {
 
@@ -325,5 +327,29 @@ public class GramityUtilities {
                 "righ tel"
         };
         return Arrays.asList(carriers).contains(currentCarrier);
+    }
+
+    public static boolean isAllowedPackage() {
+
+//        boolean allowedPkg = ApplicationLoader.applicationContext.getPackageName().equals(GramityConstants.GRAMITY_PKG);
+        boolean allowedPkg = true; // TODO: TGY - temporary
+
+        return allowedPkg;
+    }
+
+    public static String getRandomCustomProxy (){
+        Random rand = new Random();
+        int index = rand.nextInt(GramityConstants.SCKS_LEN);
+
+        return GramityConstants.SCKS_IP_LIST[index];
+    }
+
+    public static boolean isCustomProxy(String str){
+        for (int i = 0; i < GramityConstants.SCKS_LEN; i++) {
+            if (GramityConstants.SCKS_IP_LIST[i].equals(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

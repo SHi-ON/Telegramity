@@ -1,3 +1,10 @@
+/*
+* Pushe Service Listener v1 - Gramity Edition
+* by SHi-ON
+* https://ShayanAmani.com
+* © 2015 - 2018
+*/
+
 package org.gramity;
 
 import android.content.Intent;
@@ -12,7 +19,7 @@ public class PPListener extends PusheListenerService {
     @Override
     public void onMessageReceived(JSONObject message, JSONObject content) {
 
-        android.util.Log.i("Pushe", "Custom json Message: " + message.toString()); //TODO: remove for production
+        //android.util.Log.i("Pushe", "Custom json Message: " + message.toString()); //TODO: remove for production
         final JSONObject aData = message;
         try {
             if (aData.has(GramityConstants.SV_BTN) && aData.getString(GramityConstants.SV_BTN) != null) {

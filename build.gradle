@@ -3,10 +3,11 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        google() //TGY for some weird build error after 4.6 update
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.google.gms:google-services:3.1.1'
 
         //Added for BoomMenu repo
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
@@ -14,13 +15,14 @@ buildscript {
     }
 }
 
+
 allprojects {
     repositories {
         jcenter()
         maven {
             url "https://jitpack.io"
         }
-        maven{
+        maven{ // Google Maven repository
             url "https://maven.google.com"
         }
     }

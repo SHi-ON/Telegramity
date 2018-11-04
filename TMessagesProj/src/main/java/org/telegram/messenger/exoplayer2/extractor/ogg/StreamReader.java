@@ -42,7 +42,8 @@ import java.io.IOException;
     OggSeeker oggSeeker;
   }
 
-  private OggPacket oggPacket;
+  private final OggPacket oggPacket;
+
   private TrackOutput trackOutput;
   private ExtractorOutput extractorOutput;
   private OggSeeker oggSeeker;
@@ -56,11 +57,13 @@ import java.io.IOException;
   private boolean seekMapSet;
   private boolean formatSet;
 
+  public StreamReader() {
+    oggPacket = new OggPacket();
+  }
+
   void init(ExtractorOutput output, TrackOutput trackOutput) {
     this.extractorOutput = output;
     this.trackOutput = trackOutput;
-    this.oggPacket = new OggPacket();
-
     reset(true);
   }
 
@@ -82,15 +85,15 @@ import java.io.IOException;
   }
 
   /**
-   * @see Extractor#seek(long)
+   * @see Extractor#seek(long, long)
    */
-  final void seek(long position) {
+  final void seek(long position, long timeUs) {
     oggPacket.reset();
     if (position == 0) {
       reset(!seekMapSet);
     } else {
       if (state != STATE_READ_HEADERS) {
-        targetGranule = oggSeeker.startSeek();
+        targetGranule = oggSeeker.startSeek(timeUs);
         state = STATE_READ_PAYLOAD;
       }
     }
@@ -104,15 +107,12 @@ import java.io.IOException;
     switch (state) {
       case STATE_READ_HEADERS:
         return readHeaders(input);
-
       case STATE_SKIP_HEADERS:
         input.skipFully((int) payloadStartPosition);
         state = STATE_READ_PAYLOAD;
         return Extractor.RESULT_CONTINUE;
-
       case STATE_READ_PAYLOAD:
         return readPayload(input, seekPosition);
-
       default:
         // Never happens.
         throw new IllegalStateException();
@@ -153,6 +153,8 @@ import java.io.IOException;
 
     setupData = null;
     state = STATE_READ_PAYLOAD;
+    // First payload packet. Trim the payload array of the ogg packet after headers have been read.
+    oggPacket.trimPayload();
     return Extractor.RESULT_CONTINUE;
   }
 
@@ -163,7 +165,7 @@ import java.io.IOException;
       seekPosition.position = position;
       return Extractor.RESULT_SEEK;
     } else if (position < -1) {
-      onSeekEnd(-position - 2);
+      onSeekEnd(-(position + 2));
     }
     if (!seekMapSet) {
       SeekMap seekMap = oggSeeker.createSeekMap();
@@ -233,7 +235,7 @@ import java.io.IOException;
   /**
    * Called on end of seeking.
    *
-   * @param currentGranule Current granule at the current position of input.
+   * @param currentGranule The granule at the current input position.
    */
   protected void onSeekEnd(long currentGranule) {
     this.currentGranule = currentGranule;
@@ -247,7 +249,7 @@ import java.io.IOException;
     }
 
     @Override
-    public long startSeek() {
+    public long startSeek(long timeUs) {
       return 0;
     }
 

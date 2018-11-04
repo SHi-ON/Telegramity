@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,6 +66,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Components.AlertsCreator;
+import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.HintEditText;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SlideView;
@@ -139,7 +139,7 @@ public class ChangePhoneActivity extends BaseFragment {
 
     @Override
     public View createView(Context context) {
-        actionBar.setTitle(LocaleController.getString("AppName", R.string.AppName));
+        actionBar.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -323,7 +323,7 @@ public class ChangePhoneActivity extends BaseFragment {
 
     public class PhoneView extends SlideView implements AdapterView.OnItemSelectedListener {
 
-        private EditText codeField;
+        private EditTextBoldCursor codeField;
         private HintEditText phoneField;
         private TextView countryButton;
         private View view;
@@ -395,11 +395,13 @@ public class ChangePhoneActivity extends BaseFragment {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
-            codeField = new EditText(context);
+            codeField = new EditTextBoldCursor(context);
             codeField.setInputType(InputType.TYPE_CLASS_PHONE);
             codeField.setTypeface(AndroidUtilities.getTypeface(null));
             codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            AndroidUtilities.clearCursorDrawable(codeField);
+            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            codeField.setCursorSize(AndroidUtilities.dp(20));
+            codeField.setCursorWidth(1.5f);
             codeField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             codeField.setPadding(AndroidUtilities.dp(10), 0, 0, 0);
             codeField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
@@ -505,7 +507,9 @@ public class ChangePhoneActivity extends BaseFragment {
             phoneField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             phoneField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             phoneField.setPadding(0, 0, 0, 0);
-            AndroidUtilities.clearCursorDrawable(phoneField);
+            phoneField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            phoneField.setCursorSize(AndroidUtilities.dp(20));
+            phoneField.setCursorWidth(1.5f);
             phoneField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             phoneField.setMaxLines(1);
             phoneField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
@@ -694,6 +698,11 @@ public class ChangePhoneActivity extends BaseFragment {
         }
 
         @Override
+        public void onCancelPressed() {
+            nextPressed = false;
+        }
+
+        @Override
         public void onNothingSelected(AdapterView<?> adapterView) {
 
         }
@@ -716,13 +725,16 @@ public class ChangePhoneActivity extends BaseFragment {
                     }
                     if (!allowSms) {
                         permissionsItems.add(Manifest.permission.RECEIVE_SMS);
+                        if (Build.VERSION.SDK_INT >= 23) {
+                            permissionsItems.add(Manifest.permission.READ_SMS);
+                        }
                     }
                     if (!permissionsItems.isEmpty()) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                         if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.RECEIVE_SMS)) {
                             preferences.edit().putBoolean("firstlogin", false).commit();
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                            builder.setTitle(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
                             if (permissionsItems.size() == 2) {
                                 builder.setMessage(LocaleController.getString("AllowReadCallAndSms", R.string.AllowReadCallAndSms));
@@ -829,7 +841,7 @@ public class ChangePhoneActivity extends BaseFragment {
         private String phoneHash;
         private String requestPhone;
         private String emailPhone;
-        private EditText codeField;
+        private EditTextBoldCursor codeField;
         private TextView confirmTextView;
         private TextView timeText;
         private TextView problemText;
@@ -884,11 +896,13 @@ public class ChangePhoneActivity extends BaseFragment {
                 addView(confirmTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT));
             }
 
-            codeField = new EditText(context);
-            codeField.setTypeface(AndroidUtilities.getTypeface(null));
+            codeField = new EditTextBoldCursor(context);
             codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             codeField.setHint(LocaleController.getString("Code", R.string.Code));
-            AndroidUtilities.clearCursorDrawable(codeField);
+            codeField.setTypeface(AndroidUtilities.getTypeface(null));
+            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            codeField.setCursorSize(AndroidUtilities.dp(20));
+            codeField.setCursorWidth(1.5f);
             codeField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
             codeField.setBackgroundDrawable(Theme.createEditTextDrawable(context, false));
             codeField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -1049,6 +1063,11 @@ public class ChangePhoneActivity extends BaseFragment {
         @Override
         public String getHeaderName() {
             return LocaleController.getString("YourCode", R.string.YourCode);
+        }
+
+        @Override
+        public void onCancelPressed() {
+            nextPressed = false;
         }
 
         @Override

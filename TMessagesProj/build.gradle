@@ -9,43 +9,43 @@ configurations {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-gcm:11.0.2'
-    compile 'com.google.android.gms:play-services-maps:11.0.2'
-    compile 'com.google.android.gms:play-services-vision:11.0.2'
-    compile 'com.google.android.gms:play-services-wallet:11.0.2'
-    compile 'com.google.android.gms:play-services-wearable:11.0.2'
+    compile 'com.google.android.gms:play-services-gcm:11.0.4'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.google.android.gms:play-services-vision:11.0.4'
+    compile 'com.google.android.gms:play-services-wallet:11.0.4'
+    compile 'com.google.android.gms:play-services-wearable:11.0.4'
     compile 'com.android.support:support-core-ui:25.3.1'
     compile 'com.android.support:support-compat:25.3.1'
     compile 'com.android.support:support-core-utils:25.3.1'
     compile 'com.android.support:support-v13:25.3.1'
     compile 'com.android.support:palette-v7:25.3.1'
-    compile 'net.hockeyapp.android:HockeySDK:4.1.5'
+    compile 'net.hockeyapp.android:HockeySDK:4.1.3'
     compile 'com.googlecode.mp4parser:isoparser:1.0.6'
     compile 'com.stripe:stripe-android:2.0.2'
     //
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'co.ronash.android:pushe-base:1.3.1'
+    compile 'com.android.support:multidex:1.0.2'
+    compile 'co.ronash.android:pushe-base:1.3.4'
     compile 'com.onesignal:OneSignal:3.5.8'
-    compile 'com.google.android.gms:play-services-location:11.0.2'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
     compile 'com.android.support:customtabs:25.3.1'
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     compile 'com.github.QuadFlask:colorpicker:0.0.13'
-    compile 'com.nightonke:boommenu:2.1.0'
-    compile 'com.mikepenz:iconics-core:2.8.2@aar'
-    compile 'com.mikepenz:community-material-typeface:1.7.22.1@aar'
-    compile 'com.mikepenz:entypo-typeface:1.0.0.2@aar'
-    compile 'com.mikepenz:fontawesome-typeface:4.7.0.0@aar'
-    compile 'com.mikepenz:foundation-icons-typeface:3.0.0.2@aar'
-    compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
-    compile 'com.mikepenz:ionicons-typeface:2.0.1.2@aar'
-    compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
-    compile 'com.mikepenz:octicons-typeface:3.2.0.2@aar'
-    compile 'com.mikepenz:typeicons-typeface:2.0.7.2@aar'
+    compile 'com.nightonke:boommenu:2.1.1'
+    implementation "com.mikepenz:iconics-core:3.0.3@aar"
+    implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
+    implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.4@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:5.0.6.0@aar'
+    implementation 'com.mikepenz:octicons-typeface:3.2.0.4@aar'
+    implementation 'com.mikepenz:community-material-typeface:2.0.46.1@aar'
+    implementation 'com.mikepenz:typeicons-typeface:2.0.7.4@aar'
+    implementation 'com.mikepenz:entypo-typeface:1.0.0.4@aar'
+    implementation 'com.mikepenz:foundation-icons-typeface:3.0.0.4@aar'
+    implementation 'com.mikepenz:ionicons-typeface:2.0.1.4@aar'
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     useLibrary 'org.apache.http.legacy'
     defaultConfig.applicationId = "org.telegram.engmariaamani.messenger"
@@ -104,7 +104,7 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 7402 //2 GREATER than BuildVars.BUILD_VERSION
+    defaultConfig.versionCode = 8571 //2 GREATER than BuildVars.BUILD_VERSION
 
     sourceSets.debug {
         manifest.srcFile 'config/debug/AndroidManifest.xml'
@@ -113,6 +113,8 @@ android {
     sourceSets.release {
         manifest.srcFile 'config/release/AndroidManifest.xml'
     }
+
+    flavorDimensions "minApi"
 
     productFlavors {
         x86 {
@@ -163,6 +165,9 @@ android {
             versionCode = 5
         }
         telegramity {
+            ndk {
+                abiFilter "armeabi-v7a"
+            }
             sourceSets.debug {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
             }
@@ -244,14 +249,25 @@ android {
     }
 
     applicationVariants.all { variant ->
-        def abiVersion = variant.productFlavors.get(0).versionCode
-        variant.mergedFlavor.versionCode = defaultConfig.versionCode * 10 + abiVersion
+        variant.outputs.all { output ->
+            output.processManifest.doLast {
+                def abiVersion = variant.productFlavors.get(0).versionCode
+                String manifestPath = "$manifestOutputDirectory/AndroidManifest.xml"
+                def manifestContent = file(manifestPath).getText()
+                manifestContent = manifestContent.replace(String.format('android:versionCode="%d"', abiVersion), String.format('android:versionCode="%s"', defaultConfig.versionCode * 10 + abiVersion))
+                file(manifestPath).write(manifestContent)
+            }
+        }
+        // from prev versions
+//        def abiVersion  variant.productFlavors.get(0).versionCode
+//        variant.mergedFlavor.versionCode = defaultConfig.versionCode * 10 + abiVersion
+        //
         if (variant.flavorName.equals("gramity1")) {
             variant.mergeResources.doLast {
-                def dir = new File("${buildDir}/intermediates/res/merged/${variant.dirName}")
+                def dir = new File("${buildDir}/intermediates/incremental")
                 println("Resources dir " + dir)
                 dir.eachFileRecurse { file ->
-                    if (file.name.endsWith(".xml")) {
+                    if (file.name.endsWith(".xml")) {\
                         String content = file.getText('UTF-8')
                         if (content != null && (content.contains("Telegramity") || content.contains("تلگرامیتی") || content.contains("تیلیجرامیتی"))) {
                             println("Replacing name in " + file)
@@ -336,9 +352,9 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 25
-        versionName "3.18.20-GTY1498"
+        versionName "4.6.32-GTY1871"
         multiDexEnabled true
 
         externalNativeBuild {

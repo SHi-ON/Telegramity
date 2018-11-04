@@ -30,7 +30,7 @@ import java.util.List;
 public class FontSelectActivity extends BaseFragment {
 
     public static final String DEFAULT_FONT_PATH = "fonts/IRANSansMobileRegular.ttf";
-    public static final int FONTS_ROW_COUNT = 10;
+    public static final int FONTS_ROW_COUNT = 13;
 
 
     private ListAdapter listAdapter;
@@ -39,6 +39,9 @@ public class FontSelectActivity extends BaseFragment {
 
     private String[] fontNamesArray = ApplicationLoader.applicationContext.getResources().getStringArray(R.array.FontNameArr);
     private String[] fontPathsArray = {
+            "fonts/IRANSansDNLight.ttf",
+            "fonts/IRANSansDNRegular.ttf",
+            "fonts/IRANSansDNBold.ttf",
             "fonts/IRANYekanMobileLight.ttf",
             "fonts/IRANYekanMobileRegular.ttf",
             "fonts/IRANYekanMobileBold.ttf",
@@ -99,7 +102,7 @@ public class FontSelectActivity extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                 builder.setMessage(LocaleController.getString("ChangeFontAlertMessage", R.string.ChangeFontAlertMessage));
                 TextView titleTextView = new TextView(getParentActivity());
-                titleTextView.setText(LocaleController.getString("AppName", R.string.AppName));
+                titleTextView.setText(LocaleController.getString("AppNameTgy", R.string.AppNameTgy));
                 titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 titleTextView.setTextColor(Theme.getColor(Theme.key_actionBarDefault));
                 titleTextView.setTypeface(AndroidUtilities.getTypeface(null));
