@@ -24,13 +24,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.AnimRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.BundleCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.AnimRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.app.BundleCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -546,6 +546,10 @@ public final class CustomTabsIntent {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(EXTRA_USER_OPT_OUT_FROM_CUSTOM_TABS, true);
         return intent;
+    }
+
+    public void setUseNewTask() {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     /**
