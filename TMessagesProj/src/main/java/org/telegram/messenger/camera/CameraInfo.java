@@ -1,28 +1,37 @@
 /*
- * This is the source code of Telegram for Android v. 3.x.x.
+ * This is the source code of Telegram for Android v. 5.x.x.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2017.
+ * Copyright Nikolai Kudashov, 2013-2018.
  */
 
 package org.telegram.messenger.camera;
 
 import android.hardware.Camera;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CaptureRequest;
 
 import java.util.ArrayList;
 
 public class CameraInfo {
 
-    protected int cameraId;
+    public int cameraId;
     protected Camera camera;
     protected ArrayList<Size> pictureSizes = new ArrayList<>();
     protected ArrayList<Size> previewSizes = new ArrayList<>();
-    protected final int frontCamera;
+    public final int frontCamera;
 
-    public CameraInfo(int id, Camera.CameraInfo info) {
+    protected CameraDevice cameraDevice;
+    CameraCharacteristics cameraCharacteristics;
+    CaptureRequest.Builder captureRequestBuilder;
+    public CameraCaptureSession cameraCaptureSession;
+
+    public CameraInfo(int id, int frontFace) {
         cameraId = id;
-        frontCamera = info.facing;
+        frontCamera = frontFace;
     }
 
     public int getCameraId() {
@@ -44,14 +53,4 @@ public class CameraInfo {
     public boolean isFrontface() {
         return frontCamera != 0;
     }
-
-    /*private int getScore(CameraSelectionCriteria criteria) {
-        int score = 10;
-        if (criteria != null) {
-            if ((criteria.getFacing().isFront() && frontCamera != Camera.CameraInfo.CAMERA_FACING_FRONT) || (!criteria.getFacing().isFront() && frontCamera != Camera.CameraInfo.CAMERA_FACING_BACK)) {
-                score = 0;
-            }
-        }
-        return (score);
-    }*/
 }
