@@ -1,9 +1,9 @@
 /*
- * This is the source code of Telegram for Android v. 3.x.x.
+ * This is the source code of Telegram for Android v. 5.x.x.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Copyright Nikolai Kudashov, 2013-2017.
+ * Copyright Nikolai Kudashov, 2013-2018.
  */
 
 package org.telegram.messenger.video;
@@ -75,5 +75,13 @@ public class Mp4Movie {
     public int addTrack(MediaFormat mediaFormat, boolean isAudio) {
         tracks.add(new Track(tracks.size(), mediaFormat, isAudio));
         return tracks.size() - 1;
+    }
+
+    public long getLastFrameTimestamp(int trackIndex) {
+        if (trackIndex < 0 || trackIndex >= tracks.size()) {
+            return 0;
+        }
+        Track track = tracks.get(trackIndex);
+        return track.getLastFrameTimestamp();
     }
 }

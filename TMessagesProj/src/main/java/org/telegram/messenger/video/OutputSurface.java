@@ -1,17 +1,9 @@
 /*
- * Copyright (C) 2013 The Android Open Source Project
+ * This is the source code of Telegram for Android v. 6.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Nikolai Kudashov, 2013-2020.
  */
 
 package org.telegram.messenger.video;
@@ -20,8 +12,12 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.view.Surface;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.MediaController;
+import org.telegram.messenger.VideoEditedInfo;
+import org.telegram.ui.Stories.recorder.StoryEntry;
+
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -42,31 +38,9 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
     private final Object mFrameSyncObject = new Object();
     private boolean mFrameAvailable;
     private TextureRenderer mTextureRender;
-    private int mWidth;
-    private int mHeight;
-    private int rotateRender = 0;
-    private ByteBuffer mPixelBuf;
 
-    public OutputSurface(int width, int height, int rotate) {
-        if (width <= 0 || height <= 0) {
-            throw new IllegalArgumentException();
-        }
-        mWidth = width;
-        mHeight = height;
-        rotateRender = rotate;
-        mPixelBuf = ByteBuffer.allocateDirect(mWidth * mHeight * 4);
-        mPixelBuf.order(ByteOrder.LITTLE_ENDIAN);
-        eglSetup(width, height);
-        makeCurrent();
-        setup();
-    }
-
-    public OutputSurface() {
-        setup();
-    }
-
-    private void setup() {
-        mTextureRender = new TextureRenderer(rotateRender);
+    public OutputSurface(MediaController.SavedFilterState savedFilterState, String imagePath, String paintPath, String blurPath, ArrayList<VideoEditedInfo.MediaEntity> mediaEntities, MediaController.CropState cropState, int w, int h, int originalW, int originalH, int rotation, float fps, boolean photo, Integer gradientTopColor, Integer gradientBottomColor, StoryEntry.HDRInfo hdrInfo, MediaCodecVideoConvertor.ConvertVideoParams params) {
+        mTextureRender = new TextureRenderer(savedFilterState, imagePath, paintPath, blurPath, mediaEntities, cropState, w, h, originalW, originalH, rotation, fps, photo, gradientTopColor, gradientBottomColor, hdrInfo, params);
         mTextureRender.surfaceCreated();
         mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
         mSurfaceTexture.setOnFrameAvailableListener(this);
@@ -129,6 +103,9 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
             mEGL.eglDestroySurface(mEGLDisplay, mEGLSurface);
             mEGL.eglDestroyContext(mEGLDisplay, mEGLContext);
         }
+        if (mTextureRender != null) {
+            mTextureRender.release();
+        }
         mSurface.release();
         mEGLDisplay = null;
         mEGLContext = null;
@@ -168,12 +145,11 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
             }
             mFrameAvailable = false;
         }
-        mTextureRender.checkGlError("before updateTexImage");
         mSurfaceTexture.updateTexImage();
     }
 
-    public void drawImage(boolean invert) {
-        mTextureRender.drawFrame(mSurfaceTexture, invert);
+    public void drawImage(long time) {
+        mTextureRender.drawFrame(mSurfaceTexture, time);
     }
 
     @Override
@@ -187,15 +163,23 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         }
     }
 
-    public ByteBuffer getFrame() {
-        mPixelBuf.rewind();
-        GLES20.glReadPixels(0, 0, mWidth, mHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, mPixelBuf);
-        return mPixelBuf;
-    }
-
     private void checkEglError(String msg) {
         if (mEGL.eglGetError() != EGL10.EGL_SUCCESS) {
             throw new RuntimeException("EGL error encountered (see log)");
         }
+    }
+
+    public void changeFragmentShader(String fragmentExternalShader, String fragmentShader, boolean is300) {
+        mTextureRender.changeFragmentShader(fragmentExternalShader, fragmentShader, is300);
+    }
+
+    public boolean supportsEXTYUV() {
+        try {
+            String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+            return extensions.contains("GL_EXT_YUV_target");
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return false;
     }
 }
