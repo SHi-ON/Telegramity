@@ -2,13 +2,20 @@
 
 An unofficial Telegram Android client.
 
+---
+
 ### Note
-Telegramity were originally intended to introduce a set of features which were missing in the official app at the time.
-Such features in Telegramity, garnered a thriving userbase at the time.
-The current version of the `master` branch is an update-in-progress intended to update the codebase with the latest changes of the upstream (Telegram for Android sourcecode).
-My idea was to release the sourcecode even though I have no free time to be allocated just to fix the conflicts and to finish the update.
-There are several files with unsolved merge conflicts.
-Contributions in fixing the merge conflicts are welcome and much appreciated!
+
+**Telegramity** was originally created to introduce a set of features that were missing from the official Telegram app at the time. These additions helped build a thriving user base.
+
+The current `master` branch is a work-in-progress, aimed at updating the codebase with the latest changes from the upstream Telegram for Android source code.
+
+Although I currently don’t have enough free time to resolve all the merge conflicts and complete the update, I’ve decided to release the source code publicly.
+
+🚧 **Several files still contain unresolved merge conflicts.**  
+💡 **Contributions to help fix these conflicts are welcome and greatly appreciated!**
+
+---
 
 ## Telegram messenger for Android
 
